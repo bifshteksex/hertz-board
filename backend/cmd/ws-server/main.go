@@ -9,6 +9,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/app/server"
 )
 
@@ -30,7 +31,7 @@ func main() {
 	// TODO: Initialize CRDT sync engine
 
 	// Register health check endpoint
-	h.GET("/health", func(c context.Context, ctx *server.RequestContext) {
+	h.GET("/health", func(c context.Context, ctx *app.RequestContext) {
 		ctx.JSON(200, map[string]interface{}{
 			"status":    "ok",
 			"service":   "ws-server",

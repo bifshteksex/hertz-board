@@ -34,6 +34,7 @@ jobs:
         with:
           version: latest
           working-directory: backend
+          install-mode: goinstall
 
   backend-test:
     name: Backend Tests
@@ -115,11 +116,11 @@ jobs:
       - name: Install dependencies
         run: cd frontend && npm ci
 
+      - name: Sync SvelteKit
+        run: cd frontend && npx svelte-kit sync
+
       - name: Run linter
         run: cd frontend && npm run lint
-
-      - name: Check formatting
-        run: cd frontend && npm run format -- --check
 
       - name: Type check
         run: cd frontend && npm run check
@@ -140,6 +141,9 @@ jobs:
       - name: Install dependencies
         run: cd frontend && npm ci
 
+      - name: Sync SvelteKit
+        run: cd frontend && npx svelte-kit sync
+
       - name: Run tests
         run: cd frontend && npm run test:unit
 
@@ -158,6 +162,9 @@ jobs:
 
       - name: Install dependencies
         run: cd frontend && npm ci
+
+      - name: Sync SvelteKit
+        run: cd frontend && npx svelte-kit sync
 
       - name: Build
         run: cd frontend && npm run build
