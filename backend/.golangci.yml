@@ -17,14 +17,12 @@ linters-settings:
     min-complexity: 15
   goimports:
     local-prefixes: github.com/bifshteksex/hertzboard
-  gomnd:
-    settings:
-      mnd:
-        checks:
-          - argument
-          - case
-          - condition
-          - return
+  mnd:
+    checks:
+      - argument
+      - case
+      - condition
+      - return
   govet:
     enable-all: true
   lll:
@@ -51,7 +49,7 @@ linters:
     - gocyclo
     - gofmt
     - goimports
-    - gomnd
+    - mnd
     - goprintffuncname
     - gosec
     - gosimple
@@ -74,14 +72,14 @@ issues:
   exclude-rules:
     - path: _test\.go
       linters:
-        - gomnd
+        - mnd
         - goconst
         - dupl
-
-run:
-  timeout: 5m
-  skip-dirs:
+  exclude-dirs:
     - vendor
     - testdata
     - bin
     - tmp
+
+run:
+  timeout: 5m
