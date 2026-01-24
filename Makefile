@@ -48,6 +48,9 @@ dev-logs-redis:
 dev-logs-minio:
 	docker-compose logs -f minio
 
+# Detect package manager
+PKG_MANAGER := $(shell command -v pnpm 2> /dev/null && echo pnpm || echo npm)
+
 # Installation
 install: install-backend install-frontend
 
@@ -56,8 +59,8 @@ install-backend:
 	cd backend && go mod download && go mod tidy
 
 install-frontend:
-	@echo "Installing frontend dependencies..."
-	cd frontend && npm install
+	@echo "Installing frontend dependencies with $(PKG_MANAGER)..."
+	cd frontend && $(PKG_MANAGER) install
 
 # Backend commands
 backend-run:
@@ -83,42 +86,58 @@ backend-build:
 
 # Frontend commands
 frontend-run:
-	@echo "Running frontend development server..."
-	cd frontend && npm run dev
+	@echo "Running frontend development server with $(PKG_MANAGER)..."
+	cd frontend && $(PKG_MANAGER) run dev
 
 frontend-build:
-	@echo "Building frontend..."
-	cd frontend && npm run build
+	@echo "Building frontend with $(PKG_MANAGER)..."
+	cd frontend && $(PKG_MANAGER) run build
 
 frontend-preview:
-	@echo "Preview frontend build..."
-	cd frontend && npm run preview
+	@echo "Preview frontend build with $(PKG_MANAGER)..."
+	cd frontend && $(PKG_MANAGER) run preview
 
 frontend-test:
-	@echo "Running frontend tests..."
-	cd frontend && npm run test
+	@echo "Running frontend tests with $(PKG_MANAGER)..."
+	cd frontend && $(PKG_MANAGER) run test
 
 frontend-lint:
-	@echo "Running frontend linter..."
-	cd frontend && npm run lint
+	@echo "Running frontend linter with $(PKG_MANAGER)..."
+	cd frontend && $(PKG_MANAGER) run lint
 
 frontend-format:
-	@echo "Formatting frontend code..."
-	cd frontend && npm run format
+	@echo "Formatting frontend code with $(PKG_MANAGER)..."
+	cd frontend && $(PKG_MANAGER) run format
+
+frontend-update:
+	@echo "Updating frontend dependencies to latest versions with $(PKG_MANAGER)..."
+	cd frontend && $(PKG_MANAGER) update --latest
 
 # Database commands
 migrate:
-	@echo "Running database migrations..."
-	cd backend && go run cmd/migrate/main.go up
+	@if [ -f backend/cmd/migrate/main.go ]; then \
+		echo "Running database migrations..."; \
+		cd backend && go run cmd/migrate/main.go up; \
+	else \
+		echo "Migration tool not found, skipping migrations..."; \
+		echo "You can create migrations later when needed."; \
+	fi
 
 migrate-down:
-	@echo "Rolling back database migrations..."
-	cd backend && go run cmd/migrate/main.go down
+	@if [ -f backend/cmd/migrate/main.go ]; then \
+		echo "Rolling back database migrations..."; \
+		cd backend && go run cmd/migrate/main.go down; \
+	else \
+		echo "Migration tool not found at backend/cmd/migrate/main.go"; \
+	fi
 
 migrate-create:
-	@echo "Creating new migration..."
-	@read -p "Enter migration name: " name; \
-	cd backend && go run cmd/migrate/main.go create $$name
+	@if [ -f backend/cmd/migrate/main.go ]; then \
+		read -p "Enter migration name: " name; \
+		cd backend && go run cmd/migrate/main.go create $$name; \
+	else \
+		echo "Migration tool not found at backend/cmd/migrate/main.go"; \
+	fi
 
 # Testing
 test: backend-test frontend-test

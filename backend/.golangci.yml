@@ -16,7 +16,7 @@ linters-settings:
   gocyclo:
     min-complexity: 15
   goimports:
-    local-prefixes: github.com/yourusername/hertzboard
+    local-prefixes: github.com/bifshteksex/hertzboard
   gomnd:
     settings:
       mnd:
