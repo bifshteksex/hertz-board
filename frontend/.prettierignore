@@ -12,6 +12,3 @@ node_modules/
 # Generated files
 *.min.js
 *.min.css
-
-# Tailwind CSS
-src/app.css
