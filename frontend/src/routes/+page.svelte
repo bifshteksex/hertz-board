@@ -2,20 +2,22 @@
 	// Landing page placeholder
 </script>
 
-<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
+<div
+	class="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100"
+>
 	<div class="text-center">
-		<h1 class="text-6xl font-bold text-gray-900 mb-4">HertzBoard</h1>
-		<p class="text-xl text-gray-600 mb-8">Collaborative Workspace Platform</p>
+		<h1 class="mb-4 text-6xl font-bold text-gray-900">HertzBoard</h1>
+		<p class="mb-8 text-xl text-gray-600">Collaborative Workspace Platform</p>
 		<div class="space-x-4">
 			<a
 				href="/auth/login"
-				class="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+				class="inline-block rounded-lg bg-blue-600 px-6 py-3 text-white transition hover:bg-blue-700"
 			>
 				Login
 			</a>
 			<a
 				href="/auth/register"
-				class="inline-block px-6 py-3 bg-gray-200 text-gray-900 rounded-lg hover:bg-gray-300 transition"
+				class="inline-block rounded-lg bg-gray-200 px-6 py-3 text-gray-900 transition hover:bg-gray-300"
 			>
 				Sign Up
 			</a>

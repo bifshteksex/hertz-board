@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
@@ -11,6 +12,11 @@ import (
 
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/app/server"
+)
+
+const (
+	defaultPort            = ":8081"
+	shutdownTimeoutSeconds = 5
 )
 
 func main() {
@@ -22,7 +28,7 @@ func main() {
 
 	// Initialize Hertz server for WebSocket
 	h := server.Default(
-		server.WithHostPorts(":8081"),
+		server.WithHostPorts(defaultPort),
 	)
 
 	// TODO: Initialize WebSocket hub
@@ -32,7 +38,7 @@ func main() {
 
 	// Register health check endpoint
 	h.GET("/health", func(c context.Context, ctx *app.RequestContext) {
-		ctx.JSON(200, map[string]interface{}{
+		ctx.JSON(http.StatusOK, map[string]interface{}{
 			"status":    "ok",
 			"service":   "ws-server",
 			"timestamp": time.Now().Unix(),
@@ -46,7 +52,7 @@ func main() {
 		}
 	}()
 
-	log.Println("WebSocket Server is running on :8081")
+	log.Printf("WebSocket Server is running on %s", defaultPort)
 
 	// Wait for interrupt signal
 	quit := make(chan os.Signal, 1)
@@ -56,11 +62,12 @@ func main() {
 	log.Println("Shutting down server...")
 
 	// Graceful shutdown with timeout
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), shutdownTimeoutSeconds*time.Second)
 	defer cancel()
 
 	if err := h.Shutdown(ctx); err != nil {
-		log.Fatal("Server forced to shutdown:", err)
+		cancel() // Explicitly call cancel before Fatal
+		log.Fatalf("Server forced to shutdown: %v", err)
 	}
 
 	fmt.Println("Server exited")

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
@@ -11,6 +12,13 @@ import (
 
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/app/server"
+)
+
+const (
+	defaultPort            = ":8080"
+	maxRequestBodySizeMB   = 10
+	shutdownTimeoutSeconds = 5
+	bytesInMB              = 1024 * 1024
 )
 
 func main() {
@@ -22,8 +30,8 @@ func main() {
 
 	// Initialize Hertz server
 	h := server.Default(
-		server.WithHostPorts(":8080"),
-		server.WithMaxRequestBodySize(10*1024*1024), // 10MB
+		server.WithHostPorts(defaultPort),
+		server.WithMaxRequestBodySize(maxRequestBodySizeMB*bytesInMB),
 	)
 
 	// TODO: Register routes
@@ -34,7 +42,7 @@ func main() {
 
 	// Register health check endpoint
 	h.GET("/health", func(c context.Context, ctx *app.RequestContext) {
-		ctx.JSON(200, map[string]interface{}{
+		ctx.JSON(http.StatusOK, map[string]interface{}{
 			"status":    "ok",
 			"service":   "api-gateway",
 			"timestamp": time.Now().Unix(),
@@ -48,7 +56,7 @@ func main() {
 		}
 	}()
 
-	log.Println("API Gateway is running on :8080")
+	log.Printf("API Gateway is running on %s", defaultPort)
 
 	// Wait for interrupt signal
 	quit := make(chan os.Signal, 1)
@@ -58,11 +66,12 @@ func main() {
 	log.Println("Shutting down server...")
 
 	// Graceful shutdown with timeout
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), shutdownTimeoutSeconds*time.Second)
 	defer cancel()
 
 	if err := h.Shutdown(ctx); err != nil {
-		log.Fatal("Server forced to shutdown:", err)
+		cancel() // Explicitly call cancel before Fatal
+		log.Fatalf("Server forced to shutdown: %v", err)
 	}
 
 	fmt.Println("Server exited")
