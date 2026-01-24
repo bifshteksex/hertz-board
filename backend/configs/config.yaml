@@ -1,0 +1,120 @@
+app:
+  name: "HertzBoard"
+  env: "development"
+  port: 8080
+  debug: true
+
+database:
+  host: "localhost"
+  port: 5432
+  name: "hertzboard"
+  user: "hertzboard"
+  password: "hertzboard_dev_password"
+  ssl_mode: "disable"
+  max_connections: 100
+  max_idle_connections: 10
+  connection_max_lifetime: 3600
+
+redis:
+  host: "localhost"
+  port: 6379
+  password: "hertzboard_redis_password"
+  db: 0
+  max_retries: 3
+  pool_size: 10
+
+minio:
+  endpoint: "localhost:9000"
+  access_key: "hertzboard"
+  secret_key: "hertzboard_minio_password"
+  use_ssl: false
+  bucket_assets: "hertzboard-assets"
+  bucket_exports: "hertzboard-exports"
+  bucket_backups: "hertzboard-backups"
+
+clickhouse:
+  host: "localhost"
+  port: 8123
+  database: "hertzboard_analytics"
+  user: "hertzboard"
+  password: "hertzboard_clickhouse_password"
+
+nats:
+  url: "nats://localhost:4222"
+  max_reconnect: 10
+  reconnect_wait: 2
+
+jwt:
+  secret: "your-super-secret-jwt-key-change-this-in-production"
+  access_token_expiry: "15m"
+  refresh_token_expiry: "168h"
+
+oauth:
+  google:
+    client_id: "${GOOGLE_CLIENT_ID}"
+    client_secret: "${GOOGLE_CLIENT_SECRET}"
+    redirect_url: "http://localhost:8080/auth/google/callback"
+  github:
+    client_id: "${GITHUB_CLIENT_ID}"
+    client_secret: "${GITHUB_CLIENT_SECRET}"
+    redirect_url: "http://localhost:8080/auth/github/callback"
+
+email:
+  smtp_host: "localhost"
+  smtp_port: 1025
+  smtp_user: ""
+  smtp_password: ""
+  from: "noreply@hertzboard.dev"
+
+cors:
+  allowed_origins:
+    - "http://localhost:5173"
+    - "http://localhost:3000"
+  allowed_methods:
+    - "GET"
+    - "POST"
+    - "PUT"
+    - "DELETE"
+    - "OPTIONS"
+    - "PATCH"
+  allowed_headers:
+    - "Content-Type"
+    - "Authorization"
+  allow_credentials: true
+  max_age: 86400
+
+websocket:
+  port: 8081
+  read_buffer_size: 1024
+  write_buffer_size: 1024
+  max_message_size: 10485760
+  ping_period: 54
+  pong_wait: 60
+  write_wait: 10
+
+upload:
+  max_size: 10485760
+  allowed_types:
+    - "image/jpeg"
+    - "image/png"
+    - "image/gif"
+    - "image/webp"
+    - "image/svg+xml"
+
+rate_limit:
+  enabled: true
+  requests: 100
+  duration: "1m"
+
+logging:
+  level: "debug"
+  format: "json"
+  output: "stdout"
+
+metrics:
+  enabled: true
+  port: 9090
+
+tracing:
+  enabled: false
+  jaeger_endpoint: "http://localhost:14268/api/traces"

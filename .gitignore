@@ -1,1 +1,141 @@
+# Environment variables
+.env
+.env.local
+.env.*.local
+.env.development
+.env.production
+.env.staging
+
+# Editor directories and files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Go
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+/vendor/
+/bin/
+/dist/
+/tmp/
+go.work
+go.work.sum
+
+# Go coverage
+*.coverprofile
+coverage.txt
+coverage.html
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+.pnpm-store/
+dist/
+dist-ssr/
+*.local
+
+# Build output
+build/
+.output/
+.vercel/
+.netlify/
+
+# SvelteKit
+.svelte-kit/
+package/
+.env
+.env.*
+!.env.example
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
+
+# Tauri
+/desktop/src-tauri/target/
+/desktop/src-tauri/Cargo.lock
+/desktop/src-tauri/WixTools/
+
+# Capacitor
+/mobile/android/
+/mobile/ios/
+*.apk
+*.aab
+*.ipa
+
+# Logs
+logs/
+*.log
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Docker
+*.pid
+*.seed
+*.pid.lock
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Test coverage
+coverage/
+.nyc_output/
+*.lcov
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# IDL generated files
+/backend/kitex_gen/
+/backend/biz/model/
+
+# MinIO data
+/data/minio/
+
+# PostgreSQL data
+/data/postgres/
+
+# Redis data
+/data/redis/
+
+# Certificates
+*.pem
+*.key
+*.crt
+*.cert
+
+# Backup files
+*.bak
+*.backup
+
+# Lock files (commented out as we want to keep them)
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
+# Cargo.lock
+# go.sum
+
 tech.md
+PHASE_0_SUMMARY.md

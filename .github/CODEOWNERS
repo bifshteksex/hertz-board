@@ -1,0 +1,19 @@
+# CODEOWNERS file for hertz-board
+# These owners will be the default owners for everything in the repo
+
+# Global owners
+* @your-username
+
+# Backend owners
+/backend/ @your-username
+
+# Frontend owners
+/frontend/ @your-username
+
+# DevOps owners
+/deploy/ @your-username
+/.github/ @your-username
+/docker-compose.yml @your-username
+
+# Documentation owners
+/docs/ @your-username

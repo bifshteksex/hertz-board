@@ -1,0 +1,142 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:18.1-alpine
+    container_name: hertz-board-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: hertzboard
+      POSTGRES_USER: hertzboard
+      POSTGRES_PASSWORD: hertzboard_dev_password
+      POSTGRES_INITDB_ARGS: "-E UTF8"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/scripts/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hertzboard"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - hertz-network
+
+  redis:
+    image: redis:8.4-alpine
+    container_name: hertz-board-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes --requirepass hertzboard_redis_password
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - hertz-network
+
+  minio:
+    image: minio/minio:latest
+    container_name: hertz-board-minio
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: hertzboard
+      MINIO_ROOT_PASSWORD: hertzboard_minio_password
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+    networks:
+      - hertz-network
+
+  clickhouse:
+    image: clickhouse/clickhouse-server:latest
+    container_name: hertz-board-clickhouse
+    restart: unless-stopped
+    environment:
+      CLICKHOUSE_DB: hertzboard_analytics
+      CLICKHOUSE_USER: hertzboard
+      CLICKHOUSE_PASSWORD: hertzboard_clickhouse_password
+      CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: 1
+    ports:
+      - "8123:8123"
+      - "9009:9000"
+    volumes:
+      - clickhouse_data:/var/lib/clickhouse
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
+    networks:
+      - hertz-network
+
+  nats:
+    image: nats:alpine
+    container_name: hertz-board-nats
+    restart: unless-stopped
+    command: "--jetstream --store_dir /data"
+    ports:
+      - "4222:4222"
+      - "8222:8222"
+    volumes:
+      - nats_data:/data
+    networks:
+      - hertz-network
+
+  # Development tools
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: hertz-board-mailhog
+    restart: unless-stopped
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    networks:
+      - hertz-network
+
+  # MinIO client for bucket initialization
+  minio-init:
+    image: minio/mc:latest
+    container_name: hertz-board-minio-init
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+      sleep 5;
+      /usr/bin/mc alias set myminio http://minio:9000 hertzboard hertzboard_minio_password;
+      /usr/bin/mc mb myminio/hertzboard-assets --ignore-existing;
+      /usr/bin/mc mb myminio/hertzboard-exports --ignore-existing;
+      /usr/bin/mc mb myminio/hertzboard-backups --ignore-existing;
+      /usr/bin/mc anonymous set download myminio/hertzboard-assets;
+      exit 0;
+      "
+    networks:
+      - hertz-network
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  minio_data:
+    driver: local
+  clickhouse_data:
+    driver: local
+  nats_data:
+    driver: local
+
+networks:
+  hertz-network:
+    driver: bridge
