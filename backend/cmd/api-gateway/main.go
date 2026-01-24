@@ -67,12 +67,12 @@ func main() {
 
 	// Graceful shutdown with timeout
 	ctx, cancel := context.WithTimeout(context.Background(), shutdownTimeoutSeconds*time.Second)
-	defer cancel()
 
 	if err := h.Shutdown(ctx); err != nil {
-		cancel() // Explicitly call cancel before Fatal
+		cancel()
 		log.Fatalf("Server forced to shutdown: %v", err)
 	}
 
+	cancel()
 	fmt.Println("Server exited")
 }
