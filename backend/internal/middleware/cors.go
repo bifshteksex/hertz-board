@@ -8,6 +8,10 @@ import (
 	"github.com/cloudwego/hertz/pkg/app"
 )
 
+const (
+	httpStatusNoContent = 204
+)
+
 // CORS returns a CORS middleware
 func CORS(cfg *config.CORSConfig) app.HandlerFunc {
 	return func(c context.Context, ctx *app.RequestContext) {
@@ -35,7 +39,7 @@ func CORS(cfg *config.CORSConfig) app.HandlerFunc {
 			ctx.Response.Header.Set("Access-Control-Allow-Methods", strings.Join(cfg.AllowedMethods, ", "))
 			ctx.Response.Header.Set("Access-Control-Allow-Headers", strings.Join(cfg.AllowedHeaders, ", "))
 			ctx.Response.Header.Set("Access-Control-Max-Age", string(rune(cfg.MaxAge)))
-			ctx.AbortWithStatus(204)
+			ctx.AbortWithStatus(httpStatusNoContent)
 			return
 		}
 

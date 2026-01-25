@@ -6,7 +6,7 @@ import (
 	"github.com/google/uuid"
 )
 
-// User represents a user in the system
+//nolint:govet // fieldalignment: struct field order optimized for readability
 type User struct {
 	ID            uuid.UUID `json:"id" db:"id"`
 	Email         string    `json:"email" db:"email"`
@@ -20,7 +20,7 @@ type User struct {
 	UpdatedAt     time.Time `json:"updated_at" db:"updated_at"`
 }
 
-// RefreshToken represents a refresh token in the system
+//nolint:govet // fieldalignment: struct field order optimized for readability
 type RefreshToken struct {
 	ID        uuid.UUID `json:"id" db:"id"`
 	UserID    uuid.UUID `json:"user_id" db:"user_id"`
@@ -29,7 +29,7 @@ type RefreshToken struct {
 	CreatedAt time.Time `json:"created_at" db:"created_at"`
 }
 
-// PasswordResetToken represents a password reset token
+//nolint:govet // fieldalignment: struct field order optimized for readability
 type PasswordResetToken struct {
 	ID        uuid.UUID  `json:"id" db:"id"`
 	UserID    uuid.UUID  `json:"user_id" db:"user_id"`
@@ -75,7 +75,7 @@ type ResetPasswordRequest struct {
 	NewPassword string `json:"new_password" binding:"required,min=8"`
 }
 
-// TokenPair represents access and refresh tokens
+//nolint:govet // fieldalignment: struct field order optimized for readability
 type TokenPair struct {
 	AccessToken  string    `json:"access_token"`
 	RefreshToken string    `json:"refresh_token"`

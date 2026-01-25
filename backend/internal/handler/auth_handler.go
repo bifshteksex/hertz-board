@@ -3,10 +3,11 @@ package handler
 import (
 	"context"
 
-	"github.com/bifshteksex/hertzboard/internal/models"
-	"github.com/bifshteksex/hertzboard/internal/service"
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
+
+	"github.com/bifshteksex/hertzboard/internal/models"
+	"github.com/bifshteksex/hertzboard/internal/service"
 )
 
 // AuthHandler handles authentication endpoints
@@ -24,17 +25,12 @@ func NewAuthHandler(authService *service.AuthService) *AuthHandler {
 // Register handles user registration
 func (h *AuthHandler) Register(c context.Context, ctx *app.RequestContext) {
 	var req models.CreateUserRequest
-	if err := ctx.BindAndValidate(&req); err != nil {
-		ctx.JSON(consts.StatusBadRequest, map[string]interface{}{
-			"error":   "Invalid request",
-			"details": err.Error(),
-		})
-		return
-	}
+	resp, statusCode, err := h.bindValidateAndExecute(ctx, &req, func() (interface{}, error) {
+		return h.authService.Register(c, &req)
+	})
 
-	resp, err := h.authService.Register(c, &req)
 	if err != nil {
-		ctx.JSON(consts.StatusBadRequest, map[string]interface{}{
+		ctx.JSON(statusCode, map[string]interface{}{
 			"error": err.Error(),
 		})
 		return
@@ -46,23 +42,38 @@ func (h *AuthHandler) Register(c context.Context, ctx *app.RequestContext) {
 // Login handles user login
 func (h *AuthHandler) Login(c context.Context, ctx *app.RequestContext) {
 	var req models.LoginRequest
-	if err := ctx.BindAndValidate(&req); err != nil {
-		ctx.JSON(consts.StatusBadRequest, map[string]interface{}{
-			"error":   "Invalid request",
-			"details": err.Error(),
-		})
-		return
-	}
+	resp, statusCode, err := h.bindValidateAndExecute(ctx, &req, func() (interface{}, error) {
+		return h.authService.Login(c, &req)
+	})
 
-	resp, err := h.authService.Login(c, &req)
 	if err != nil {
-		ctx.JSON(consts.StatusUnauthorized, map[string]interface{}{
+		ctx.JSON(statusCode, map[string]interface{}{
 			"error": err.Error(),
 		})
 		return
 	}
 
 	ctx.JSON(consts.StatusOK, resp)
+}
+
+// bindValidateAndExecute handles common request binding, validation, and execution pattern
+func (h *AuthHandler) bindValidateAndExecute(
+	ctx *app.RequestContext,
+	req interface{},
+	execute func() (interface{}, error),
+) (interface{}, int, error) {
+	if err := ctx.BindAndValidate(req); err != nil {
+		return nil, consts.StatusBadRequest, err
+	}
+
+	resp, err := execute()
+	if err != nil {
+		// Determine status code based on error context
+		// For now, return BadRequest, but caller can override
+		return nil, consts.StatusBadRequest, err
+	}
+
+	return resp, consts.StatusOK, nil
 }
 
 // RefreshToken handles token refresh

@@ -70,8 +70,8 @@ func main() {
 
 	// Run migrations
 	log.Println("Running database migrations...")
-	if err := database.Migrate(dbPool, "migrations"); err != nil {
-		log.Fatalf("Failed to run migrations: %v", err)
+	if migrateErr := database.Migrate(dbPool, "migrations"); migrateErr != nil {
+		log.Fatalf("Failed to run migrations: %v", migrateErr)
 	}
 	log.Println("Migrations completed")
 

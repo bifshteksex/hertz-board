@@ -6,12 +6,13 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/bifshteksex/hertzboard/internal/config"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
+
+	"github.com/bifshteksex/hertzboard/internal/config"
 )
 
-// Claims represents JWT claims
+//nolint:govet // fieldalignment: struct field order optimized for readability
 type Claims struct {
 	UserID uuid.UUID `json:"user_id"`
 	Email  string    `json:"email"`
@@ -69,10 +70,10 @@ func (s *JWTService) GenerateAccessToken(userID uuid.UUID, email string) (string
 }
 
 // GenerateRefreshToken generates a new refresh token
-func (s *JWTService) GenerateRefreshToken() (string, string, time.Time, error) {
-	token := uuid.New().String()
-	tokenHash := hashToken(token)
-	expiresAt := time.Now().Add(s.refreshTokenDuration)
+func (s *JWTService) GenerateRefreshToken() (token string, tokenHash string, expiresAt time.Time, err error) {
+	token = uuid.New().String()
+	tokenHash = hashToken(token)
+	expiresAt = time.Now().Add(s.refreshTokenDuration)
 
 	return token, tokenHash, expiresAt, nil
 }

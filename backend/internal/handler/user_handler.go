@@ -161,7 +161,7 @@ func (h *UserHandler) ChangePassword(c context.Context, ctx *app.RequestContext)
 	}
 
 	// Verify old password
-	if err := verifyPassword(*user.PasswordHash, req.OldPassword); err != nil {
+	if verifyErr := verifyPassword(*user.PasswordHash, req.OldPassword); verifyErr != nil {
 		ctx.JSON(consts.StatusBadRequest, map[string]interface{}{
 			"error": "Invalid old password",
 		})

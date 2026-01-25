@@ -52,8 +52,8 @@ func (s *AuthService) Register(ctx context.Context, req *models.CreateUserReques
 		EmailVerified: false,
 	}
 
-	if err := s.userRepo.Create(ctx, user); err != nil {
-		return nil, fmt.Errorf("failed to create user: %w", err)
+	if createErr := s.userRepo.Create(ctx, user); createErr != nil {
+		return nil, fmt.Errorf("failed to create user: %w", createErr)
 	}
 
 	// Generate tokens
@@ -125,8 +125,8 @@ func (s *AuthService) RefreshToken(ctx context.Context, refreshToken string) (*m
 	}
 
 	// Delete old refresh token
-	if err := s.userRepo.DeleteRefreshToken(ctx, tokenHash); err != nil {
-		return nil, fmt.Errorf("failed to delete old refresh token: %w", err)
+	if deleteErr := s.userRepo.DeleteRefreshToken(ctx, tokenHash); deleteErr != nil {
+		return nil, fmt.Errorf("failed to delete old refresh token: %w", deleteErr)
 	}
 
 	// Generate new token pair

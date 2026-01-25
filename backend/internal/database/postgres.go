@@ -10,6 +10,10 @@ import (
 	"github.com/bifshteksex/hertzboard/internal/config"
 )
 
+const (
+	defaultPingTimeout = 5 * time.Second
+)
+
 // NewPostgresPool creates a new PostgreSQL connection pool
 func NewPostgresPool(cfg *config.DatabaseConfig) (*pgxpool.Pool, error) {
 	poolConfig, err := pgxpool.ParseConfig(cfg.GetDSN())
@@ -42,7 +46,7 @@ func NewPostgresPool(cfg *config.DatabaseConfig) (*pgxpool.Pool, error) {
 	}
 
 	// Test connection
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), defaultPingTimeout)
 	defer cancel()
 
 	if err := pool.Ping(ctx); err != nil {

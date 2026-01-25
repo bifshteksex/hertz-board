@@ -6,12 +6,13 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/bifshteksex/hertzboard/internal/config"
-	"github.com/bifshteksex/hertzboard/internal/models"
-	"github.com/bifshteksex/hertzboard/internal/repository"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/github"
 	"golang.org/x/oauth2/google"
+
+	"github.com/bifshteksex/hertzboard/internal/config"
+	"github.com/bifshteksex/hertzboard/internal/models"
+	"github.com/bifshteksex/hertzboard/internal/repository"
 )
 
 // OAuthService handles OAuth authentication
@@ -124,6 +125,7 @@ func (s *OAuthService) GitHubCallback(ctx context.Context, code string) (*models
 		return nil, fmt.Errorf("failed to read response body: %w", err)
 	}
 
+	//nolint:govet // fieldalignment: anonymous struct used for JSON unmarshaling
 	var userInfo struct {
 		ID        int64  `json:"id"`
 		Email     string `json:"email"`
@@ -205,8 +207,8 @@ func (s *OAuthService) findOrCreateUser(
 			user.AvatarURL = &avatarURL
 		}
 
-		if err := s.userRepo.Create(ctx, user); err != nil {
-			return nil, fmt.Errorf("failed to create user: %w", err)
+		if createErr := s.userRepo.Create(ctx, user); createErr != nil {
+			return nil, fmt.Errorf("failed to create user: %w", createErr)
 		}
 	}
 

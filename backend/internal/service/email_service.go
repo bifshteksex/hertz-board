@@ -18,7 +18,7 @@ type EmailService struct {
 	nats *nats.Conn
 }
 
-// EmailMessage represents an email message
+//nolint:govet // fieldalignment: struct field order optimized for readability
 type EmailMessage struct {
 	To      string                 `json:"to"`
 	Subject string                 `json:"subject"`
@@ -178,18 +178,18 @@ func (w *EmailWorker) sendEmail(msg *EmailMessage) error {
 	// For development (MailHog), we don't need authentication
 	if w.cfg.SMTPUser == "" && w.cfg.SMTPPassword == "" {
 		// Connect without auth
-		c, err := smtp.Dial(addr)
-		if err != nil {
-			return fmt.Errorf("failed to connect to SMTP server: %w", err)
+		c, dialErr := smtp.Dial(addr)
+		if dialErr != nil {
+			return fmt.Errorf("failed to connect to SMTP server: %w", dialErr)
 		}
 		defer c.Close()
 
-		if err := c.Mail(from); err != nil {
-			return fmt.Errorf("failed to set sender: %w", err)
+		if mailErr := c.Mail(from); mailErr != nil {
+			return fmt.Errorf("failed to set sender: %w", mailErr)
 		}
 
-		if err := c.Rcpt(to); err != nil {
-			return fmt.Errorf("failed to set recipient: %w", err)
+		if rcptErr := c.Rcpt(to); rcptErr != nil {
+			return fmt.Errorf("failed to set recipient: %w", rcptErr)
 		}
 
 		wc, err := c.Data()
