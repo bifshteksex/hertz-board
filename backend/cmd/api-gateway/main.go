@@ -81,7 +81,6 @@ func main() {
 
 	authService := service.NewAuthService(userRepo, jwtService)
 	oauthService := service.NewOAuthService(&cfg.OAuth, userRepo, jwtService)
-	emailService := service.NewEmailService(&cfg.Email, natsConn)
 
 	// Start email worker
 	log.Println("Starting email worker...")
