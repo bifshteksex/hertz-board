@@ -62,11 +62,11 @@ func (h *AuthHandler) bindValidateAndExecute(
 	req interface{},
 	execute func() (interface{}, error),
 ) (resp interface{}, statusCode int, err error) {
-	if err := ctx.BindAndValidate(req); err != nil {
+	if err = ctx.BindAndValidate(req); err != nil {
 		return nil, consts.StatusBadRequest, err
 	}
 
-	resp, err := execute()
+	resp, err = execute()
 	if err != nil {
 		// Determine status code based on error context
 		// For now, return BadRequest, but caller can override
