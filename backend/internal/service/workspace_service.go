@@ -32,7 +32,11 @@ func NewWorkspaceService(
 // --- Workspace CRUD ---
 
 // CreateWorkspace creates a new workspace with the user as owner
-func (s *WorkspaceService) CreateWorkspace(ctx context.Context, req *models.CreateWorkspaceRequest, ownerID uuid.UUID) (*models.Workspace, error) {
+func (s *WorkspaceService) CreateWorkspace(
+	ctx context.Context,
+	req *models.CreateWorkspaceRequest,
+	ownerID uuid.UUID,
+) (*models.Workspace, error) {
 	workspace := &models.Workspace{
 		ID:          uuid.New(),
 		Name:        req.Name,
@@ -105,7 +109,11 @@ func (s *WorkspaceService) GetWorkspaceWithRole(ctx context.Context, workspaceID
 }
 
 // UpdateWorkspace updates workspace information
-func (s *WorkspaceService) UpdateWorkspace(ctx context.Context, workspaceID uuid.UUID, req *models.UpdateWorkspaceRequest) (*models.Workspace, error) {
+func (s *WorkspaceService) UpdateWorkspace(
+	ctx context.Context,
+	workspaceID uuid.UUID,
+	req *models.UpdateWorkspaceRequest,
+) (*models.Workspace, error) {
 	workspace, err := s.GetWorkspace(ctx, workspaceID)
 	if err != nil {
 		return nil, err
@@ -145,7 +153,11 @@ func (s *WorkspaceService) DeleteWorkspace(ctx context.Context, workspaceID uuid
 }
 
 // ListUserWorkspaces retrieves all workspaces accessible to user
-func (s *WorkspaceService) ListUserWorkspaces(ctx context.Context, userID uuid.UUID, filter models.WorkspaceListFilter) (*models.WorkspaceListResponse, error) {
+func (s *WorkspaceService) ListUserWorkspaces(
+	ctx context.Context,
+	userID uuid.UUID,
+	filter models.WorkspaceListFilter,
+) (*models.WorkspaceListResponse, error) {
 	workspaces, total, err := s.workspaceRepo.ListWorkspacesByUser(ctx, userID, filter)
 	if err != nil {
 		return nil, fmt.Errorf("failed to list workspaces: %w", err)
@@ -159,24 +171,24 @@ func (s *WorkspaceService) ListUserWorkspaces(ctx context.Context, userID uuid.U
 		Offset:     filter.Offset,
 	}
 
-	for _, ws := range workspaces {
+	for i := range workspaces {
 		// Get owner info
-		owner, err := s.userRepo.GetByID(ctx, ws.OwnerID)
+		owner, err := s.userRepo.GetByID(ctx, workspaces[i].OwnerID)
 		if err != nil {
 			continue // Skip on error
 		}
 
 		wsResp := models.WorkspaceResponse{
-			ID:           ws.ID,
-			Name:         ws.Name,
-			Description:  ws.Description,
-			OwnerID:      ws.OwnerID,
-			ThumbnailURL: ws.ThumbnailURL,
-			IsPublic:     ws.IsPublic,
-			Settings:     ws.Settings,
-			CreatedAt:    ws.CreatedAt,
-			UpdatedAt:    ws.UpdatedAt,
-			UserRole:     &ws.UserRole,
+			ID:           workspaces[i].ID,
+			Name:         workspaces[i].Name,
+			Description:  workspaces[i].Description,
+			OwnerID:      workspaces[i].OwnerID,
+			ThumbnailURL: workspaces[i].ThumbnailURL,
+			IsPublic:     workspaces[i].IsPublic,
+			Settings:     workspaces[i].Settings,
+			CreatedAt:    workspaces[i].CreatedAt,
+			UpdatedAt:    workspaces[i].UpdatedAt,
+			UserRole:     &workspaces[i].UserRole,
 		}
 
 		if owner != nil {
@@ -231,17 +243,17 @@ func (s *WorkspaceService) GetMembers(ctx context.Context, workspaceID uuid.UUID
 	}
 
 	response := make([]models.WorkspaceMemberResponse, 0, len(members))
-	for _, m := range members {
+	for i := range members {
 		response = append(response, models.WorkspaceMemberResponse{
-			ID: m.ID,
+			ID: members[i].ID,
 			User: models.UserResponse{
-				ID:        m.User.ID,
-				Email:     m.User.Email,
-				Name:      m.User.Name,
-				AvatarURL: m.User.AvatarURL,
+				ID:        members[i].User.ID,
+				Email:     members[i].User.Email,
+				Name:      members[i].User.Name,
+				AvatarURL: members[i].User.AvatarURL,
 			},
-			Role:     m.Role,
-			JoinedAt: m.JoinedAt,
+			Role:     members[i].Role,
+			JoinedAt: members[i].JoinedAt,
 		})
 	}
 
@@ -289,7 +301,11 @@ func (s *WorkspaceService) RemoveMember(ctx context.Context, workspaceID, member
 // --- Invitations ---
 
 // CreateInvite creates a new workspace invitation
-func (s *WorkspaceService) CreateInvite(ctx context.Context, workspaceID, createdBy uuid.UUID, req *models.InviteToWorkspaceRequest) (*models.InviteTokenResponse, error) {
+func (s *WorkspaceService) CreateInvite(
+	ctx context.Context,
+	workspaceID, createdBy uuid.UUID,
+	req *models.InviteToWorkspaceRequest,
+) (*models.InviteTokenResponse, error) {
 	// Check if user already exists and is a member
 	user, _ := s.userRepo.GetByEmail(ctx, req.Email)
 	if user != nil {
@@ -329,7 +345,7 @@ func (s *WorkspaceService) CreateInvite(ctx context.Context, workspaceID, create
 
 	// Send invitation email
 	if workspace != nil && creator != nil {
-		s.emailService.SendWorkspaceInvite(req.Email, workspace.Name, creator.Name, token)
+		_ = s.emailService.SendWorkspaceInvite(req.Email, workspace.Name, creator.Name, token)
 	}
 
 	// Build invite URL (frontend route)
@@ -390,13 +406,13 @@ func (s *WorkspaceService) AcceptInvite(ctx context.Context, token string, userI
 		InvitedBy:   &invite.CreatedBy,
 	}
 
-	if err := s.workspaceRepo.AddMember(ctx, newMember); err != nil {
-		return nil, fmt.Errorf("failed to add member: %w", err)
+	if addErr := s.workspaceRepo.AddMember(ctx, newMember); addErr != nil {
+		return nil, fmt.Errorf("failed to add member: %w", addErr)
 	}
 
 	// Mark invite as accepted
-	if err := s.workspaceRepo.MarkInviteAsAccepted(ctx, invite.ID, userID); err != nil {
-		return nil, fmt.Errorf("failed to mark invite as accepted: %w", err)
+	if markErr := s.workspaceRepo.MarkInviteAsAccepted(ctx, invite.ID, userID); markErr != nil {
+		return nil, fmt.Errorf("failed to mark invite as accepted: %w", markErr)
 	}
 
 	// Get workspace
@@ -416,19 +432,19 @@ func (s *WorkspaceService) GetPendingInvites(ctx context.Context, workspaceID uu
 	}
 
 	response := make([]models.WorkspaceInviteResponse, 0, len(invites))
-	for _, inv := range invites {
+	for i := range invites {
 		// Get creator info
-		creator, err := s.userRepo.GetByID(ctx, inv.CreatedBy)
+		creator, err := s.userRepo.GetByID(ctx, invites[i].CreatedBy)
 		if err != nil {
 			continue
 		}
 
 		response = append(response, models.WorkspaceInviteResponse{
-			ID:        inv.ID,
-			Email:     inv.Email,
-			Role:      inv.Role,
-			ExpiresAt: inv.ExpiresAt,
-			CreatedAt: inv.CreatedAt,
+			ID:        invites[i].ID,
+			Email:     invites[i].Email,
+			Role:      invites[i].Role,
+			ExpiresAt: invites[i].ExpiresAt,
+			CreatedAt: invites[i].CreatedAt,
 			CreatedBy: models.UserResponse{
 				ID:        creator.ID,
 				Email:     creator.Email,

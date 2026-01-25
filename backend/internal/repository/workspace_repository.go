@@ -28,7 +28,7 @@ func (r *WorkspaceRepository) CreateWorkspace(ctx context.Context, workspace *mo
 	if err != nil {
 		return fmt.Errorf("failed to begin transaction: %w", err)
 	}
-	defer tx.Rollback(ctx)
+	defer func() { _ = tx.Rollback(ctx) }()
 
 	settingsJSON, err := json.Marshal(workspace.Settings)
 	if err != nil {
@@ -162,7 +162,11 @@ func (r *WorkspaceRepository) SoftDeleteWorkspace(ctx context.Context, id uuid.U
 }
 
 // ListWorkspacesByUser retrieves workspaces accessible to user with filters
-func (r *WorkspaceRepository) ListWorkspacesByUser(ctx context.Context, userID uuid.UUID, filter models.WorkspaceListFilter) ([]models.WorkspaceWithRole, int, error) {
+func (r *WorkspaceRepository) ListWorkspacesByUser(
+	ctx context.Context,
+	userID uuid.UUID,
+	filter models.WorkspaceListFilter,
+) ([]models.WorkspaceWithRole, int, error) {
 	// Build query with filters
 	query := `
 		SELECT DISTINCT
@@ -573,7 +577,11 @@ func (r *WorkspaceRepository) CleanupExpiredInvites(ctx context.Context) error {
 }
 
 // GetInviteByWorkspaceAndEmail checks if there's a pending invite for email in workspace
-func (r *WorkspaceRepository) GetInviteByWorkspaceAndEmail(ctx context.Context, workspaceID uuid.UUID, email string) (*models.WorkspaceInvite, error) {
+func (r *WorkspaceRepository) GetInviteByWorkspaceAndEmail(
+	ctx context.Context,
+	workspaceID uuid.UUID,
+	email string,
+) (*models.WorkspaceInvite, error) {
 	query := `
 		SELECT id, workspace_id, email, role, token_hash, expires_at, created_by, created_at, accepted_at, accepted_by
 		FROM workspace_invites

@@ -16,6 +16,8 @@ const (
 )
 
 // Workspace represents a collaborative workspace
+//
+//nolint:govet // fieldalignment: struct field order optimized for readability
 type Workspace struct {
 	ID           uuid.UUID              `json:"id"`
 	Name         string                 `json:"name"`
@@ -30,6 +32,8 @@ type Workspace struct {
 }
 
 // WorkspaceMember represents a user's membership in a workspace
+//
+//nolint:govet // fieldalignment: struct field order optimized for readability
 type WorkspaceMember struct {
 	ID          uuid.UUID     `json:"id"`
 	WorkspaceID uuid.UUID     `json:"workspace_id"`
@@ -40,6 +44,8 @@ type WorkspaceMember struct {
 }
 
 // WorkspaceInvite represents an invitation to join a workspace
+//
+//nolint:govet // fieldalignment: struct field order optimized for readability
 type WorkspaceInvite struct {
 	ID          uuid.UUID     `json:"id"`
 	WorkspaceID uuid.UUID     `json:"workspace_id"`
@@ -54,6 +60,8 @@ type WorkspaceInvite struct {
 }
 
 // WorkspaceWithRole extends Workspace with user's role
+//
+//nolint:govet // fieldalignment: struct field order optimized for readability
 type WorkspaceWithRole struct {
 	Workspace
 	UserRole WorkspaceRole `json:"user_role"`
@@ -69,6 +77,8 @@ type WorkspaceMemberWithUser struct {
 // --- Request DTOs ---
 
 // CreateWorkspaceRequest represents a request to create a new workspace
+//
+//nolint:govet // fieldalignment: struct field order optimized for readability
 type CreateWorkspaceRequest struct {
 	Name        string                 `json:"name" binding:"required,min=1,max=255"`
 	Description *string                `json:"description,omitempty"`
@@ -102,6 +112,8 @@ type UpdateMemberRoleRequest struct {
 }
 
 // WorkspaceListFilter represents filters for listing workspaces
+//
+//nolint:govet // fieldalignment: struct field order optimized for readability
 type WorkspaceListFilter struct {
 	Query      string `form:"q"`
 	OwnedOnly  bool   `form:"owned_only"`
@@ -115,6 +127,8 @@ type WorkspaceListFilter struct {
 // --- Response DTOs ---
 
 // WorkspaceResponse represents workspace data in API responses
+//
+//nolint:govet // fieldalignment: struct field order optimized for readability
 type WorkspaceResponse struct {
 	ID           uuid.UUID              `json:"id"`
 	Name         string                 `json:"name"`
@@ -138,6 +152,8 @@ type WorkspaceListResponse struct {
 }
 
 // WorkspaceMemberResponse represents workspace member in API responses
+//
+//nolint:govet // fieldalignment: struct field order optimized for readability
 type WorkspaceMemberResponse struct {
 	ID       uuid.UUID     `json:"id"`
 	User     UserResponse  `json:"user"`
@@ -146,6 +162,8 @@ type WorkspaceMemberResponse struct {
 }
 
 // WorkspaceInviteResponse represents workspace invite in API responses
+//
+//nolint:govet // fieldalignment: struct field order optimized for readability
 type WorkspaceInviteResponse struct {
 	ID        uuid.UUID     `json:"id"`
 	Email     string        `json:"email"`

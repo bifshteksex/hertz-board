@@ -151,13 +151,3 @@ func readinessCheck(c context.Context, ctx *app.RequestContext) {
 		},
 	})
 }
-
-// placeholderHandler returns a temporary handler for routes not yet implemented
-func placeholderHandler(name string) app.HandlerFunc {
-	return func(c context.Context, ctx *app.RequestContext) {
-		ctx.JSON(http.StatusNotImplemented, map[string]interface{}{
-			"error":   "Not implemented yet",
-			"handler": name,
-		})
-	}
-}

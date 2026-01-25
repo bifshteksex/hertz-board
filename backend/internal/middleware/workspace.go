@@ -54,7 +54,14 @@ func (m *WorkspaceMiddleware) RequireWorkspaceAccess(requiredRole models.Workspa
 		}
 
 		// Check permission
-		uid := userID.(uuid.UUID)
+		uid, ok := userID.(uuid.UUID)
+		if !ok {
+			c.JSON(http.StatusUnauthorized, map[string]interface{}{
+				"error": "Invalid user ID",
+			})
+			c.Abort()
+			return
+		}
 		if err := m.workspaceService.CheckPermission(ctx, workspaceID, uid, requiredRole); err != nil {
 			c.JSON(http.StatusForbidden, map[string]interface{}{
 				"error": "Access denied",
@@ -102,7 +109,14 @@ func (m *WorkspaceMiddleware) RequireWorkspaceOwner() app.HandlerFunc {
 		}
 
 		// Check if owner
-		uid := userID.(uuid.UUID)
+		uid, ok := userID.(uuid.UUID)
+		if !ok {
+			c.JSON(http.StatusUnauthorized, map[string]interface{}{
+				"error": "Invalid user ID",
+			})
+			c.Abort()
+			return
+		}
 		isOwner, err := m.workspaceService.IsOwner(ctx, workspaceID, uid)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, map[string]interface{}{
@@ -172,7 +186,14 @@ func (m *WorkspaceMiddleware) OptionalWorkspaceAccess() app.HandlerFunc {
 
 		// If workspace is private and user is authenticated, check membership
 		if !workspace.IsPublic && authenticated {
-			uid := userID.(uuid.UUID)
+			uid, ok := userID.(uuid.UUID)
+			if !ok {
+				c.JSON(http.StatusUnauthorized, map[string]interface{}{
+					"error": "Invalid user ID",
+				})
+				c.Abort()
+				return
+			}
 			if err := m.workspaceService.CheckPermission(ctx, workspaceID, uid, models.WorkspaceRoleViewer); err != nil {
 				c.JSON(http.StatusForbidden, map[string]interface{}{
 					"error": "Access denied",
