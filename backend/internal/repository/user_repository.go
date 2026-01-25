@@ -9,7 +9,7 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 
-	"github.com/bifshteksex/hertzboard/internal/models"
+	"github.com/bifshteksex/hertz-board/internal/models"
 )
 
 // UserRepository handles user data operations

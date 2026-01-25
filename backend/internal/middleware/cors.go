@@ -6,7 +6,7 @@ import (
 
 	"github.com/cloudwego/hertz/pkg/app"
 
-	"github.com/bifshteksex/hertzboard/internal/config"
+	"github.com/bifshteksex/hertz-board/internal/config"
 )
 
 const (

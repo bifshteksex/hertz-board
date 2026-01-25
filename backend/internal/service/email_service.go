@@ -9,7 +9,7 @@ import (
 
 	"github.com/nats-io/nats.go"
 
-	"github.com/bifshteksex/hertzboard/internal/config"
+	"github.com/bifshteksex/hertz-board/internal/config"
 )
 
 // EmailService handles email sending

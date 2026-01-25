@@ -6,7 +6,7 @@ import (
 
 	"github.com/nats-io/nats.go"
 
-	"github.com/bifshteksex/hertzboard/internal/config"
+	"github.com/bifshteksex/hertz-board/internal/config"
 )
 
 // NewNATSConnection creates a new NATS connection

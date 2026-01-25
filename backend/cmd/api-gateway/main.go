@@ -11,12 +11,12 @@ import (
 
 	"github.com/cloudwego/hertz/pkg/app/server"
 
-	"github.com/bifshteksex/hertzboard/internal/config"
-	"github.com/bifshteksex/hertzboard/internal/database"
-	"github.com/bifshteksex/hertzboard/internal/handler"
-	"github.com/bifshteksex/hertzboard/internal/repository"
-	"github.com/bifshteksex/hertzboard/internal/router"
-	"github.com/bifshteksex/hertzboard/internal/service"
+	"github.com/bifshteksex/hertz-board/internal/config"
+	"github.com/bifshteksex/hertz-board/internal/database"
+	"github.com/bifshteksex/hertz-board/internal/handler"
+	"github.com/bifshteksex/hertz-board/internal/repository"
+	"github.com/bifshteksex/hertz-board/internal/router"
+	"github.com/bifshteksex/hertz-board/internal/service"
 )
 
 const (
@@ -79,6 +79,9 @@ func main() {
 	// Initialize repositories
 	userRepo := repository.NewUserRepository(dbPool)
 	workspaceRepo := repository.NewWorkspaceRepository(dbPool)
+	canvasRepo := repository.NewCanvasRepository(dbPool)
+	assetRepo := repository.NewAssetRepository(dbPool)
+	snapshotRepo := repository.NewSnapshotRepository(dbPool)
 
 	// Initialize services
 	jwtService, err := service.NewJWTService(&cfg.JWT)
@@ -90,6 +93,24 @@ func main() {
 	authService := service.NewAuthService(userRepo, jwtService)
 	oauthService := service.NewOAuthService(&cfg.OAuth, userRepo, jwtService)
 	workspaceService := service.NewWorkspaceService(workspaceRepo, userRepo, emailService)
+
+	// Canvas and asset services
+	cacheService := service.NewCanvasCacheService(redisClient)
+	canvasService := service.NewCanvasService(canvasRepo, workspaceRepo, cacheService)
+
+	assetService, err := service.NewAssetService(
+		assetRepo,
+		workspaceRepo,
+		cfg.MinIO.Endpoint,
+		cfg.MinIO.AccessKey,
+		cfg.MinIO.SecretKey,
+		cfg.MinIO.UseSSL,
+	)
+	if err != nil {
+		log.Fatalf("Failed to create asset service: %v", err)
+	}
+
+	snapshotService := service.NewSnapshotService(snapshotRepo, canvasRepo, workspaceRepo)
 
 	// Start email worker
 	log.Println("Starting email worker...")
@@ -105,6 +126,9 @@ func main() {
 	userHandler := handler.NewUserHandler(userRepo, authService)
 	oauthHandler := handler.NewOAuthHandler(oauthService)
 	workspaceHandler := handler.NewWorkspaceHandler(workspaceService)
+	canvasHandler := handler.NewCanvasHandler(canvasService)
+	assetHandler := handler.NewAssetHandler(assetService)
+	snapshotHandler := handler.NewSnapshotHandler(snapshotService)
 
 	// Initialize Hertz server
 	addr := fmt.Sprintf(":%d", cfg.App.Port)
@@ -121,6 +145,9 @@ func main() {
 		UserHandler:      userHandler,
 		OAuthHandler:     oauthHandler,
 		WorkspaceHandler: workspaceHandler,
+		CanvasHandler:    canvasHandler,
+		AssetHandler:     assetHandler,
+		SnapshotHandler:  snapshotHandler,
 	}
 	router.Setup(h, cfg, deps)
 

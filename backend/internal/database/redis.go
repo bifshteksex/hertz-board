@@ -7,7 +7,7 @@ import (
 
 	"github.com/redis/go-redis/v9"
 
-	"github.com/bifshteksex/hertzboard/internal/config"
+	"github.com/bifshteksex/hertz-board/internal/config"
 )
 
 const (

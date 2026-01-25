@@ -6,8 +6,8 @@ import (
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
 
-	"github.com/bifshteksex/hertzboard/internal/models"
-	"github.com/bifshteksex/hertzboard/internal/service"
+	"github.com/bifshteksex/hertz-board/internal/models"
+	"github.com/bifshteksex/hertz-board/internal/service"
 )
 
 // AuthHandler handles authentication endpoints

@@ -7,7 +7,7 @@ import (
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
 
-	"github.com/bifshteksex/hertzboard/internal/service"
+	"github.com/bifshteksex/hertz-board/internal/service"
 )
 
 // Auth returns JWT authentication middleware

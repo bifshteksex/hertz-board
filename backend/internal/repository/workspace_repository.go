@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/bifshteksex/hertzboard/internal/models"
+	"github.com/bifshteksex/hertz-board/internal/models"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"

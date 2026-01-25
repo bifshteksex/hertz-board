@@ -8,35 +8,35 @@ import (
 
 //nolint:govet // fieldalignment: struct field order optimized for readability
 type User struct {
-	ID            uuid.UUID `json:"id" db:"id"`
-	Email         string    `json:"email" db:"email"`
-	PasswordHash  *string   `json:"-" db:"password_hash"`
-	Name          string    `json:"name" db:"name"`
-	AvatarURL     *string   `json:"avatar_url,omitempty" db:"avatar_url"`
-	Provider      string    `json:"provider" db:"provider"`
-	ProviderID    *string   `json:"-" db:"provider_id"`
-	EmailVerified bool      `json:"email_verified" db:"email_verified"`
 	CreatedAt     time.Time `json:"created_at" db:"created_at"`
 	UpdatedAt     time.Time `json:"updated_at" db:"updated_at"`
+	PasswordHash  *string   `json:"-" db:"password_hash"`
+	AvatarURL     *string   `json:"avatar_url,omitempty" db:"avatar_url"`
+	ProviderID    *string   `json:"-" db:"provider_id"`
+	Email         string    `json:"email" db:"email"`
+	Name          string    `json:"name" db:"name"`
+	Provider      string    `json:"provider" db:"provider"`
+	ID            uuid.UUID `json:"id" db:"id"`
+	EmailVerified bool      `json:"email_verified" db:"email_verified"`
 }
 
 //nolint:govet // fieldalignment: struct field order optimized for readability
 type RefreshToken struct {
-	ID        uuid.UUID `json:"id" db:"id"`
-	UserID    uuid.UUID `json:"user_id" db:"user_id"`
-	TokenHash string    `json:"-" db:"token_hash"`
 	ExpiresAt time.Time `json:"expires_at" db:"expires_at"`
 	CreatedAt time.Time `json:"created_at" db:"created_at"`
+	TokenHash string    `json:"-" db:"token_hash"`
+	ID        uuid.UUID `json:"id" db:"id"`
+	UserID    uuid.UUID `json:"user_id" db:"user_id"`
 }
 
 //nolint:govet // fieldalignment: struct field order optimized for readability
 type PasswordResetToken struct {
-	ID        uuid.UUID  `json:"id" db:"id"`
-	UserID    uuid.UUID  `json:"user_id" db:"user_id"`
-	TokenHash string     `json:"-" db:"token_hash"`
 	ExpiresAt time.Time  `json:"expires_at" db:"expires_at"`
 	CreatedAt time.Time  `json:"created_at" db:"created_at"`
 	UsedAt    *time.Time `json:"used_at,omitempty" db:"used_at"`
+	TokenHash string     `json:"-" db:"token_hash"`
+	ID        uuid.UUID  `json:"id" db:"id"`
+	UserID    uuid.UUID  `json:"user_id" db:"user_id"`
 }
 
 // CreateUserRequest represents the request to create a new user
@@ -77,9 +77,9 @@ type ResetPasswordRequest struct {
 
 //nolint:govet // fieldalignment: struct field order optimized for readability
 type TokenPair struct {
+	ExpiresAt    time.Time `json:"expires_at"`
 	AccessToken  string    `json:"access_token"`
 	RefreshToken string    `json:"refresh_token"`
-	ExpiresAt    time.Time `json:"expires_at"`
 }
 
 // AuthResponse represents the authentication response
@@ -92,8 +92,8 @@ type AuthResponse struct {
 //
 //nolint:govet // fieldalignment: struct field order optimized for readability
 type UserResponse struct {
-	ID        uuid.UUID `json:"id"`
+	AvatarURL *string   `json:"avatar_url,omitempty"`
 	Email     string    `json:"email"`
 	Name      string    `json:"name"`
-	AvatarURL *string   `json:"avatar_url,omitempty"`
+	ID        uuid.UUID `json:"id"`
 }

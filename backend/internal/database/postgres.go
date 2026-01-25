@@ -7,7 +7,7 @@ import (
 
 	"github.com/jackc/pgx/v5/pgxpool"
 
-	"github.com/bifshteksex/hertzboard/internal/config"
+	"github.com/bifshteksex/hertz-board/internal/config"
 )
 
 const (

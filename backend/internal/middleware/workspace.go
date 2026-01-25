@@ -4,8 +4,8 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/bifshteksex/hertzboard/internal/models"
-	"github.com/bifshteksex/hertzboard/internal/service"
+	"github.com/bifshteksex/hertz-board/internal/models"
+	"github.com/bifshteksex/hertz-board/internal/service"
 
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/google/uuid"

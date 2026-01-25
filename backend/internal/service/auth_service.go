@@ -8,8 +8,8 @@ import (
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 
-	"github.com/bifshteksex/hertzboard/internal/models"
-	"github.com/bifshteksex/hertzboard/internal/repository"
+	"github.com/bifshteksex/hertz-board/internal/models"
+	"github.com/bifshteksex/hertz-board/internal/repository"
 )
 
 // AuthService handles authentication logic

@@ -19,44 +19,44 @@ const (
 //
 //nolint:govet // fieldalignment: struct field order optimized for readability
 type Workspace struct {
-	ID           uuid.UUID              `json:"id"`
-	Name         string                 `json:"name"`
-	Description  *string                `json:"description,omitempty"`
-	OwnerID      uuid.UUID              `json:"owner_id"`
-	ThumbnailURL *string                `json:"thumbnail_url,omitempty"`
-	IsPublic     bool                   `json:"is_public"`
-	Settings     map[string]interface{} `json:"settings"`
-	DeletedAt    *time.Time             `json:"deleted_at,omitempty"`
 	CreatedAt    time.Time              `json:"created_at"`
 	UpdatedAt    time.Time              `json:"updated_at"`
+	Description  *string                `json:"description,omitempty"`
+	ThumbnailURL *string                `json:"thumbnail_url,omitempty"`
+	Settings     map[string]interface{} `json:"settings"`
+	DeletedAt    *time.Time             `json:"deleted_at,omitempty"`
+	Name         string                 `json:"name"`
+	ID           uuid.UUID              `json:"id"`
+	OwnerID      uuid.UUID              `json:"owner_id"`
+	IsPublic     bool                   `json:"is_public"`
 }
 
 // WorkspaceMember represents a user's membership in a workspace
 //
 //nolint:govet // fieldalignment: struct field order optimized for readability
 type WorkspaceMember struct {
+	JoinedAt    time.Time     `json:"joined_at"`
+	InvitedBy   *uuid.UUID    `json:"invited_by,omitempty"`
+	Role        WorkspaceRole `json:"role"`
 	ID          uuid.UUID     `json:"id"`
 	WorkspaceID uuid.UUID     `json:"workspace_id"`
 	UserID      uuid.UUID     `json:"user_id"`
-	Role        WorkspaceRole `json:"role"`
-	InvitedBy   *uuid.UUID    `json:"invited_by,omitempty"`
-	JoinedAt    time.Time     `json:"joined_at"`
 }
 
 // WorkspaceInvite represents an invitation to join a workspace
 //
 //nolint:govet // fieldalignment: struct field order optimized for readability
 type WorkspaceInvite struct {
-	ID          uuid.UUID     `json:"id"`
-	WorkspaceID uuid.UUID     `json:"workspace_id"`
-	Email       string        `json:"email"`
-	Role        WorkspaceRole `json:"role"`
-	TokenHash   string        `json:"-"` // Never expose token hash
 	ExpiresAt   time.Time     `json:"expires_at"`
-	CreatedBy   uuid.UUID     `json:"created_by"`
 	CreatedAt   time.Time     `json:"created_at"`
 	AcceptedAt  *time.Time    `json:"accepted_at,omitempty"`
 	AcceptedBy  *uuid.UUID    `json:"accepted_by,omitempty"`
+	Email       string        `json:"email"`
+	Role        WorkspaceRole `json:"role"`
+	TokenHash   string        `json:"-"`
+	ID          uuid.UUID     `json:"id"`
+	WorkspaceID uuid.UUID     `json:"workspace_id"`
+	CreatedBy   uuid.UUID     `json:"created_by"`
 }
 
 // WorkspaceWithRole extends Workspace with user's role
@@ -64,8 +64,8 @@ type WorkspaceInvite struct {
 //nolint:govet // fieldalignment: struct field order optimized for readability
 type WorkspaceWithRole struct {
 	Workspace
-	UserRole WorkspaceRole `json:"user_role"`
 	Owner    *User         `json:"owner,omitempty"`
+	UserRole WorkspaceRole `json:"user_role"`
 }
 
 // WorkspaceMemberWithUser extends WorkspaceMember with user details
@@ -80,10 +80,10 @@ type WorkspaceMemberWithUser struct {
 //
 //nolint:govet // fieldalignment: struct field order optimized for readability
 type CreateWorkspaceRequest struct {
-	Name        string                 `json:"name" binding:"required,min=1,max=255"`
 	Description *string                `json:"description,omitempty"`
-	IsPublic    bool                   `json:"is_public"`
 	Settings    map[string]interface{} `json:"settings,omitempty"`
+	Name        string                 `json:"name" binding:"required,min=1,max=255"`
+	IsPublic    bool                   `json:"is_public"`
 }
 
 // UpdateWorkspaceRequest represents a request to update workspace
@@ -116,12 +116,12 @@ type UpdateMemberRoleRequest struct {
 //nolint:govet // fieldalignment: struct field order optimized for readability
 type WorkspaceListFilter struct {
 	Query      string `form:"q"`
-	OwnedOnly  bool   `form:"owned_only"`
-	SharedOnly bool   `form:"shared_only"`
-	SortBy     string `form:"sort_by"`    // created_at, updated_at, name
-	SortOrder  string `form:"sort_order"` // asc, desc
+	SortBy     string `form:"sort_by"`
+	SortOrder  string `form:"sort_order"`
 	Limit      int    `form:"limit"`
 	Offset     int    `form:"offset"`
+	OwnedOnly  bool   `form:"owned_only"`
+	SharedOnly bool   `form:"shared_only"`
 }
 
 // --- Response DTOs ---
@@ -130,17 +130,17 @@ type WorkspaceListFilter struct {
 //
 //nolint:govet // fieldalignment: struct field order optimized for readability
 type WorkspaceResponse struct {
-	ID           uuid.UUID              `json:"id"`
-	Name         string                 `json:"name"`
-	Description  *string                `json:"description,omitempty"`
-	OwnerID      uuid.UUID              `json:"owner_id"`
-	ThumbnailURL *string                `json:"thumbnail_url,omitempty"`
-	IsPublic     bool                   `json:"is_public"`
-	Settings     map[string]interface{} `json:"settings"`
 	CreatedAt    time.Time              `json:"created_at"`
 	UpdatedAt    time.Time              `json:"updated_at"`
+	Description  *string                `json:"description,omitempty"`
+	ThumbnailURL *string                `json:"thumbnail_url,omitempty"`
+	Settings     map[string]interface{} `json:"settings"`
 	UserRole     *WorkspaceRole         `json:"user_role,omitempty"`
 	Owner        *UserResponse          `json:"owner,omitempty"`
+	Name         string                 `json:"name"`
+	ID           uuid.UUID              `json:"id"`
+	OwnerID      uuid.UUID              `json:"owner_id"`
+	IsPublic     bool                   `json:"is_public"`
 }
 
 // WorkspaceListResponse represents paginated list of workspaces
@@ -155,22 +155,22 @@ type WorkspaceListResponse struct {
 //
 //nolint:govet // fieldalignment: struct field order optimized for readability
 type WorkspaceMemberResponse struct {
-	ID       uuid.UUID     `json:"id"`
 	User     UserResponse  `json:"user"`
-	Role     WorkspaceRole `json:"role"`
 	JoinedAt time.Time     `json:"joined_at"`
+	Role     WorkspaceRole `json:"role"`
+	ID       uuid.UUID     `json:"id"`
 }
 
 // WorkspaceInviteResponse represents workspace invite in API responses
 //
 //nolint:govet // fieldalignment: struct field order optimized for readability
 type WorkspaceInviteResponse struct {
-	ID        uuid.UUID     `json:"id"`
-	Email     string        `json:"email"`
-	Role      WorkspaceRole `json:"role"`
+	CreatedBy UserResponse  `json:"created_by"`
 	ExpiresAt time.Time     `json:"expires_at"`
 	CreatedAt time.Time     `json:"created_at"`
-	CreatedBy UserResponse  `json:"created_by"`
+	Email     string        `json:"email"`
+	Role      WorkspaceRole `json:"role"`
+	ID        uuid.UUID     `json:"id"`
 }
 
 // InviteTokenResponse represents response with invitation token

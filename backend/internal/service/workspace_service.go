@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/bifshteksex/hertzboard/internal/models"
-	"github.com/bifshteksex/hertzboard/internal/repository"
+	"github.com/bifshteksex/hertz-board/internal/models"
+	"github.com/bifshteksex/hertz-board/internal/repository"
 
 	"github.com/google/uuid"
 )

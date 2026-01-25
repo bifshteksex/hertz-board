@@ -8,11 +8,11 @@ import (
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/app/server"
 
-	"github.com/bifshteksex/hertzboard/internal/config"
-	"github.com/bifshteksex/hertzboard/internal/handler"
-	"github.com/bifshteksex/hertzboard/internal/middleware"
-	"github.com/bifshteksex/hertzboard/internal/models"
-	"github.com/bifshteksex/hertzboard/internal/service"
+	"github.com/bifshteksex/hertz-board/internal/config"
+	"github.com/bifshteksex/hertz-board/internal/handler"
+	"github.com/bifshteksex/hertz-board/internal/middleware"
+	"github.com/bifshteksex/hertz-board/internal/models"
+	"github.com/bifshteksex/hertz-board/internal/service"
 )
 
 // Dependencies holds all service dependencies
@@ -23,6 +23,9 @@ type Dependencies struct {
 	UserHandler      *handler.UserHandler
 	OAuthHandler     *handler.OAuthHandler
 	WorkspaceHandler *handler.WorkspaceHandler
+	CanvasHandler    *handler.CanvasHandler
+	AssetHandler     *handler.AssetHandler
+	SnapshotHandler  *handler.SnapshotHandler
 }
 
 // Setup configures all routes and middleware
@@ -126,6 +129,110 @@ func Setup(h *server.Hertz, cfg *config.Config, deps *Dependencies) {
 	workspaces.DELETE("/:workspace_id/invites/:invite_id",
 		workspaceMiddleware.RequireWorkspaceOwner(),
 		deps.WorkspaceHandler.RevokeInvite,
+	)
+
+	// Canvas element routes (require editor access to modify)
+	workspaces.GET("/:workspace_id/elements",
+		workspaceMiddleware.RequireWorkspaceAccess(models.WorkspaceRoleViewer),
+		deps.CanvasHandler.GetWorkspaceElements,
+	)
+
+	workspaces.POST("/:workspace_id/elements",
+		workspaceMiddleware.RequireWorkspaceAccess(models.WorkspaceRoleEditor),
+		deps.CanvasHandler.CreateElement,
+	)
+
+	workspaces.GET("/:workspace_id/elements/by-type",
+		workspaceMiddleware.RequireWorkspaceAccess(models.WorkspaceRoleViewer),
+		deps.CanvasHandler.GetElementsByType,
+	)
+
+	workspaces.GET("/:workspace_id/elements/:element_id",
+		workspaceMiddleware.RequireWorkspaceAccess(models.WorkspaceRoleViewer),
+		deps.CanvasHandler.GetElement,
+	)
+
+	workspaces.PUT("/:workspace_id/elements/:element_id",
+		workspaceMiddleware.RequireWorkspaceAccess(models.WorkspaceRoleEditor),
+		deps.CanvasHandler.UpdateElement,
+	)
+
+	workspaces.DELETE("/:workspace_id/elements/:element_id",
+		workspaceMiddleware.RequireWorkspaceAccess(models.WorkspaceRoleEditor),
+		deps.CanvasHandler.DeleteElement,
+	)
+
+	// Batch element operations
+	workspaces.POST("/:workspace_id/elements/batch",
+		workspaceMiddleware.RequireWorkspaceAccess(models.WorkspaceRoleEditor),
+		deps.CanvasHandler.BatchCreateElements,
+	)
+
+	workspaces.PUT("/:workspace_id/elements/batch",
+		workspaceMiddleware.RequireWorkspaceAccess(models.WorkspaceRoleEditor),
+		deps.CanvasHandler.BatchUpdateElements,
+	)
+
+	workspaces.DELETE("/:workspace_id/elements/batch",
+		workspaceMiddleware.RequireWorkspaceAccess(models.WorkspaceRoleEditor),
+		deps.CanvasHandler.BatchDeleteElements,
+	)
+
+	// Asset routes (require editor access to upload)
+	workspaces.GET("/:workspace_id/assets",
+		workspaceMiddleware.RequireWorkspaceAccess(models.WorkspaceRoleViewer),
+		deps.AssetHandler.GetWorkspaceAssets,
+	)
+
+	workspaces.POST("/:workspace_id/assets",
+		workspaceMiddleware.RequireWorkspaceAccess(models.WorkspaceRoleEditor),
+		deps.AssetHandler.UploadAsset,
+	)
+
+	workspaces.GET("/:workspace_id/assets/:asset_id",
+		workspaceMiddleware.RequireWorkspaceAccess(models.WorkspaceRoleViewer),
+		deps.AssetHandler.GetAsset,
+	)
+
+	workspaces.DELETE("/:workspace_id/assets/:asset_id",
+		workspaceMiddleware.RequireWorkspaceAccess(models.WorkspaceRoleEditor),
+		deps.AssetHandler.DeleteAsset,
+	)
+
+	workspaces.POST("/:workspace_id/assets/cleanup",
+		workspaceMiddleware.RequireWorkspaceOwner(),
+		deps.AssetHandler.CleanupOrphanedAssets,
+	)
+
+	// Snapshot routes (require editor access to create, viewer to list)
+	workspaces.GET("/:workspace_id/snapshots",
+		workspaceMiddleware.RequireWorkspaceAccess(models.WorkspaceRoleViewer),
+		deps.SnapshotHandler.ListSnapshots,
+	)
+
+	workspaces.POST("/:workspace_id/snapshots",
+		workspaceMiddleware.RequireWorkspaceAccess(models.WorkspaceRoleEditor),
+		deps.SnapshotHandler.CreateSnapshot,
+	)
+
+	workspaces.GET("/:workspace_id/snapshots/version/:version",
+		workspaceMiddleware.RequireWorkspaceAccess(models.WorkspaceRoleViewer),
+		deps.SnapshotHandler.GetSnapshotByVersion,
+	)
+
+	workspaces.GET("/:workspace_id/snapshots/:snapshot_id",
+		workspaceMiddleware.RequireWorkspaceAccess(models.WorkspaceRoleViewer),
+		deps.SnapshotHandler.GetSnapshot,
+	)
+
+	workspaces.POST("/:workspace_id/snapshots/:snapshot_id/restore",
+		workspaceMiddleware.RequireWorkspaceAccess(models.WorkspaceRoleEditor),
+		deps.SnapshotHandler.RestoreSnapshot,
+	)
+
+	workspaces.DELETE("/:workspace_id/snapshots/:snapshot_id",
+		workspaceMiddleware.RequireWorkspaceOwner(),
+		deps.SnapshotHandler.DeleteSnapshot,
 	)
 }
 

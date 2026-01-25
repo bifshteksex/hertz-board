@@ -10,9 +10,9 @@ import (
 	"golang.org/x/oauth2/github"
 	"golang.org/x/oauth2/google"
 
-	"github.com/bifshteksex/hertzboard/internal/config"
-	"github.com/bifshteksex/hertzboard/internal/models"
-	"github.com/bifshteksex/hertzboard/internal/repository"
+	"github.com/bifshteksex/hertz-board/internal/config"
+	"github.com/bifshteksex/hertz-board/internal/models"
+	"github.com/bifshteksex/hertz-board/internal/repository"
 )
 
 // OAuthService handles OAuth authentication
