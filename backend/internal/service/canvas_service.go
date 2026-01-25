@@ -390,46 +390,52 @@ func (s *CanvasService) GetElementCount(ctx context.Context, workspaceID uuid.UU
 
 // ValidateElementData performs basic validation on element data
 func (s *CanvasService) ValidateElementData(elementType models.ElementType, data models.ElementData) error {
-	// Basic validation - could be extended based on element type
 	if len(data) == 0 {
 		return fmt.Errorf("element_data cannot be empty")
 	}
 
-	// Type-specific validation
+	return s.validateElementTypeSpecific(elementType, data)
+}
+
+func (s *CanvasService) validateElementTypeSpecific(elementType models.ElementType, data models.ElementData) error {
 	switch elementType {
 	case models.ElementTypeText:
-		// Could validate text-specific fields
-		if _, ok := data["content"]; !ok {
-			return fmt.Errorf("text element must have 'content' field")
-		}
+		return s.validateTextElement(data)
 	case models.ElementTypeImage:
-		// Could validate image-specific fields
-		if _, ok := data["url"]; !ok {
-			return fmt.Errorf("image element must have 'url' field")
-		}
+		return s.validateImageElement(data)
 	case models.ElementTypeConnector:
-		// Validate connector endpoints
-		if _, hasStart := data["start_element_id"]; !hasStart {
-			if _, hasStartPoint := data["start_point"]; !hasStartPoint {
-				return fmt.Errorf("connector must have either 'start_element_id' or 'start_point'")
-			}
-		}
-		if _, hasEnd := data["end_element_id"]; !hasEnd {
-			if _, hasEndPoint := data["end_point"]; !hasEndPoint {
-				return fmt.Errorf("connector must have either 'end_element_id' or 'end_point'")
-			}
-		}
-	case models.ElementTypeShape:
-		// Shape validation can be added here
-	case models.ElementTypeDrawing:
-		// Drawing validation can be added here
-	case models.ElementTypeSticky:
-		// Sticky note validation can be added here
-	case models.ElementTypeList:
-		// List validation can be added here
-	case models.ElementTypeGroup:
-		// Group validation can be added here
+		return s.validateConnectorElement(data)
+	case models.ElementTypeShape, models.ElementTypeDrawing, models.ElementTypeSticky, models.ElementTypeList, models.ElementTypeGroup:
+		return nil
+	default:
+		return nil
 	}
+}
 
+func (s *CanvasService) validateTextElement(data models.ElementData) error {
+	if _, ok := data["content"]; !ok {
+		return fmt.Errorf("text element must have 'content' field")
+	}
+	return nil
+}
+
+func (s *CanvasService) validateImageElement(data models.ElementData) error {
+	if _, ok := data["url"]; !ok {
+		return fmt.Errorf("image element must have 'url' field")
+	}
+	return nil
+}
+
+func (s *CanvasService) validateConnectorElement(data models.ElementData) error {
+	if _, hasStart := data["start_element_id"]; !hasStart {
+		if _, hasStartPoint := data["start_point"]; !hasStartPoint {
+			return fmt.Errorf("connector must have either 'start_element_id' or 'start_point'")
+		}
+	}
+	if _, hasEnd := data["end_element_id"]; !hasEnd {
+		if _, hasEndPoint := data["end_point"]; !hasEndPoint {
+			return fmt.Errorf("connector must have either 'end_element_id' or 'end_point'")
+		}
+	}
 	return nil
 }

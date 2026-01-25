@@ -38,16 +38,10 @@ func (r *SnapshotRepository) CreateSnapshot(ctx context.Context, snapshot *model
 	).Scan(&snapshot.Version, &snapshot.CreatedAt)
 }
 
-// GetSnapshotByID retrieves a snapshot by ID
-func (r *SnapshotRepository) GetSnapshotByID(ctx context.Context, id uuid.UUID) (*models.CanvasSnapshot, error) {
-	query := `
-		SELECT id, workspace_id, version, description, snapshot_data, element_count, created_by, created_at
-		FROM canvas_snapshots
-		WHERE id = $1
-	`
-
+// scanSnapshot scans a row into a CanvasSnapshot
+func (r *SnapshotRepository) scanSnapshot(row pgx.Row) (*models.CanvasSnapshot, error) {
 	var snapshot models.CanvasSnapshot
-	err := r.db.QueryRow(ctx, query, id).Scan(
+	err := row.Scan(
 		&snapshot.ID,
 		&snapshot.WorkspaceID,
 		&snapshot.Version,
@@ -62,10 +56,21 @@ func (r *SnapshotRepository) GetSnapshotByID(ctx context.Context, id uuid.UUID) 
 		return nil, fmt.Errorf("snapshot not found")
 	}
 	if err != nil {
-		return nil, fmt.Errorf("failed to get snapshot: %w", err)
+		return nil, fmt.Errorf("failed to scan snapshot: %w", err)
 	}
 
 	return &snapshot, nil
+}
+
+// GetSnapshotByID retrieves a snapshot by ID
+func (r *SnapshotRepository) GetSnapshotByID(ctx context.Context, id uuid.UUID) (*models.CanvasSnapshot, error) {
+	query := `
+		SELECT id, workspace_id, version, description, snapshot_data, element_count, created_by, created_at
+		FROM canvas_snapshots
+		WHERE id = $1
+	`
+
+	return r.scanSnapshot(r.db.QueryRow(ctx, query, id))
 }
 
 // GetSnapshotByVersion retrieves a snapshot by workspace and version number
@@ -76,26 +81,7 @@ func (r *SnapshotRepository) GetSnapshotByVersion(ctx context.Context, workspace
 		WHERE workspace_id = $1 AND version = $2
 	`
 
-	var snapshot models.CanvasSnapshot
-	err := r.db.QueryRow(ctx, query, workspaceID, version).Scan(
-		&snapshot.ID,
-		&snapshot.WorkspaceID,
-		&snapshot.Version,
-		&snapshot.Description,
-		&snapshot.SnapshotData,
-		&snapshot.ElementCount,
-		&snapshot.CreatedBy,
-		&snapshot.CreatedAt,
-	)
-
-	if err == pgx.ErrNoRows {
-		return nil, fmt.Errorf("snapshot not found")
-	}
-	if err != nil {
-		return nil, fmt.Errorf("failed to get snapshot: %w", err)
-	}
-
-	return &snapshot, nil
+	return r.scanSnapshot(r.db.QueryRow(ctx, query, workspaceID, version))
 }
 
 // GetLatestSnapshot retrieves the latest snapshot for a workspace
@@ -108,26 +94,7 @@ func (r *SnapshotRepository) GetLatestSnapshot(ctx context.Context, workspaceID 
 		LIMIT 1
 	`
 
-	var snapshot models.CanvasSnapshot
-	err := r.db.QueryRow(ctx, query, workspaceID).Scan(
-		&snapshot.ID,
-		&snapshot.WorkspaceID,
-		&snapshot.Version,
-		&snapshot.Description,
-		&snapshot.SnapshotData,
-		&snapshot.ElementCount,
-		&snapshot.CreatedBy,
-		&snapshot.CreatedAt,
-	)
-
-	if err == pgx.ErrNoRows {
-		return nil, fmt.Errorf("no snapshots found")
-	}
-	if err != nil {
-		return nil, fmt.Errorf("failed to get latest snapshot: %w", err)
-	}
-
-	return &snapshot, nil
+	return r.scanSnapshot(r.db.QueryRow(ctx, query, workspaceID))
 }
 
 // ListSnapshots retrieves all snapshots for a workspace with pagination

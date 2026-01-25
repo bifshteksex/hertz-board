@@ -71,39 +71,14 @@ func (h *CanvasHandler) GetWorkspaceElements(ctx context.Context, c *app.Request
 //
 // @Router /api/v1/workspaces/{workspace_id}/elements [post]
 func (h *CanvasHandler) CreateElement(ctx context.Context, c *app.RequestContext) {
-	workspaceIDStr := c.Param("workspace_id")
-	workspaceID, err := uuid.Parse(workspaceIDStr)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, map[string]interface{}{"error": "Invalid workspace ID"})
-		return
-	}
-
-	userID, exists := c.Get("user_id")
-	if !exists {
-		c.JSON(http.StatusUnauthorized, map[string]interface{}{"error": "User not authenticated"})
-		return
-	}
-
 	var req models.CreateElementRequest
-	if bindErr := c.BindJSON(&req); bindErr != nil {
-		c.JSON(http.StatusBadRequest, map[string]interface{}{"error": "Invalid request body"})
-		return
-	}
-
-	userUUID, ok := userID.(uuid.UUID)
-	if !ok {
-		c.JSON(http.StatusInternalServerError, map[string]interface{}{"error": "Invalid user ID format"})
-		return
-	}
-
-	element, err := h.canvasService.CreateElement(ctx, workspaceID, userUUID, req)
-	if err != nil {
-		hlog.CtxErrorf(ctx, "Failed to create element: %v", err)
-		c.JSON(http.StatusInternalServerError, map[string]interface{}{"error": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusCreated, element.ToResponse())
+	handleElementOperation(ctx, c, "", &req, func(ctx context.Context, id uuid.UUID, userID uuid.UUID, reqPtr interface{}) (interface{}, error) {
+		element, err := h.canvasService.CreateElement(ctx, id, userID, *reqPtr.(*models.CreateElementRequest))
+		if err != nil {
+			return nil, err
+		}
+		return element.ToResponse(), nil
+	}, "Failed to create element", http.StatusCreated)
 }
 
 // GetElement godoc
@@ -118,21 +93,13 @@ func (h *CanvasHandler) CreateElement(ctx context.Context, c *app.RequestContext
 //
 // @Router /api/v1/workspaces/{workspace_id}/elements/{element_id} [get]
 func (h *CanvasHandler) GetElement(ctx context.Context, c *app.RequestContext) {
-	elementIDStr := c.Param("element_id")
-	elementID, err := uuid.Parse(elementIDStr)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, map[string]interface{}{"error": "Invalid element ID"})
-		return
-	}
-
-	element, err := h.canvasService.GetElement(ctx, elementID)
-	if err != nil {
-		hlog.CtxErrorf(ctx, "Failed to get element: %v", err)
-		c.JSON(http.StatusNotFound, map[string]interface{}{"error": "Element not found"})
-		return
-	}
-
-	c.JSON(http.StatusOK, element.ToResponse())
+	handleGetByID(ctx, c, "element_id", func(ctx context.Context, id uuid.UUID) (interface{}, error) {
+		element, err := h.canvasService.GetElement(ctx, id)
+		if err != nil {
+			return nil, err
+		}
+		return element.ToResponse(), nil
+	}, "Failed to get element")
 }
 
 // UpdateElement godoc
@@ -148,39 +115,14 @@ func (h *CanvasHandler) GetElement(ctx context.Context, c *app.RequestContext) {
 //
 // @Router /api/v1/workspaces/{workspace_id}/elements/{element_id} [put]
 func (h *CanvasHandler) UpdateElement(ctx context.Context, c *app.RequestContext) {
-	elementIDStr := c.Param("element_id")
-	elementID, err := uuid.Parse(elementIDStr)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, map[string]interface{}{"error": "Invalid element ID"})
-		return
-	}
-
-	userID, exists := c.Get("user_id")
-	if !exists {
-		c.JSON(http.StatusUnauthorized, map[string]interface{}{"error": "User not authenticated"})
-		return
-	}
-
 	var req models.UpdateElementRequest
-	if bindErr := c.BindJSON(&req); bindErr != nil {
-		c.JSON(http.StatusBadRequest, map[string]interface{}{"error": "Invalid request body"})
-		return
-	}
-
-	userUUID, ok := userID.(uuid.UUID)
-	if !ok {
-		c.JSON(http.StatusInternalServerError, map[string]interface{}{"error": "Invalid user ID format"})
-		return
-	}
-
-	element, err := h.canvasService.UpdateElement(ctx, elementID, userUUID, req)
-	if err != nil {
-		hlog.CtxErrorf(ctx, "Failed to update element: %v", err)
-		c.JSON(http.StatusInternalServerError, map[string]interface{}{"error": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusOK, element.ToResponse())
+	handleElementOperation(ctx, c, "element_id", &req, func(ctx context.Context, id uuid.UUID, userID uuid.UUID, reqPtr interface{}) (interface{}, error) {
+		element, err := h.canvasService.UpdateElement(ctx, id, userID, *reqPtr.(*models.UpdateElementRequest))
+		if err != nil {
+			return nil, err
+		}
+		return element.ToResponse(), nil
+	}, "Failed to update element", http.StatusOK)
 }
 
 // DeleteElement godoc
@@ -194,20 +136,7 @@ func (h *CanvasHandler) UpdateElement(ctx context.Context, c *app.RequestContext
 //
 // @Router /api/v1/workspaces/{workspace_id}/elements/{element_id} [delete]
 func (h *CanvasHandler) DeleteElement(ctx context.Context, c *app.RequestContext) {
-	elementIDStr := c.Param("element_id")
-	elementID, err := uuid.Parse(elementIDStr)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, map[string]interface{}{"error": "Invalid element ID"})
-		return
-	}
-
-	if err := h.canvasService.DeleteElement(ctx, elementID); err != nil {
-		hlog.CtxErrorf(ctx, "Failed to delete element: %v", err)
-		c.JSON(http.StatusInternalServerError, map[string]interface{}{"error": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusOK, map[string]interface{}{"message": "Element deleted successfully"})
+	handleDeleteByID(ctx, c, "element_id", h.canvasService.DeleteElement, "Failed to delete element", "Element deleted successfully")
 }
 
 // Batch operations
@@ -224,48 +153,18 @@ func (h *CanvasHandler) DeleteElement(ctx context.Context, c *app.RequestContext
 //
 // @Router /api/v1/workspaces/{workspace_id}/elements/batch [post]
 func (h *CanvasHandler) BatchCreateElements(ctx context.Context, c *app.RequestContext) {
-	workspaceIDStr := c.Param("workspace_id")
-	workspaceID, err := uuid.Parse(workspaceIDStr)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, map[string]interface{}{"error": "Invalid workspace ID"})
-		return
-	}
-
-	userID, exists := c.Get("user_id")
-	if !exists {
-		c.JSON(http.StatusUnauthorized, map[string]interface{}{"error": "User not authenticated"})
-		return
-	}
-
 	var req models.BatchCreateRequest
-	if bindErr := c.BindJSON(&req); bindErr != nil {
-		c.JSON(http.StatusBadRequest, map[string]interface{}{"error": "Invalid request body"})
-		return
-	}
-
-	userUUID, ok := userID.(uuid.UUID)
-	if !ok {
-		c.JSON(http.StatusInternalServerError, map[string]interface{}{"error": "Invalid user ID format"})
-		return
-	}
-
-	elements, err := h.canvasService.BatchCreateElements(ctx, workspaceID, userUUID, req)
-	if err != nil {
-		hlog.CtxErrorf(ctx, "Failed to batch create elements: %v", err)
-		c.JSON(http.StatusBadRequest, map[string]interface{}{"error": err.Error()})
-		return
-	}
-
-	// Convert to response
-	responses := make([]models.ElementResponse, len(elements))
-	for i := range elements {
-		responses[i] = elements[i].ToResponse()
-	}
-
-	c.JSON(http.StatusCreated, models.ElementListResponse{
-		Elements: responses,
-		Total:    len(responses),
-	})
+	handleBatchElementOperation(ctx, c, &req, func(ctx context.Context, workspaceID uuid.UUID, userID uuid.UUID, reqPtr interface{}) ([]interface{}, error) {
+		elements, err := h.canvasService.BatchCreateElements(ctx, workspaceID, userID, *reqPtr.(*models.BatchCreateRequest))
+		if err != nil {
+			return nil, err
+		}
+		results := make([]interface{}, len(elements))
+		for i := range elements {
+			results[i] = elements[i].ToResponse()
+		}
+		return results, nil
+	}, "Failed to batch create elements", http.StatusCreated)
 }
 
 // BatchUpdateElements godoc
@@ -280,48 +179,18 @@ func (h *CanvasHandler) BatchCreateElements(ctx context.Context, c *app.RequestC
 //
 // @Router /api/v1/workspaces/{workspace_id}/elements/batch [put]
 func (h *CanvasHandler) BatchUpdateElements(ctx context.Context, c *app.RequestContext) {
-	workspaceIDStr := c.Param("workspace_id")
-	workspaceID, err := uuid.Parse(workspaceIDStr)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, map[string]interface{}{"error": "Invalid workspace ID"})
-		return
-	}
-
-	userID, exists := c.Get("user_id")
-	if !exists {
-		c.JSON(http.StatusUnauthorized, map[string]interface{}{"error": "User not authenticated"})
-		return
-	}
-
 	var req models.BatchUpdateRequest
-	if bindErr := c.BindJSON(&req); bindErr != nil {
-		c.JSON(http.StatusBadRequest, map[string]interface{}{"error": "Invalid request body"})
-		return
-	}
-
-	userUUID, ok := userID.(uuid.UUID)
-	if !ok {
-		c.JSON(http.StatusInternalServerError, map[string]interface{}{"error": "Invalid user ID format"})
-		return
-	}
-
-	elements, err := h.canvasService.BatchUpdateElements(ctx, workspaceID, userUUID, req)
-	if err != nil {
-		hlog.CtxErrorf(ctx, "Failed to batch update elements: %v", err)
-		c.JSON(http.StatusBadRequest, map[string]interface{}{"error": err.Error()})
-		return
-	}
-
-	// Convert to response
-	responses := make([]models.ElementResponse, len(elements))
-	for i := range elements {
-		responses[i] = elements[i].ToResponse()
-	}
-
-	c.JSON(http.StatusOK, models.ElementListResponse{
-		Elements: responses,
-		Total:    len(responses),
-	})
+	handleBatchElementOperation(ctx, c, &req, func(ctx context.Context, workspaceID uuid.UUID, userID uuid.UUID, reqPtr interface{}) ([]interface{}, error) {
+		elements, err := h.canvasService.BatchUpdateElements(ctx, workspaceID, userID, *reqPtr.(*models.BatchUpdateRequest))
+		if err != nil {
+			return nil, err
+		}
+		results := make([]interface{}, len(elements))
+		for i := range elements {
+			results[i] = elements[i].ToResponse()
+		}
+		return results, nil
+	}, "Failed to batch update elements", http.StatusOK)
 }
 
 // BatchDeleteElements godoc

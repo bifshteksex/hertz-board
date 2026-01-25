@@ -50,8 +50,13 @@ func (r *AssetRepository) GetAssetByID(ctx context.Context, id uuid.UUID) (*mode
 		WHERE id = $1 AND deleted_at IS NULL
 	`
 
+	return r.scanAsset(r.db.QueryRow(ctx, query, id))
+}
+
+// scanAsset scans a single row into an Asset
+func (r *AssetRepository) scanAsset(row pgx.Row) (*models.Asset, error) {
 	var asset models.Asset
-	err := r.db.QueryRow(ctx, query, id).Scan(
+	err := row.Scan(
 		&asset.ID,
 		&asset.WorkspaceID,
 		&asset.UploadedBy,
@@ -70,27 +75,14 @@ func (r *AssetRepository) GetAssetByID(ctx context.Context, id uuid.UUID) (*mode
 		return nil, fmt.Errorf("asset not found")
 	}
 	if err != nil {
-		return nil, fmt.Errorf("failed to get asset: %w", err)
+		return nil, fmt.Errorf("failed to scan asset: %w", err)
 	}
 
 	return &asset, nil
 }
 
-// GetAssetsByWorkspace retrieves all assets for a workspace
-func (r *AssetRepository) GetAssetsByWorkspace(ctx context.Context, workspaceID uuid.UUID) ([]models.Asset, error) {
-	query := `
-		SELECT id, workspace_id, uploaded_by, filename, content_type, size, url, thumbnail_url, width, height, created_at, deleted_at
-		FROM assets
-		WHERE workspace_id = $1 AND deleted_at IS NULL
-		ORDER BY created_at DESC
-	`
-
-	rows, err := r.db.Query(ctx, query, workspaceID)
-	if err != nil {
-		return nil, fmt.Errorf("failed to query assets: %w", err)
-	}
-	defer rows.Close()
-
+// scanAssets scans multiple rows into Assets
+func (r *AssetRepository) scanAssets(rows pgx.Rows) ([]models.Asset, error) {
 	var assets []models.Asset
 	for rows.Next() {
 		var asset models.Asset
@@ -115,6 +107,24 @@ func (r *AssetRepository) GetAssetsByWorkspace(ctx context.Context, workspaceID 
 	}
 
 	return assets, rows.Err()
+}
+
+// GetAssetsByWorkspace retrieves all assets for a workspace
+func (r *AssetRepository) GetAssetsByWorkspace(ctx context.Context, workspaceID uuid.UUID) ([]models.Asset, error) {
+	query := `
+		SELECT id, workspace_id, uploaded_by, filename, content_type, size, url, thumbnail_url, width, height, created_at, deleted_at
+		FROM assets
+		WHERE workspace_id = $1 AND deleted_at IS NULL
+		ORDER BY created_at DESC
+	`
+
+	rows, err := r.db.Query(ctx, query, workspaceID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to query assets: %w", err)
+	}
+	defer rows.Close()
+
+	return r.scanAssets(rows)
 }
 
 // DeleteAsset soft deletes an asset
@@ -162,28 +172,5 @@ func (r *AssetRepository) GetOrphanedAssets(ctx context.Context, workspaceID uui
 	}
 	defer rows.Close()
 
-	var assets []models.Asset
-	for rows.Next() {
-		var asset models.Asset
-		err := rows.Scan(
-			&asset.ID,
-			&asset.WorkspaceID,
-			&asset.UploadedBy,
-			&asset.Filename,
-			&asset.ContentType,
-			&asset.Size,
-			&asset.URL,
-			&asset.ThumbnailURL,
-			&asset.Width,
-			&asset.Height,
-			&asset.CreatedAt,
-			&asset.DeletedAt,
-		)
-		if err != nil {
-			return nil, fmt.Errorf("failed to scan orphaned asset: %w", err)
-		}
-		assets = append(assets, asset)
-	}
-
-	return assets, rows.Err()
+	return r.scanAssets(rows)
 }

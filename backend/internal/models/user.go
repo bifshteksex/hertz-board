@@ -6,7 +6,6 @@ import (
 	"github.com/google/uuid"
 )
 
-//nolint:govet // fieldalignment: struct field order optimized for readability
 type User struct {
 	CreatedAt     time.Time `json:"created_at" db:"created_at"`
 	UpdatedAt     time.Time `json:"updated_at" db:"updated_at"`
@@ -20,7 +19,6 @@ type User struct {
 	EmailVerified bool      `json:"email_verified" db:"email_verified"`
 }
 
-//nolint:govet // fieldalignment: struct field order optimized for readability
 type RefreshToken struct {
 	ExpiresAt time.Time `json:"expires_at" db:"expires_at"`
 	CreatedAt time.Time `json:"created_at" db:"created_at"`
@@ -29,7 +27,6 @@ type RefreshToken struct {
 	UserID    uuid.UUID `json:"user_id" db:"user_id"`
 }
 
-//nolint:govet // fieldalignment: struct field order optimized for readability
 type PasswordResetToken struct {
 	ExpiresAt time.Time  `json:"expires_at" db:"expires_at"`
 	CreatedAt time.Time  `json:"created_at" db:"created_at"`
@@ -75,7 +72,6 @@ type ResetPasswordRequest struct {
 	NewPassword string `json:"new_password" binding:"required,min=8"`
 }
 
-//nolint:govet // fieldalignment: struct field order optimized for readability
 type TokenPair struct {
 	ExpiresAt    time.Time `json:"expires_at"`
 	AccessToken  string    `json:"access_token"`
@@ -89,8 +85,6 @@ type AuthResponse struct {
 }
 
 // UserResponse represents user data in API responses
-//
-//nolint:govet // fieldalignment: struct field order optimized for readability
 type UserResponse struct {
 	AvatarURL *string   `json:"avatar_url,omitempty"`
 	Email     string    `json:"email"`

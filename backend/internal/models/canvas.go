@@ -130,9 +130,9 @@ type ImageElementData struct {
 
 // DrawingElementData represents freehand drawing
 type DrawingElementData struct {
-	BaseElementData
 	Points []Point `json:"points"`
-	Smooth bool    `json:"smooth"`
+	BaseElementData
+	Smooth bool `json:"smooth"`
 }
 
 type Point struct {
@@ -150,9 +150,9 @@ type StickyNoteData struct {
 
 // ListElementData represents a list (checklist, bullet list)
 type ListElementData struct {
-	BaseElementData
-	ListType string     `json:"list_type"` // bullet, numbered, checkbox
 	Items    []ListItem `json:"items"`
+	ListType string     `json:"list_type"` // bullet, numbered, checkbox
+	BaseElementData
 }
 
 type ListItem struct {
@@ -175,8 +175,8 @@ type ConnectorElementData struct {
 
 // GroupElementData represents a group of elements
 type GroupElementData struct {
-	BaseElementData
 	ChildIDs []uuid.UUID `json:"child_ids"`
+	BaseElementData
 }
 
 // DTOs for API requests/responses

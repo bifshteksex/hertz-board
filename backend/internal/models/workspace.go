@@ -16,8 +16,6 @@ const (
 )
 
 // Workspace represents a collaborative workspace
-//
-//nolint:govet // fieldalignment: struct field order optimized for readability
 type Workspace struct {
 	CreatedAt    time.Time              `json:"created_at"`
 	UpdatedAt    time.Time              `json:"updated_at"`
@@ -32,8 +30,6 @@ type Workspace struct {
 }
 
 // WorkspaceMember represents a user's membership in a workspace
-//
-//nolint:govet // fieldalignment: struct field order optimized for readability
 type WorkspaceMember struct {
 	JoinedAt    time.Time     `json:"joined_at"`
 	InvitedBy   *uuid.UUID    `json:"invited_by,omitempty"`
@@ -44,8 +40,6 @@ type WorkspaceMember struct {
 }
 
 // WorkspaceInvite represents an invitation to join a workspace
-//
-//nolint:govet // fieldalignment: struct field order optimized for readability
 type WorkspaceInvite struct {
 	ExpiresAt   time.Time     `json:"expires_at"`
 	CreatedAt   time.Time     `json:"created_at"`
@@ -60,25 +54,21 @@ type WorkspaceInvite struct {
 }
 
 // WorkspaceWithRole extends Workspace with user's role
-//
-//nolint:govet // fieldalignment: struct field order optimized for readability
 type WorkspaceWithRole struct {
-	Workspace
 	Owner    *User         `json:"owner,omitempty"`
 	UserRole WorkspaceRole `json:"user_role"`
+	Workspace
 }
 
 // WorkspaceMemberWithUser extends WorkspaceMember with user details
 type WorkspaceMemberWithUser struct {
-	WorkspaceMember
 	User User `json:"user"`
+	WorkspaceMember
 }
 
 // --- Request DTOs ---
 
 // CreateWorkspaceRequest represents a request to create a new workspace
-//
-//nolint:govet // fieldalignment: struct field order optimized for readability
 type CreateWorkspaceRequest struct {
 	Description *string                `json:"description,omitempty"`
 	Settings    map[string]interface{} `json:"settings,omitempty"`
@@ -112,8 +102,6 @@ type UpdateMemberRoleRequest struct {
 }
 
 // WorkspaceListFilter represents filters for listing workspaces
-//
-//nolint:govet // fieldalignment: struct field order optimized for readability
 type WorkspaceListFilter struct {
 	Query      string `form:"q"`
 	SortBy     string `form:"sort_by"`
@@ -127,8 +115,6 @@ type WorkspaceListFilter struct {
 // --- Response DTOs ---
 
 // WorkspaceResponse represents workspace data in API responses
-//
-//nolint:govet // fieldalignment: struct field order optimized for readability
 type WorkspaceResponse struct {
 	CreatedAt    time.Time              `json:"created_at"`
 	UpdatedAt    time.Time              `json:"updated_at"`
@@ -152,22 +138,18 @@ type WorkspaceListResponse struct {
 }
 
 // WorkspaceMemberResponse represents workspace member in API responses
-//
-//nolint:govet // fieldalignment: struct field order optimized for readability
 type WorkspaceMemberResponse struct {
-	User     UserResponse  `json:"user"`
-	JoinedAt time.Time     `json:"joined_at"`
+	JoinedAt time.Time `json:"joined_at"`
+	User     UserResponse
 	Role     WorkspaceRole `json:"role"`
 	ID       uuid.UUID     `json:"id"`
 }
 
 // WorkspaceInviteResponse represents workspace invite in API responses
-//
-//nolint:govet // fieldalignment: struct field order optimized for readability
 type WorkspaceInviteResponse struct {
-	CreatedBy UserResponse  `json:"created_by"`
-	ExpiresAt time.Time     `json:"expires_at"`
-	CreatedAt time.Time     `json:"created_at"`
+	ExpiresAt time.Time `json:"expires_at"`
+	CreatedAt time.Time `json:"created_at"`
+	CreatedBy UserResponse
 	Email     string        `json:"email"`
 	Role      WorkspaceRole `json:"role"`
 	ID        uuid.UUID     `json:"id"`

@@ -129,21 +129,13 @@ func (h *SnapshotHandler) ListSnapshots(ctx context.Context, c *app.RequestConte
 //
 // @Router /api/v1/workspaces/{workspace_id}/snapshots/{snapshot_id} [get]
 func (h *SnapshotHandler) GetSnapshot(ctx context.Context, c *app.RequestContext) {
-	snapshotIDStr := c.Param("snapshot_id")
-	snapshotID, err := uuid.Parse(snapshotIDStr)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, map[string]interface{}{"error": "Invalid snapshot ID"})
-		return
-	}
-
-	snapshot, err := h.snapshotService.GetSnapshot(ctx, snapshotID)
-	if err != nil {
-		hlog.CtxErrorf(ctx, "Failed to get snapshot: %v", err)
-		c.JSON(http.StatusNotFound, map[string]interface{}{"error": "Snapshot not found"})
-		return
-	}
-
-	c.JSON(http.StatusOK, snapshot.ToDetailResponse())
+	handleGetByID(ctx, c, "snapshot_id", func(ctx context.Context, id uuid.UUID) (interface{}, error) {
+		snapshot, err := h.snapshotService.GetSnapshot(ctx, id)
+		if err != nil {
+			return nil, err
+		}
+		return snapshot.ToDetailResponse(), nil
+	}, "Failed to get snapshot")
 }
 
 // GetSnapshotByVersion godoc

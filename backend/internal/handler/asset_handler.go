@@ -111,21 +111,13 @@ func (h *AssetHandler) UploadAsset(ctx context.Context, c *app.RequestContext) {
 //
 // @Router /api/v1/workspaces/{workspace_id}/assets/{asset_id} [get]
 func (h *AssetHandler) GetAsset(ctx context.Context, c *app.RequestContext) {
-	assetIDStr := c.Param("asset_id")
-	assetID, err := uuid.Parse(assetIDStr)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, map[string]interface{}{"error": "Invalid asset ID"})
-		return
-	}
-
-	asset, err := h.assetService.GetAsset(ctx, assetID)
-	if err != nil {
-		hlog.CtxErrorf(ctx, "Failed to get asset: %v", err)
-		c.JSON(http.StatusNotFound, map[string]interface{}{"error": "Asset not found"})
-		return
-	}
-
-	c.JSON(http.StatusOK, asset.ToResponse())
+	handleGetByID(ctx, c, "asset_id", func(ctx context.Context, id uuid.UUID) (interface{}, error) {
+		asset, err := h.assetService.GetAsset(ctx, id)
+		if err != nil {
+			return nil, err
+		}
+		return asset.ToResponse(), nil
+	}, "Failed to get asset")
 }
 
 // GetWorkspaceAssets godoc
@@ -176,20 +168,7 @@ func (h *AssetHandler) GetWorkspaceAssets(ctx context.Context, c *app.RequestCon
 //
 // @Router /api/v1/workspaces/{workspace_id}/assets/{asset_id} [delete]
 func (h *AssetHandler) DeleteAsset(ctx context.Context, c *app.RequestContext) {
-	assetIDStr := c.Param("asset_id")
-	assetID, err := uuid.Parse(assetIDStr)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, map[string]interface{}{"error": "Invalid asset ID"})
-		return
-	}
-
-	if err := h.assetService.DeleteAsset(ctx, assetID); err != nil {
-		hlog.CtxErrorf(ctx, "Failed to delete asset: %v", err)
-		c.JSON(http.StatusInternalServerError, map[string]interface{}{"error": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusOK, map[string]interface{}{"message": "Asset deleted successfully"})
+	handleDeleteByID(ctx, c, "asset_id", h.assetService.DeleteAsset, "Failed to delete asset", "Asset deleted successfully")
 }
 
 // CleanupOrphanedAssets godoc

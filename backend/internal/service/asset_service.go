@@ -168,7 +168,7 @@ func (s *AssetService) processImage(
 	isImage bool,
 	ext string,
 	workspaceID uuid.UUID,
-) (*int, *int, *string, error) {
+) (width, height *int, thumbnailURL *string, err error) {
 	if !isImage {
 		return nil, nil, nil, nil
 	}
@@ -186,9 +186,9 @@ func (s *AssetService) processImage(
 		return nil, nil, nil, fmt.Errorf("image dimensions exceed maximum allowed size of %dx%d", MaxImageWidth, MaxImageHeight)
 	}
 
-	thumbnailURL, err := s.createAndUploadThumbnail(ctx, img, format, ext, workspaceID, contentType)
-	if err != nil {
-		return nil, nil, nil, err
+	thumbnailURL, thumbErr := s.createAndUploadThumbnail(ctx, img, format, ext, workspaceID, contentType)
+	if thumbErr != nil {
+		return nil, nil, nil, thumbErr
 	}
 
 	return &w, &h, thumbnailURL, nil
