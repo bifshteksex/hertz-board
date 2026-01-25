@@ -4,21 +4,25 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
-	"github.com/cloudwego/hertz/pkg/app"
+	"github.com/bifshteksex/hertzboard/internal/config"
+	"github.com/bifshteksex/hertzboard/internal/database"
+	"github.com/bifshteksex/hertzboard/internal/handler"
+	"github.com/bifshteksex/hertzboard/internal/repository"
+	"github.com/bifshteksex/hertzboard/internal/router"
+	"github.com/bifshteksex/hertzboard/internal/service"
 	"github.com/cloudwego/hertz/pkg/app/server"
 )
 
 const (
-	defaultPort            = ":8080"
 	maxRequestBodySizeMB   = 10
 	shutdownTimeoutSeconds = 5
 	bytesInMB              = 1024 * 1024
+	defaultConfigPath      = "configs/config.yaml"
 )
 
 func main() {
@@ -26,28 +30,90 @@ func main() {
 	log.Println("Starting HertzBoard API Gateway...")
 
 	// Load configuration
-	// TODO: Implement config loading
+	configPath := getEnv("CONFIG_PATH", defaultConfigPath)
+	cfg, err := config.Load(configPath)
+	if err != nil {
+		log.Fatalf("Failed to load config: %v", err)
+	}
+
+	log.Printf("Loaded configuration: %s environment", cfg.App.Env)
+
+	// Connect to databases
+	log.Println("Connecting to PostgreSQL...")
+	dbPool, err := database.NewPostgresPool(&cfg.Database)
+	if err != nil {
+		log.Fatalf("Failed to connect to PostgreSQL: %v", err)
+	}
+	defer database.ClosePostgresPool(dbPool)
+	log.Println("Connected to PostgreSQL")
+
+	log.Println("Connecting to Redis...")
+	redisClient, err := database.NewRedisClient(&cfg.Redis)
+	if err != nil {
+		log.Fatalf("Failed to connect to Redis: %v", err)
+	}
+	defer database.CloseRedisClient(redisClient)
+	log.Println("Connected to Redis")
+
+	log.Println("Connecting to NATS...")
+	natsConn, err := database.NewNATSConnection(&cfg.NATS)
+	if err != nil {
+		log.Fatalf("Failed to connect to NATS: %v", err)
+	}
+	defer database.CloseNATSConnection(natsConn)
+	log.Println("Connected to NATS")
+
+	// Run migrations
+	log.Println("Running database migrations...")
+	if err := database.Migrate(dbPool, "migrations"); err != nil {
+		log.Fatalf("Failed to run migrations: %v", err)
+	}
+	log.Println("Migrations completed")
+
+	// Initialize repositories
+	userRepo := repository.NewUserRepository(dbPool)
+
+	// Initialize services
+	jwtService, err := service.NewJWTService(&cfg.JWT)
+	if err != nil {
+		log.Fatalf("Failed to create JWT service: %v", err)
+	}
+
+	authService := service.NewAuthService(userRepo, jwtService)
+	oauthService := service.NewOAuthService(&cfg.OAuth, userRepo, jwtService)
+	emailService := service.NewEmailService(&cfg.Email, natsConn)
+
+	// Start email worker
+	log.Println("Starting email worker...")
+	emailWorker, err := service.NewEmailWorker(&cfg.Email, natsConn)
+	if err != nil {
+		log.Fatalf("Failed to start email worker: %v", err)
+	}
+	defer emailWorker.Close()
+	log.Println("Email worker started")
+
+	// Initialize handlers
+	authHandler := handler.NewAuthHandler(authService)
+	userHandler := handler.NewUserHandler(userRepo, authService)
+	oauthHandler := handler.NewOAuthHandler(oauthService)
 
 	// Initialize Hertz server
+	addr := fmt.Sprintf(":%d", cfg.App.Port)
 	h := server.Default(
-		server.WithHostPorts(defaultPort),
+		server.WithHostPorts(addr),
 		server.WithMaxRequestBodySize(maxRequestBodySizeMB*bytesInMB),
 	)
 
-	// TODO: Register routes
-	// TODO: Register middleware
-	// TODO: Connect to database
-	// TODO: Connect to Redis
-	// TODO: Initialize services
+	// Setup routes and middleware
+	deps := &router.Dependencies{
+		JWTService:   jwtService,
+		AuthHandler:  authHandler,
+		UserHandler:  userHandler,
+		OAuthHandler: oauthHandler,
+	}
+	router.Setup(h, cfg, deps)
 
-	// Register health check endpoint
-	h.GET("/health", func(c context.Context, ctx *app.RequestContext) {
-		ctx.JSON(http.StatusOK, map[string]interface{}{
-			"status":    "ok",
-			"service":   "api-gateway",
-			"timestamp": time.Now().Unix(),
-		})
-	})
+	log.Printf("API Gateway is starting on %s", addr)
 
 	// Graceful shutdown
 	go func() {
@@ -56,7 +122,7 @@ func main() {
 		}
 	}()
 
-	log.Printf("API Gateway is running on %s", defaultPort)
+	log.Printf("API Gateway is running on %s", addr)
 
 	// Wait for interrupt signal
 	quit := make(chan os.Signal, 1)
@@ -67,12 +133,18 @@ func main() {
 
 	// Graceful shutdown with timeout
 	ctx, cancel := context.WithTimeout(context.Background(), shutdownTimeoutSeconds*time.Second)
+	defer cancel()
 
 	if err := h.Shutdown(ctx); err != nil {
-		cancel()
 		log.Fatalf("Server forced to shutdown: %v", err)
 	}
 
-	cancel()
-	fmt.Println("Server exited")
+	fmt.Println("Server exited gracefully")
+}
+
+func getEnv(key, defaultValue string) string {
+	if value := os.Getenv(key); value != "" {
+		return value
+	}
+	return defaultValue
 }
