@@ -234,8 +234,14 @@ git push origin feature/your-feature-name
 
 ### Commit Convention
 
-Используем [Conventional Commits](https://www.conventionalcommits.org/):
+Проект **строго требует** соблюдения [Conventional Commits](https://www.conventionalcommits.org/).
 
+**Автоматическая валидация:**
+- Локально при коммите (Husky + Commitlint)
+- В Pull Requests через GitHub Actions
+- Неправильные коммиты блокируются автоматически
+
+**Допустимые типы:**
 - `feat:` - Новая функциональность
 - `fix:` - Исправление бага
 - `docs:` - Изменения в документации
@@ -243,6 +249,18 @@ git push origin feature/your-feature-name
 - `refactor:` - Рефакторинг
 - `test:` - Добавление тестов
 - `chore:` - Рутинные задачи
+- `perf:` - Улучшение производительности
+- `ci:` - Изменения CI/CD
+- `build:` - Изменения сборки
+
+**Примеры:**
+```bash
+git commit -m "feat(canvas): add shape rotation"
+git commit -m "fix(auth): resolve token expiration"
+git commit -m "docs(readme): update installation steps"
+```
+
+Подробнее в [CONTRIBUTING.md](CONTRIBUTING.md#commit-messages)
 
 ## Документация
 

@@ -61,6 +61,33 @@ cd hertzboard
 make init
 ```
 
+### Commit Convention Setup
+
+This project enforces [Conventional Commits](https://www.conventionalcommits.org/) at multiple levels:
+
+**Local validation (Husky + Commitlint):**
+- Automatically installed when you run `npm install` in the root directory
+- Validates commit messages before they are created
+- Prevents non-compliant commits on your local machine
+
+**GitHub Actions:**
+- Validates all commits in Pull Requests
+- Checks both individual commits and PR title
+- PRs with invalid commit messages will fail CI checks
+
+**To test your commit message format:**
+```bash
+# This will validate your message before committing
+git commit -m "feat(canvas): add new drawing tool"
+```
+
+If your commit message doesn't follow the convention, you'll see an error like:
+```
+⧗   input: invalid commit message
+✖   subject may not be empty [subject-empty]
+✖   type may not be empty [type-empty]
+```
+
 ## Code Style
 
 ### Backend (Go)
@@ -91,7 +118,7 @@ We use [Conventional Commits](https://www.conventionalcommits.org/) format:
 <footer>
 ```
 
-**Types:**
+**Types (strictly enforced):**
 - `feat`: New feature
 - `fix`: Bug fix
 - `docs`: Documentation changes
@@ -99,12 +126,34 @@ We use [Conventional Commits](https://www.conventionalcommits.org/) format:
 - `refactor`: Code refactoring
 - `test`: Adding or updating tests
 - `chore`: Maintenance tasks
+- `perf`: Performance improvements
+- `ci`: CI/CD changes
+- `build`: Build system changes
+- `revert`: Revert previous commit
 
-**Examples:**
+**Rules:**
+- Type must be lowercase
+- Subject cannot be empty
+- Subject cannot end with a period
+- Header max length: 100 characters
+- Body and footer must have blank line before them
+
+**Valid examples:**
 ```
 feat(canvas): add shape rotation feature
 fix(auth): resolve JWT token expiration issue
 docs(api): update REST API documentation
+perf(renderer): optimize canvas rendering performance
+ci(actions): add commit message validation
+```
+
+**Invalid examples:**
+```
+Feature: add rotation        ❌ Type must be from allowed list
+feat(Canvas): Add rotation   ❌ Type and scope must be lowercase
+feat: add rotation.          ❌ Subject cannot end with period
+feat:add rotation            ❌ Missing space after colon
+add rotation                 ❌ Missing type
 ```
 
 ## Testing
