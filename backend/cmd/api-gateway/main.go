@@ -9,13 +9,14 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/cloudwego/hertz/pkg/app/server"
+
 	"github.com/bifshteksex/hertzboard/internal/config"
 	"github.com/bifshteksex/hertzboard/internal/database"
 	"github.com/bifshteksex/hertzboard/internal/handler"
 	"github.com/bifshteksex/hertzboard/internal/repository"
 	"github.com/bifshteksex/hertzboard/internal/router"
 	"github.com/bifshteksex/hertzboard/internal/service"
-	"github.com/cloudwego/hertz/pkg/app/server"
 )
 
 const (

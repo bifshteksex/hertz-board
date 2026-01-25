@@ -4,8 +4,9 @@ import (
 	"context"
 	"strings"
 
-	"github.com/bifshteksex/hertzboard/internal/config"
 	"github.com/cloudwego/hertz/pkg/app"
+
+	"github.com/bifshteksex/hertzboard/internal/config"
 )
 
 const (

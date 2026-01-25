@@ -5,12 +5,13 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/cloudwego/hertz/pkg/app"
+	"github.com/cloudwego/hertz/pkg/app/server"
+
 	"github.com/bifshteksex/hertzboard/internal/config"
 	"github.com/bifshteksex/hertzboard/internal/handler"
 	"github.com/bifshteksex/hertzboard/internal/middleware"
 	"github.com/bifshteksex/hertzboard/internal/service"
-	"github.com/cloudwego/hertz/pkg/app"
-	"github.com/cloudwego/hertz/pkg/app/server"
 )
 
 // Dependencies holds all service dependencies
