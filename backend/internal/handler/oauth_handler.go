@@ -96,7 +96,7 @@ func (h *OAuthHandler) GitHubCallback(c context.Context, ctx *app.RequestContext
 // generateState generates a random state for OAuth
 func (h *OAuthHandler) generateState() string {
 	b := make([]byte, 16)
-	rand.Read(b)
+	_, _ = rand.Read(b)
 	return hex.EncodeToString(b)
 }
 

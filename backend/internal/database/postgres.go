@@ -5,8 +5,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/bifshteksex/hertzboard/internal/config"
 	"github.com/jackc/pgx/v5/pgxpool"
+
+	"github.com/bifshteksex/hertzboard/internal/config"
 )
 
 // NewPostgresPool creates a new PostgreSQL connection pool
@@ -17,8 +18,17 @@ func NewPostgresPool(cfg *config.DatabaseConfig) (*pgxpool.Pool, error) {
 	}
 
 	// Configure pool settings
-	poolConfig.MaxConns = int32(cfg.MaxConnections)
-	poolConfig.MinConns = int32(cfg.MaxIdleConnections)
+	maxConns := cfg.MaxConnections
+	if maxConns > 0x7FFFFFFF {
+		maxConns = 0x7FFFFFFF
+	}
+	poolConfig.MaxConns = int32(maxConns)
+
+	minConns := cfg.MaxIdleConnections
+	if minConns > 0x7FFFFFFF {
+		minConns = 0x7FFFFFFF
+	}
+	poolConfig.MinConns = int32(minConns)
 	poolConfig.MaxConnLifetime = time.Duration(cfg.ConnectionMaxLifetime) * time.Second
 	poolConfig.MaxConnIdleTime = 30 * time.Minute
 	poolConfig.HealthCheckPeriod = 1 * time.Minute

@@ -50,14 +50,19 @@ func main() {
 	log.Println("Connecting to Redis...")
 	redisClient, err := database.NewRedisClient(&cfg.Redis)
 	if err != nil {
+		database.ClosePostgresPool(dbPool)
 		log.Fatalf("Failed to connect to Redis: %v", err)
 	}
-	defer database.CloseRedisClient(redisClient)
+	defer func() {
+		_ = database.CloseRedisClient(redisClient)
+	}()
 	log.Println("Connected to Redis")
 
 	log.Println("Connecting to NATS...")
 	natsConn, err := database.NewNATSConnection(&cfg.NATS)
 	if err != nil {
+		database.ClosePostgresPool(dbPool)
+		_ = database.CloseRedisClient(redisClient)
 		log.Fatalf("Failed to connect to NATS: %v", err)
 	}
 	defer database.CloseNATSConnection(natsConn)

@@ -48,14 +48,14 @@ func Migrate(pool *pgxpool.Pool, migrationsPath string) error {
 
 		// Execute migration
 		if _, err := tx.Exec(ctx, migration.SQL); err != nil {
-			tx.Rollback(ctx)
+			_ = tx.Rollback(ctx)
 			return fmt.Errorf("failed to execute migration %s: %w", migration.Name, err)
 		}
 
 		// Record migration
 		if _, err := tx.Exec(ctx, "INSERT INTO schema_migrations (version, name) VALUES ($1, $2)",
 			migration.Version, migration.Name); err != nil {
-			tx.Rollback(ctx)
+			_ = tx.Rollback(ctx)
 			return fmt.Errorf("failed to record migration %s: %w", migration.Name, err)
 		}
 

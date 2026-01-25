@@ -35,44 +35,37 @@ func Setup(h *server.Hertz, cfg *config.Config, deps *Dependencies) {
 
 	// API v1 routes
 	v1 := h.Group("/api/v1")
-	{
-		// Auth routes
-		auth := v1.Group("/auth")
-		{
-			auth.POST("/register", deps.AuthHandler.Register)
-			auth.POST("/login", deps.AuthHandler.Login)
-			auth.POST("/refresh", deps.AuthHandler.RefreshToken)
-			auth.POST("/logout", deps.AuthHandler.Logout)
-			auth.POST("/forgot-password", deps.AuthHandler.ForgotPassword)
-			auth.POST("/reset-password", deps.AuthHandler.ResetPassword)
 
-			// OAuth routes
-			auth.GET("/google", deps.OAuthHandler.GoogleAuth)
-			auth.GET("/google/callback", deps.OAuthHandler.GoogleCallback)
-			auth.GET("/github", deps.OAuthHandler.GitHubAuth)
-			auth.GET("/github/callback", deps.OAuthHandler.GitHubCallback)
-		}
+	// Auth routes
+	auth := v1.Group("/auth")
+	auth.POST("/register", deps.AuthHandler.Register)
+	auth.POST("/login", deps.AuthHandler.Login)
+	auth.POST("/refresh", deps.AuthHandler.RefreshToken)
+	auth.POST("/logout", deps.AuthHandler.Logout)
+	auth.POST("/forgot-password", deps.AuthHandler.ForgotPassword)
+	auth.POST("/reset-password", deps.AuthHandler.ResetPassword)
 
-		// User routes (protected)
-		users := v1.Group("/users")
-		users.Use(middleware.Auth(deps.JWTService))
-		{
-			users.GET("/me", deps.UserHandler.GetProfile)
-			users.PUT("/me", deps.UserHandler.UpdateProfile)
-			users.PUT("/me/password", deps.UserHandler.ChangePassword)
-		}
+	// OAuth routes
+	auth.GET("/google", deps.OAuthHandler.GoogleAuth)
+	auth.GET("/google/callback", deps.OAuthHandler.GoogleCallback)
+	auth.GET("/github", deps.OAuthHandler.GitHubAuth)
+	auth.GET("/github/callback", deps.OAuthHandler.GitHubCallback)
 
-		// Workspace routes (will be implemented in Phase 2)
-		workspaces := v1.Group("/workspaces")
-		workspaces.Use(middleware.Auth(deps.JWTService))
-		{
-			workspaces.GET("", placeholderHandler("list-workspaces"))
-			workspaces.POST("", placeholderHandler("create-workspace"))
-			workspaces.GET("/:id", placeholderHandler("get-workspace"))
-			workspaces.PUT("/:id", placeholderHandler("update-workspace"))
-			workspaces.DELETE("/:id", placeholderHandler("delete-workspace"))
-		}
-	}
+	// User routes (protected)
+	users := v1.Group("/users")
+	users.Use(middleware.Auth(deps.JWTService))
+	users.GET("/me", deps.UserHandler.GetProfile)
+	users.PUT("/me", deps.UserHandler.UpdateProfile)
+	users.PUT("/me/password", deps.UserHandler.ChangePassword)
+
+	// Workspace routes (will be implemented in Phase 2)
+	workspaces := v1.Group("/workspaces")
+	workspaces.Use(middleware.Auth(deps.JWTService))
+	workspaces.GET("", placeholderHandler("list-workspaces"))
+	workspaces.POST("", placeholderHandler("create-workspace"))
+	workspaces.GET("/:id", placeholderHandler("get-workspace"))
+	workspaces.PUT("/:id", placeholderHandler("update-workspace"))
+	workspaces.DELETE("/:id", placeholderHandler("delete-workspace"))
 }
 
 // healthCheck returns basic health status

@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/bifshteksex/hertzboard/internal/config"
 	"github.com/nats-io/nats.go"
+
+	"github.com/bifshteksex/hertzboard/internal/config"
 )
 
 // NewNATSConnection creates a new NATS connection

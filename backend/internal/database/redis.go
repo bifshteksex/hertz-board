@@ -5,8 +5,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/bifshteksex/hertzboard/internal/config"
 	"github.com/redis/go-redis/v9"
+
+	"github.com/bifshteksex/hertzboard/internal/config"
 )
 
 // NewRedisClient creates a new Redis client

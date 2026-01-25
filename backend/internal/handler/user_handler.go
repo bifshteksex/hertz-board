@@ -186,9 +186,7 @@ func (h *UserHandler) ChangePassword(c context.Context, ctx *app.RequestContext)
 	}
 
 	// Delete all refresh tokens (logout all sessions)
-	if err := h.userRepo.DeleteUserRefreshTokens(c, uid); err != nil {
-		// Log error but don't fail the request
-	}
+	_ = h.userRepo.DeleteUserRefreshTokens(c, uid)
 
 	ctx.JSON(consts.StatusOK, map[string]interface{}{
 		"message": "Password changed successfully",
