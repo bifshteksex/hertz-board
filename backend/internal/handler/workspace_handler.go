@@ -21,10 +21,23 @@ func NewWorkspaceHandler(workspaceService *service.WorkspaceService) *WorkspaceH
 	}
 }
 
+// getUUIDFromContext extracts UUID from context with type checking
+func getUUIDFromContext(c *app.RequestContext, key string) (uuid.UUID, bool) {
+	val := c.MustGet(key)
+	id, ok := val.(uuid.UUID)
+	return id, ok
+}
+
 // CreateWorkspace creates a new workspace
 // POST /api/v1/workspaces
 func (h *WorkspaceHandler) CreateWorkspace(ctx context.Context, c *app.RequestContext) {
-	userID := c.MustGet("user_id").(uuid.UUID)
+	userID, ok := getUUIDFromContext(c, "user_id")
+	if !ok {
+		c.JSON(http.StatusUnauthorized, map[string]interface{}{
+			"error": "Invalid user ID",
+		})
+		return
+	}
 
 	var req models.CreateWorkspaceRequest
 	if err := c.BindJSON(&req); err != nil {
@@ -50,7 +63,13 @@ func (h *WorkspaceHandler) CreateWorkspace(ctx context.Context, c *app.RequestCo
 // ListWorkspaces lists all workspaces accessible to user
 // GET /api/v1/workspaces
 func (h *WorkspaceHandler) ListWorkspaces(ctx context.Context, c *app.RequestContext) {
-	userID := c.MustGet("user_id").(uuid.UUID)
+	userID, ok := getUUIDFromContext(c, "user_id")
+	if !ok {
+		c.JSON(http.StatusUnauthorized, map[string]interface{}{
+			"error": "Invalid user ID",
+		})
+		return
+	}
 
 	var filter models.WorkspaceListFilter
 	if err := c.BindQuery(&filter); err != nil {
@@ -85,7 +104,13 @@ func (h *WorkspaceHandler) ListWorkspaces(ctx context.Context, c *app.RequestCon
 // GetWorkspace retrieves a specific workspace
 // GET /api/v1/workspaces/:workspace_id
 func (h *WorkspaceHandler) GetWorkspace(ctx context.Context, c *app.RequestContext) {
-	workspaceID := c.MustGet("workspace_id").(uuid.UUID)
+	workspaceID, ok := getUUIDFromContext(c, "workspace_id")
+	if !ok {
+		c.JSON(http.StatusBadRequest, map[string]interface{}{
+			"error": "Invalid workspace ID",
+		})
+		return
+	}
 	userID, authenticated := c.Get("user_id")
 
 	if !authenticated {
@@ -122,7 +147,13 @@ func (h *WorkspaceHandler) GetWorkspace(ctx context.Context, c *app.RequestConte
 // UpdateWorkspace updates workspace information
 // PUT /api/v1/workspaces/:workspace_id
 func (h *WorkspaceHandler) UpdateWorkspace(ctx context.Context, c *app.RequestContext) {
-	workspaceID := c.MustGet("workspace_id").(uuid.UUID)
+	workspaceID, ok := getUUIDFromContext(c, "workspace_id")
+	if !ok {
+		c.JSON(http.StatusBadRequest, map[string]interface{}{
+			"error": "Invalid workspace ID",
+		})
+		return
+	}
 
 	var req models.UpdateWorkspaceRequest
 	if err := c.BindJSON(&req); err != nil {
@@ -148,7 +179,13 @@ func (h *WorkspaceHandler) UpdateWorkspace(ctx context.Context, c *app.RequestCo
 // DeleteWorkspace deletes a workspace
 // DELETE /api/v1/workspaces/:workspace_id
 func (h *WorkspaceHandler) DeleteWorkspace(ctx context.Context, c *app.RequestContext) {
-	workspaceID := c.MustGet("workspace_id").(uuid.UUID)
+	workspaceID, ok := getUUIDFromContext(c, "workspace_id")
+	if !ok {
+		c.JSON(http.StatusBadRequest, map[string]interface{}{
+			"error": "Invalid workspace ID",
+		})
+		return
+	}
 
 	if err := h.workspaceService.DeleteWorkspace(ctx, workspaceID); err != nil {
 		c.JSON(http.StatusInternalServerError, map[string]interface{}{
@@ -165,8 +202,20 @@ func (h *WorkspaceHandler) DeleteWorkspace(ctx context.Context, c *app.RequestCo
 // DuplicateWorkspace creates a copy of a workspace
 // POST /api/v1/workspaces/:workspace_id/duplicate
 func (h *WorkspaceHandler) DuplicateWorkspace(ctx context.Context, c *app.RequestContext) {
-	workspaceID := c.MustGet("workspace_id").(uuid.UUID)
-	userID := c.MustGet("user_id").(uuid.UUID)
+	workspaceID, ok := getUUIDFromContext(c, "workspace_id")
+	if !ok {
+		c.JSON(http.StatusBadRequest, map[string]interface{}{
+			"error": "Invalid workspace ID",
+		})
+		return
+	}
+	userID, ok := getUUIDFromContext(c, "user_id")
+	if !ok {
+		c.JSON(http.StatusUnauthorized, map[string]interface{}{
+			"error": "Invalid user ID",
+		})
+		return
+	}
 
 	workspace, err := h.workspaceService.DuplicateWorkspace(ctx, workspaceID, userID)
 	if err != nil {
@@ -186,7 +235,13 @@ func (h *WorkspaceHandler) DuplicateWorkspace(ctx context.Context, c *app.Reques
 // ListMembers retrieves all members of a workspace
 // GET /api/v1/workspaces/:workspace_id/members
 func (h *WorkspaceHandler) ListMembers(ctx context.Context, c *app.RequestContext) {
-	workspaceID := c.MustGet("workspace_id").(uuid.UUID)
+	workspaceID, ok := getUUIDFromContext(c, "workspace_id")
+	if !ok {
+		c.JSON(http.StatusBadRequest, map[string]interface{}{
+			"error": "Invalid workspace ID",
+		})
+		return
+	}
 
 	members, err := h.workspaceService.GetMembers(ctx, workspaceID)
 	if err != nil {
@@ -204,7 +259,13 @@ func (h *WorkspaceHandler) ListMembers(ctx context.Context, c *app.RequestContex
 // UpdateMemberRole updates a member's role
 // PUT /api/v1/workspaces/:workspace_id/members/:user_id
 func (h *WorkspaceHandler) UpdateMemberRole(ctx context.Context, c *app.RequestContext) {
-	workspaceID := c.MustGet("workspace_id").(uuid.UUID)
+	workspaceID, ok := getUUIDFromContext(c, "workspace_id")
+	if !ok {
+		c.JSON(http.StatusBadRequest, map[string]interface{}{
+			"error": "Invalid workspace ID",
+		})
+		return
+	}
 
 	memberUserIDStr := c.Param("user_id")
 	memberUserID, err := uuid.Parse(memberUserIDStr)
@@ -238,7 +299,13 @@ func (h *WorkspaceHandler) UpdateMemberRole(ctx context.Context, c *app.RequestC
 // RemoveMember removes a member from workspace
 // DELETE /api/v1/workspaces/:workspace_id/members/:user_id
 func (h *WorkspaceHandler) RemoveMember(ctx context.Context, c *app.RequestContext) {
-	workspaceID := c.MustGet("workspace_id").(uuid.UUID)
+	workspaceID, ok := getUUIDFromContext(c, "workspace_id")
+	if !ok {
+		c.JSON(http.StatusBadRequest, map[string]interface{}{
+			"error": "Invalid workspace ID",
+		})
+		return
+	}
 
 	memberUserIDStr := c.Param("user_id")
 	memberUserID, err := uuid.Parse(memberUserIDStr)
@@ -266,8 +333,20 @@ func (h *WorkspaceHandler) RemoveMember(ctx context.Context, c *app.RequestConte
 // CreateInvite creates a workspace invitation
 // POST /api/v1/workspaces/:workspace_id/invites
 func (h *WorkspaceHandler) CreateInvite(ctx context.Context, c *app.RequestContext) {
-	workspaceID := c.MustGet("workspace_id").(uuid.UUID)
-	userID := c.MustGet("user_id").(uuid.UUID)
+	workspaceID, ok := getUUIDFromContext(c, "workspace_id")
+	if !ok {
+		c.JSON(http.StatusBadRequest, map[string]interface{}{
+			"error": "Invalid workspace ID",
+		})
+		return
+	}
+	userID, ok := getUUIDFromContext(c, "user_id")
+	if !ok {
+		c.JSON(http.StatusUnauthorized, map[string]interface{}{
+			"error": "Invalid user ID",
+		})
+		return
+	}
 
 	var req models.InviteToWorkspaceRequest
 	if err := c.BindJSON(&req); err != nil {
@@ -291,7 +370,13 @@ func (h *WorkspaceHandler) CreateInvite(ctx context.Context, c *app.RequestConte
 // ListInvites retrieves all pending invitations for a workspace
 // GET /api/v1/workspaces/:workspace_id/invites
 func (h *WorkspaceHandler) ListInvites(ctx context.Context, c *app.RequestContext) {
-	workspaceID := c.MustGet("workspace_id").(uuid.UUID)
+	workspaceID, ok := getUUIDFromContext(c, "workspace_id")
+	if !ok {
+		c.JSON(http.StatusBadRequest, map[string]interface{}{
+			"error": "Invalid workspace ID",
+		})
+		return
+	}
 
 	invites, err := h.workspaceService.GetPendingInvites(ctx, workspaceID)
 	if err != nil {
@@ -333,7 +418,13 @@ func (h *WorkspaceHandler) RevokeInvite(ctx context.Context, c *app.RequestConte
 // AcceptInvite accepts a workspace invitation
 // POST /api/v1/workspaces/invites/accept
 func (h *WorkspaceHandler) AcceptInvite(ctx context.Context, c *app.RequestContext) {
-	userID := c.MustGet("user_id").(uuid.UUID)
+	userID, ok := getUUIDFromContext(c, "user_id")
+	if !ok {
+		c.JSON(http.StatusUnauthorized, map[string]interface{}{
+			"error": "Invalid user ID",
+		})
+		return
+	}
 
 	var req models.AcceptInviteRequest
 	if err := c.BindJSON(&req); err != nil {
