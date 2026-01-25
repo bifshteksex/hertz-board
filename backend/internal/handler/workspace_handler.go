@@ -130,7 +130,13 @@ func (h *WorkspaceHandler) GetWorkspace(ctx context.Context, c *app.RequestConte
 	}
 
 	// Authenticated - return with role
-	uid := userID.(uuid.UUID)
+	uid, ok := userID.(uuid.UUID)
+	if !ok {
+		c.JSON(http.StatusUnauthorized, map[string]interface{}{
+			"error": "Invalid user ID",
+		})
+		return
+	}
 	workspace, err := h.workspaceService.GetWorkspaceWithRole(ctx, workspaceID, uid)
 	if err != nil {
 		c.JSON(http.StatusNotFound, map[string]interface{}{
@@ -234,6 +240,8 @@ func (h *WorkspaceHandler) DuplicateWorkspace(ctx context.Context, c *app.Reques
 
 // ListMembers retrieves all members of a workspace
 // GET /api/v1/workspaces/:workspace_id/members
+//
+//nolint:dupl // Similar handler pattern is intentional
 func (h *WorkspaceHandler) ListMembers(ctx context.Context, c *app.RequestContext) {
 	workspaceID, ok := getUUIDFromContext(c, "workspace_id")
 	if !ok {
@@ -369,6 +377,8 @@ func (h *WorkspaceHandler) CreateInvite(ctx context.Context, c *app.RequestConte
 
 // ListInvites retrieves all pending invitations for a workspace
 // GET /api/v1/workspaces/:workspace_id/invites
+//
+//nolint:dupl // Similar handler pattern is intentional
 func (h *WorkspaceHandler) ListInvites(ctx context.Context, c *app.RequestContext) {
 	workspaceID, ok := getUUIDFromContext(c, "workspace_id")
 	if !ok {
