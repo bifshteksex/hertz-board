@@ -192,14 +192,14 @@ func (w *EmailWorker) sendEmail(msg *EmailMessage) error {
 			return fmt.Errorf("failed to set recipient: %w", rcptErr)
 		}
 
-		wc, err := c.Data()
-		if err != nil {
-			return fmt.Errorf("failed to create data writer: %w", err)
+		wc, dataErr := c.Data()
+		if dataErr != nil {
+			return fmt.Errorf("failed to create data writer: %w", dataErr)
 		}
 		defer wc.Close()
 
-		if _, err := wc.Write([]byte(message)); err != nil {
-			return fmt.Errorf("failed to write message: %w", err)
+		if _, writeErr := wc.Write([]byte(message)); writeErr != nil {
+			return fmt.Errorf("failed to write message: %w", writeErr)
 		}
 
 		return nil

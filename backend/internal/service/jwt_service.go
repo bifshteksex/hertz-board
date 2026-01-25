@@ -70,7 +70,7 @@ func (s *JWTService) GenerateAccessToken(userID uuid.UUID, email string) (string
 }
 
 // GenerateRefreshToken generates a new refresh token
-func (s *JWTService) GenerateRefreshToken() (token string, tokenHash string, expiresAt time.Time, err error) {
+func (s *JWTService) GenerateRefreshToken() (token, tokenHash string, expiresAt time.Time, err error) {
 	token = uuid.New().String()
 	tokenHash = hashToken(token)
 	expiresAt = time.Now().Add(s.refreshTokenDuration)

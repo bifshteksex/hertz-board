@@ -3,13 +3,14 @@ package handler
 import (
 	"context"
 
-	"github.com/bifshteksex/hertzboard/internal/models"
-	"github.com/bifshteksex/hertzboard/internal/repository"
-	"github.com/bifshteksex/hertzboard/internal/service"
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
+
+	"github.com/bifshteksex/hertzboard/internal/models"
+	"github.com/bifshteksex/hertzboard/internal/repository"
+	"github.com/bifshteksex/hertzboard/internal/service"
 )
 
 // UserHandler handles user-related endpoints

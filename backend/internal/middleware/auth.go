@@ -4,9 +4,10 @@ import (
 	"context"
 	"strings"
 
-	"github.com/bifshteksex/hertzboard/internal/service"
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
+
+	"github.com/bifshteksex/hertzboard/internal/service"
 )
 
 // Auth returns JWT authentication middleware

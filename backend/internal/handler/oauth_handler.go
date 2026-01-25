@@ -6,10 +6,11 @@ import (
 	"encoding/hex"
 	"time"
 
-	"github.com/bifshteksex/hertzboard/internal/models"
-	"github.com/bifshteksex/hertzboard/internal/service"
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
+
+	"github.com/bifshteksex/hertzboard/internal/models"
+	"github.com/bifshteksex/hertzboard/internal/service"
 )
 
 const (
