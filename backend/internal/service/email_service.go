@@ -7,8 +7,9 @@ import (
 	"html/template"
 	"net/smtp"
 
-	"github.com/bifshteksex/hertzboard/internal/config"
 	"github.com/nats-io/nats.go"
+
+	"github.com/bifshteksex/hertzboard/internal/config"
 )
 
 // EmailService handles email sending

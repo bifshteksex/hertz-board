@@ -51,7 +51,7 @@ func main() {
 	redisClient, err := database.NewRedisClient(&cfg.Redis)
 	if err != nil {
 		database.ClosePostgresPool(dbPool)
-		log.Fatalf("Failed to connect to Redis: %v", err)
+		log.Fatalf("Failed to connect to Redis: %v", err) //nolint:gocritic // cleanup is done before exit
 	}
 	defer func() {
 		_ = database.CloseRedisClient(redisClient)

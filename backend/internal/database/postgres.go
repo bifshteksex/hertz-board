@@ -18,17 +18,19 @@ func NewPostgresPool(cfg *config.DatabaseConfig) (*pgxpool.Pool, error) {
 	}
 
 	// Configure pool settings
+	// #nosec G115 -- MaxConnections is validated to be within int32 range
 	maxConns := cfg.MaxConnections
-	if maxConns > 0x7FFFFFFF {
-		maxConns = 0x7FFFFFFF
+	if maxConns > 0x7FFFFFFF || maxConns < 0 {
+		maxConns = 100 // default safe value
 	}
-	poolConfig.MaxConns = int32(maxConns)
+	poolConfig.MaxConns = int32(maxConns) // #nosec G115
 
+	// #nosec G115 -- MaxIdleConnections is validated to be within int32 range
 	minConns := cfg.MaxIdleConnections
-	if minConns > 0x7FFFFFFF {
-		minConns = 0x7FFFFFFF
+	if minConns > 0x7FFFFFFF || minConns < 0 {
+		minConns = 10 // default safe value
 	}
-	poolConfig.MinConns = int32(minConns)
+	poolConfig.MinConns = int32(minConns) // #nosec G115
 	poolConfig.MaxConnLifetime = time.Duration(cfg.ConnectionMaxLifetime) * time.Second
 	poolConfig.MaxConnIdleTime = 30 * time.Minute
 	poolConfig.HealthCheckPeriod = 1 * time.Minute

@@ -5,10 +5,11 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/bifshteksex/hertzboard/internal/models"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
+
+	"github.com/bifshteksex/hertzboard/internal/models"
 )
 
 // UserRepository handles user data operations
