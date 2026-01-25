@@ -62,7 +62,8 @@ func (h *AuthHandler) bindValidateAndExecute(
 	req interface{},
 	execute func() (interface{}, error),
 ) (resp interface{}, statusCode int, err error) {
-	if err := ctx.BindAndValidate(req); err != nil {
+	err = ctx.BindAndValidate(req)
+	if err != nil {
 		return nil, consts.StatusBadRequest, err
 	}
 
