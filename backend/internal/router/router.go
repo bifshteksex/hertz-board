@@ -11,15 +11,18 @@ import (
 	"github.com/bifshteksex/hertzboard/internal/config"
 	"github.com/bifshteksex/hertzboard/internal/handler"
 	"github.com/bifshteksex/hertzboard/internal/middleware"
+	"github.com/bifshteksex/hertzboard/internal/models"
 	"github.com/bifshteksex/hertzboard/internal/service"
 )
 
 // Dependencies holds all service dependencies
 type Dependencies struct {
-	JWTService   *service.JWTService
-	AuthHandler  *handler.AuthHandler
-	UserHandler  *handler.UserHandler
-	OAuthHandler *handler.OAuthHandler
+	JWTService       *service.JWTService
+	WorkspaceService *service.WorkspaceService
+	AuthHandler      *handler.AuthHandler
+	UserHandler      *handler.UserHandler
+	OAuthHandler     *handler.OAuthHandler
+	WorkspaceHandler *handler.WorkspaceHandler
 }
 
 // Setup configures all routes and middleware
@@ -59,14 +62,71 @@ func Setup(h *server.Hertz, cfg *config.Config, deps *Dependencies) {
 	users.PUT("/me", deps.UserHandler.UpdateProfile)
 	users.PUT("/me/password", deps.UserHandler.ChangePassword)
 
-	// Workspace routes (will be implemented in Phase 2)
+	// Workspace routes
+	workspaceMiddleware := middleware.NewWorkspaceMiddleware(deps.WorkspaceService)
+
 	workspaces := v1.Group("/workspaces")
 	workspaces.Use(middleware.Auth(deps.JWTService))
-	workspaces.GET("", placeholderHandler("list-workspaces"))
-	workspaces.POST("", placeholderHandler("create-workspace"))
-	workspaces.GET("/:id", placeholderHandler("get-workspace"))
-	workspaces.PUT("/:id", placeholderHandler("update-workspace"))
-	workspaces.DELETE("/:id", placeholderHandler("delete-workspace"))
+
+	// Workspace CRUD
+	workspaces.POST("", deps.WorkspaceHandler.CreateWorkspace)
+	workspaces.GET("", deps.WorkspaceHandler.ListWorkspaces)
+
+	// Accept invite (no workspace_id param)
+	workspaces.POST("/invites/accept", deps.WorkspaceHandler.AcceptInvite)
+
+	// Specific workspace routes (require workspace access)
+	workspaces.GET("/:workspace_id",
+		workspaceMiddleware.OptionalWorkspaceAccess(),
+		deps.WorkspaceHandler.GetWorkspace,
+	)
+
+	workspaces.PUT("/:workspace_id",
+		workspaceMiddleware.RequireWorkspaceAccess(models.WorkspaceRoleEditor),
+		deps.WorkspaceHandler.UpdateWorkspace,
+	)
+
+	workspaces.DELETE("/:workspace_id",
+		workspaceMiddleware.RequireWorkspaceOwner(),
+		deps.WorkspaceHandler.DeleteWorkspace,
+	)
+
+	workspaces.POST("/:workspace_id/duplicate",
+		workspaceMiddleware.RequireWorkspaceAccess(models.WorkspaceRoleViewer),
+		deps.WorkspaceHandler.DuplicateWorkspace,
+	)
+
+	// Member management (require editor access)
+	workspaces.GET("/:workspace_id/members",
+		workspaceMiddleware.RequireWorkspaceAccess(models.WorkspaceRoleViewer),
+		deps.WorkspaceHandler.ListMembers,
+	)
+
+	workspaces.PUT("/:workspace_id/members/:user_id",
+		workspaceMiddleware.RequireWorkspaceOwner(),
+		deps.WorkspaceHandler.UpdateMemberRole,
+	)
+
+	workspaces.DELETE("/:workspace_id/members/:user_id",
+		workspaceMiddleware.RequireWorkspaceOwner(),
+		deps.WorkspaceHandler.RemoveMember,
+	)
+
+	// Invitation management (require editor access to create, owner to manage)
+	workspaces.POST("/:workspace_id/invites",
+		workspaceMiddleware.RequireWorkspaceAccess(models.WorkspaceRoleEditor),
+		deps.WorkspaceHandler.CreateInvite,
+	)
+
+	workspaces.GET("/:workspace_id/invites",
+		workspaceMiddleware.RequireWorkspaceAccess(models.WorkspaceRoleEditor),
+		deps.WorkspaceHandler.ListInvites,
+	)
+
+	workspaces.DELETE("/:workspace_id/invites/:invite_id",
+		workspaceMiddleware.RequireWorkspaceOwner(),
+		deps.WorkspaceHandler.RevokeInvite,
+	)
 }
 
 // healthCheck returns basic health status

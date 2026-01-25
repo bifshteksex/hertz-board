@@ -87,3 +87,11 @@ type AuthResponse struct {
 	User   *User      `json:"user"`
 	Tokens *TokenPair `json:"tokens"`
 }
+
+// UserResponse represents user data in API responses
+type UserResponse struct {
+	ID        uuid.UUID `json:"id"`
+	Email     string    `json:"email"`
+	Name      string    `json:"name"`
+	AvatarURL *string   `json:"avatar_url,omitempty"`
+}

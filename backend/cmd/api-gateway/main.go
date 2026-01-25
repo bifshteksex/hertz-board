@@ -78,6 +78,7 @@ func main() {
 
 	// Initialize repositories
 	userRepo := repository.NewUserRepository(dbPool)
+	workspaceRepo := repository.NewWorkspaceRepository(dbPool)
 
 	// Initialize services
 	jwtService, err := service.NewJWTService(&cfg.JWT)
@@ -85,8 +86,10 @@ func main() {
 		log.Fatalf("Failed to create JWT service: %v", err)
 	}
 
+	emailService := service.NewEmailService(&cfg.Email, natsConn)
 	authService := service.NewAuthService(userRepo, jwtService)
 	oauthService := service.NewOAuthService(&cfg.OAuth, userRepo, jwtService)
+	workspaceService := service.NewWorkspaceService(workspaceRepo, userRepo, emailService)
 
 	// Start email worker
 	log.Println("Starting email worker...")
@@ -101,6 +104,7 @@ func main() {
 	authHandler := handler.NewAuthHandler(authService)
 	userHandler := handler.NewUserHandler(userRepo, authService)
 	oauthHandler := handler.NewOAuthHandler(oauthService)
+	workspaceHandler := handler.NewWorkspaceHandler(workspaceService)
 
 	// Initialize Hertz server
 	addr := fmt.Sprintf(":%d", cfg.App.Port)
@@ -111,10 +115,12 @@ func main() {
 
 	// Setup routes and middleware
 	deps := &router.Dependencies{
-		JWTService:   jwtService,
-		AuthHandler:  authHandler,
-		UserHandler:  userHandler,
-		OAuthHandler: oauthHandler,
+		JWTService:       jwtService,
+		WorkspaceService: workspaceService,
+		AuthHandler:      authHandler,
+		UserHandler:      userHandler,
+		OAuthHandler:     oauthHandler,
+		WorkspaceHandler: workspaceHandler,
 	}
 	router.Setup(h, cfg, deps)
 
