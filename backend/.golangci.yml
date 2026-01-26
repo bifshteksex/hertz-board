@@ -25,6 +25,8 @@ linters-settings:
       - return
   govet:
     enable-all: true
+    disable:
+      - fieldalignment # Disable fieldalignment as it conflicts with JSON field ordering
   lll:
     line-length: 140
   misspell:

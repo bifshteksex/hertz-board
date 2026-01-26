@@ -18,7 +18,6 @@ type EmailService struct {
 	nats *nats.Conn
 }
 
-//nolint:govet // fieldalignment: struct field order optimized for readability
 type EmailMessage struct {
 	To      string                 `json:"to"`
 	Subject string                 `json:"subject"`

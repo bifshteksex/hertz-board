@@ -138,8 +138,6 @@ type WorkspaceListResponse struct {
 }
 
 // WorkspaceMemberResponse represents workspace member in API responses
-//
-//nolint:govet // Field order optimized for JSON readability, not memory alignment
 type WorkspaceMemberResponse struct {
 	JoinedAt time.Time     `json:"joined_at"`
 	Role     WorkspaceRole `json:"role"`
@@ -148,8 +146,6 @@ type WorkspaceMemberResponse struct {
 }
 
 // WorkspaceInviteResponse represents workspace invite in API responses
-//
-//nolint:govet // Field order optimized for JSON readability, not memory alignment
 type WorkspaceInviteResponse struct {
 	ExpiresAt time.Time     `json:"expires_at"`
 	CreatedAt time.Time     `json:"created_at"`

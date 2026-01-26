@@ -8,7 +8,6 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-//nolint:govet // fieldalignment: struct field order optimized for readability over memory
 type Config struct {
 	App        AppConfig        `yaml:"app"`
 	Database   DatabaseConfig   `yaml:"database"`
@@ -35,7 +34,6 @@ type AppConfig struct {
 	Debug bool   `yaml:"debug"`
 }
 
-//nolint:govet // fieldalignment: struct field order optimized for readability
 type DatabaseConfig struct {
 	Host                  string `yaml:"host"`
 	Port                  int    `yaml:"port"`
@@ -48,7 +46,6 @@ type DatabaseConfig struct {
 	ConnectionMaxLifetime int    `yaml:"connection_max_lifetime"`
 }
 
-//nolint:govet // fieldalignment: struct field order optimized for readability
 type RedisConfig struct {
 	Host       string `yaml:"host"`
 	Port       int    `yaml:"port"`
@@ -58,7 +55,6 @@ type RedisConfig struct {
 	PoolSize   int    `yaml:"pool_size"`
 }
 
-//nolint:govet // fieldalignment: struct field order optimized for readability
 type MinIOConfig struct {
 	Endpoint      string `yaml:"endpoint"`
 	AccessKey     string `yaml:"access_key"`
@@ -69,7 +65,6 @@ type MinIOConfig struct {
 	BucketBackups string `yaml:"bucket_backups"`
 }
 
-//nolint:govet // fieldalignment: struct field order optimized for readability
 type ClickHouseConfig struct {
 	Host     string `yaml:"host"`
 	Port     int    `yaml:"port"`
@@ -101,7 +96,6 @@ type OAuthConfig struct {
 	GitHub OAuthProviderConfig `yaml:"github"`
 }
 
-//nolint:govet // fieldalignment: struct field order optimized for readability
 type EmailConfig struct {
 	SMTPHost     string `yaml:"smtp_host"`
 	SMTPPort     int    `yaml:"smtp_port"`
@@ -128,13 +122,11 @@ type WebSocketConfig struct {
 	WriteWait       int `yaml:"write_wait"`
 }
 
-//nolint:govet // fieldalignment: struct field order optimized for readability
 type UploadConfig struct {
 	MaxSize      int64    `yaml:"max_size"`
 	AllowedTypes []string `yaml:"allowed_types"`
 }
 
-//nolint:govet // fieldalignment: struct field order optimized for readability
 type RateLimitConfig struct {
 	Enabled  bool   `yaml:"enabled"`
 	Requests int    `yaml:"requests"`
@@ -152,7 +144,6 @@ type MetricsConfig struct {
 	Port    int  `yaml:"port"`
 }
 
-//nolint:govet // fieldalignment: struct field order optimized for readability
 type TracingConfig struct {
 	Enabled        bool   `yaml:"enabled"`
 	JaegerEndpoint string `yaml:"jaeger_endpoint"`

@@ -7,6 +7,7 @@ import (
 
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/app/server"
+	"github.com/cloudwego/hertz/pkg/common/adaptor"
 
 	"github.com/bifshteksex/hertz-board/internal/config"
 	"github.com/bifshteksex/hertz-board/internal/handler"
@@ -19,6 +20,8 @@ import (
 type Dependencies struct {
 	JWTService       *service.JWTService
 	WorkspaceService *service.WorkspaceService
+	CRDTService      *service.CRDTService
+	Hub              *service.Hub
 	AuthHandler      *handler.AuthHandler
 	UserHandler      *handler.UserHandler
 	OAuthHandler     *handler.OAuthHandler
@@ -26,6 +29,7 @@ type Dependencies struct {
 	CanvasHandler    *handler.CanvasHandler
 	AssetHandler     *handler.AssetHandler
 	SnapshotHandler  *handler.SnapshotHandler
+	WSHandler        *handler.WebSocketHandler
 }
 
 // Setup configures all routes and middleware
@@ -39,6 +43,10 @@ func Setup(h *server.Hertz, cfg *config.Config, deps *Dependencies) {
 	// Health check endpoints
 	h.GET("/health", healthCheck)
 	h.GET("/readiness", readinessCheck)
+
+	// WebSocket endpoint (requires JWT token as query parameter)
+	// Use HTTP adaptor to integrate gorilla/websocket with Hertz
+	h.GET("/ws", adaptor.HertzHandler(http.HandlerFunc(deps.WSHandler.HandleWebSocket)))
 
 	// API v1 routes
 	v1 := h.Group("/api/v1")

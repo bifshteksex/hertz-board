@@ -12,10 +12,10 @@ import (
 	"github.com/bifshteksex/hertz-board/internal/config"
 )
 
-//nolint:govet // fieldalignment: struct field order optimized for readability
 type Claims struct {
-	UserID uuid.UUID `json:"user_id"`
-	Email  string    `json:"email"`
+	UserID   uuid.UUID `json:"user_id"`
+	Email    string    `json:"email"`
+	Username string    `json:"username"`
 	jwt.RegisteredClaims
 }
 
@@ -46,12 +46,18 @@ func NewJWTService(cfg *config.JWTConfig) (*JWTService, error) {
 }
 
 // GenerateAccessToken generates a new access token
-func (s *JWTService) GenerateAccessToken(userID uuid.UUID, email string) (string, time.Time, error) {
+func (s *JWTService) GenerateAccessToken(userID uuid.UUID, email string, username ...string) (string, time.Time, error) {
 	expiresAt := time.Now().Add(s.accessTokenDuration)
 
+	user := ""
+	if len(username) > 0 {
+		user = username[0]
+	}
+
 	claims := &Claims{
-		UserID: userID,
-		Email:  email,
+		UserID:   userID,
+		Email:    email,
+		Username: user,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expiresAt),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
@@ -96,6 +102,11 @@ func (s *JWTService) ValidateAccessToken(tokenString string) (*Claims, error) {
 	}
 
 	return nil, fmt.Errorf("invalid token")
+}
+
+// ValidateToken is an alias for ValidateAccessToken
+func (s *JWTService) ValidateToken(tokenString string) (*Claims, error) {
+	return s.ValidateAccessToken(tokenString)
 }
 
 // HashRefreshToken hashes a refresh token for storage

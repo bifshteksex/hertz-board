@@ -316,3 +316,38 @@ func (s *CanvasSnapshot) ToDetailResponse() SnapshotDetailResponse {
 		SnapshotData:     s.SnapshotData,
 	}
 }
+
+// Operation Models for CRDT synchronization
+
+// Operation represents a CRDT operation stored in the database
+type Operation struct {
+	ID          uuid.UUID   `json:"id" db:"id"`
+	WorkspaceID uuid.UUID   `json:"workspace_id" db:"workspace_id"`
+	ElementID   uuid.UUID   `json:"element_id" db:"element_id"`
+	UserID      uuid.UUID   `json:"user_id" db:"user_id"`
+	Data        interface{} `json:"data" db:"data"` // Operation-specific data (JSONB)
+	CreatedAt   time.Time   `json:"created_at" db:"created_at"`
+	Timestamp   int64       `json:"timestamp" db:"timestamp"` // Lamport timestamp
+	OpType      string      `json:"op_type" db:"op_type"`     // create, update, delete, move
+}
+
+// Element represents a simplified element model for CRDT operations
+type Element struct {
+	ID          uuid.UUID              `json:"id"`
+	WorkspaceID uuid.UUID              `json:"workspace_id"`
+	CreatedBy   uuid.UUID              `json:"created_by"`
+	UpdatedBy   uuid.UUID              `json:"updated_by"`
+	Style       map[string]interface{} `json:"style"`
+	Type        string                 `json:"type"`
+	Content     string                 `json:"content"`
+	PosX        float64                `json:"pos_x"`
+	PosY        float64                `json:"pos_y"`
+	Width       float64                `json:"width"`
+	Height      float64                `json:"height"`
+	Rotation    float64                `json:"rotation"`
+	Version     int64                  `json:"version"` // Lamport timestamp of last update
+	ZIndex      int                    `json:"z_index"`
+	CreatedAt   time.Time              `json:"created_at"`
+	UpdatedAt   time.Time              `json:"updated_at"`
+	DeletedAt   *time.Time             `json:"deleted_at,omitempty"`
+}

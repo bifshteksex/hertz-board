@@ -125,7 +125,6 @@ func (s *OAuthService) GitHubCallback(ctx context.Context, code string) (*models
 		return nil, fmt.Errorf("failed to read response body: %w", err)
 	}
 
-	//nolint:govet // fieldalignment: anonymous struct used for JSON unmarshaling
 	var userInfo struct {
 		ID        int64  `json:"id"`
 		Email     string `json:"email"`

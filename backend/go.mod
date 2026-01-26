@@ -6,6 +6,7 @@ require (
 	github.com/cloudwego/hertz v0.10.3
 	github.com/golang-jwt/jwt/v5 v5.3.0
 	github.com/google/uuid v1.6.0
+	github.com/gorilla/websocket v1.5.3
 	github.com/jackc/pgx/v5 v5.8.0
 	github.com/minio/minio-go/v7 v7.0.82
 	github.com/nats-io/nats.go v1.48.0

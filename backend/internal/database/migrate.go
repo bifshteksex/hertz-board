@@ -70,7 +70,6 @@ func Migrate(pool *pgxpool.Pool, migrationsPath string) error {
 	return nil
 }
 
-//nolint:govet // fieldalignment: struct field order optimized for readability
 type Migration struct {
 	Version int
 	Name    string

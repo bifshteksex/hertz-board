@@ -82,6 +82,8 @@ func main() {
 	canvasRepo := repository.NewCanvasRepository(dbPool)
 	assetRepo := repository.NewAssetRepository(dbPool)
 	snapshotRepo := repository.NewSnapshotRepository(dbPool)
+	elementRepo := repository.NewElementRepository(dbPool)
+	operationRepo := repository.NewOperationRepository(dbPool)
 
 	// Initialize services
 	jwtService, err := service.NewJWTService(&cfg.JWT)
@@ -112,6 +114,10 @@ func main() {
 
 	snapshotService := service.NewSnapshotService(snapshotRepo, canvasRepo, workspaceRepo)
 
+	// Initialize CRDT and WebSocket services
+	crdt := service.NewCRDTService(elementRepo, operationRepo)
+	hub := service.NewHub(redisClient)
+
 	// Start email worker
 	log.Println("Starting email worker...")
 	emailWorker, err := service.NewEmailWorker(&cfg.Email, natsConn)
@@ -129,6 +135,7 @@ func main() {
 	canvasHandler := handler.NewCanvasHandler(canvasService)
 	assetHandler := handler.NewAssetHandler(assetService)
 	snapshotHandler := handler.NewSnapshotHandler(snapshotService)
+	wsHandler := handler.NewWebSocketHandler(hub, jwtService)
 
 	// Initialize Hertz server
 	addr := fmt.Sprintf(":%d", cfg.App.Port)
@@ -148,6 +155,9 @@ func main() {
 		CanvasHandler:    canvasHandler,
 		AssetHandler:     assetHandler,
 		SnapshotHandler:  snapshotHandler,
+		WSHandler:        wsHandler,
+		Hub:              hub,
+		CRDTService:      crdt,
 	}
 	router.Setup(h, cfg, deps)
 
