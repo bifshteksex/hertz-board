@@ -246,7 +246,7 @@ func (s *WorkspaceService) GetMembers(ctx context.Context, workspaceID uuid.UUID
 	for i := range members {
 		response = append(response, models.WorkspaceMemberResponse{
 			ID: members[i].ID,
-			User: models.UserResponse{
+			User: &models.UserResponse{
 				ID:        members[i].User.ID,
 				Email:     members[i].User.Email,
 				Name:      members[i].User.Name,
@@ -445,7 +445,7 @@ func (s *WorkspaceService) GetPendingInvites(ctx context.Context, workspaceID uu
 			Role:      invites[i].Role,
 			ExpiresAt: invites[i].ExpiresAt,
 			CreatedAt: invites[i].CreatedAt,
-			CreatedBy: models.UserResponse{
+			CreatedBy: &models.UserResponse{
 				ID:        creator.ID,
 				Email:     creator.Email,
 				Name:      creator.Name,

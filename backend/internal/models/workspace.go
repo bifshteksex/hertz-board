@@ -138,21 +138,25 @@ type WorkspaceListResponse struct {
 }
 
 // WorkspaceMemberResponse represents workspace member in API responses
+//
+//nolint:govet // Field order optimized for JSON readability, not memory alignment
 type WorkspaceMemberResponse struct {
-	JoinedAt time.Time `json:"joined_at"`
-	User     UserResponse
+	JoinedAt time.Time     `json:"joined_at"`
 	Role     WorkspaceRole `json:"role"`
 	ID       uuid.UUID     `json:"id"`
+	User     *UserResponse `json:"user"`
 }
 
 // WorkspaceInviteResponse represents workspace invite in API responses
+//
+//nolint:govet // Field order optimized for JSON readability, not memory alignment
 type WorkspaceInviteResponse struct {
-	ExpiresAt time.Time `json:"expires_at"`
-	CreatedAt time.Time `json:"created_at"`
-	CreatedBy UserResponse
+	ExpiresAt time.Time     `json:"expires_at"`
+	CreatedAt time.Time     `json:"created_at"`
 	Email     string        `json:"email"`
 	Role      WorkspaceRole `json:"role"`
 	ID        uuid.UUID     `json:"id"`
+	CreatedBy *UserResponse `json:"created_by"`
 }
 
 // InviteTokenResponse represents response with invitation token

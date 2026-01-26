@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"errors"
 	"net/http"
 
 	"github.com/cloudwego/hertz/pkg/app"
@@ -12,6 +13,8 @@ import (
 	"github.com/bifshteksex/hertz-board/internal/service"
 )
 
+var ErrInvalidRequestType = errors.New("invalid request type")
+
 type CanvasHandler struct {
 	canvasService *service.CanvasService
 }
@@ -20,6 +23,40 @@ func NewCanvasHandler(canvasService *service.CanvasService) *CanvasHandler {
 	return &CanvasHandler{
 		canvasService: canvasService,
 	}
+}
+
+// Helper function for single element operations
+func (h *CanvasHandler) processElementRequest(
+	ctx context.Context,
+	id uuid.UUID,
+	userID uuid.UUID,
+	reqPtr interface{},
+	operation func(context.Context, uuid.UUID, uuid.UUID, interface{}) (*models.CanvasElement, error),
+) (interface{}, error) {
+	element, err := operation(ctx, id, userID, reqPtr)
+	if err != nil {
+		return nil, err
+	}
+	return element.ToResponse(), nil
+}
+
+// Helper function for batch element operations
+func (h *CanvasHandler) processBatchElementRequest(
+	ctx context.Context,
+	workspaceID uuid.UUID,
+	userID uuid.UUID,
+	reqPtr interface{},
+	operation func(context.Context, uuid.UUID, uuid.UUID, interface{}) ([]models.CanvasElement, error),
+) ([]interface{}, error) {
+	elements, err := operation(ctx, workspaceID, userID, reqPtr)
+	if err != nil {
+		return nil, err
+	}
+	results := make([]interface{}, len(elements))
+	for i := range elements {
+		results[i] = elements[i].ToResponse()
+	}
+	return results, nil
 }
 
 // GetWorkspaceElements godoc
@@ -70,15 +107,25 @@ func (h *CanvasHandler) GetWorkspaceElements(ctx context.Context, c *app.Request
 // @Success 201 {object} models.ElementResponse
 //
 // @Router /api/v1/workspaces/{workspace_id}/elements [post]
+//
+//nolint:dupl,errcheck // Similar pattern needed for create/update operations
 func (h *CanvasHandler) CreateElement(ctx context.Context, c *app.RequestContext) {
 	var req models.CreateElementRequest
-	handleElementOperation(ctx, c, "", &req, func(ctx context.Context, id uuid.UUID, userID uuid.UUID, reqPtr interface{}) (interface{}, error) {
-		element, err := h.canvasService.CreateElement(ctx, id, userID, *reqPtr.(*models.CreateElementRequest))
-		if err != nil {
-			return nil, err
-		}
-		return element.ToResponse(), nil
-	}, "Failed to create element", http.StatusCreated)
+	handleElementOperation(
+		ctx, c, "", &req,
+		func(ctx context.Context, id uuid.UUID, userID uuid.UUID, reqPtr interface{}) (interface{}, error) {
+			createReq, ok := reqPtr.(*models.CreateElementRequest)
+			if !ok {
+				return nil, ErrInvalidRequestType
+			}
+			return h.processElementRequest(ctx, id, userID, createReq,
+				func(ctx context.Context, id, userID uuid.UUID, r interface{}) (*models.CanvasElement, error) {
+					return h.canvasService.CreateElement(ctx, id, userID, *r.(*models.CreateElementRequest))
+				})
+		},
+		"Failed to create element",
+		http.StatusCreated,
+	)
 }
 
 // GetElement godoc
@@ -114,15 +161,25 @@ func (h *CanvasHandler) GetElement(ctx context.Context, c *app.RequestContext) {
 // @Success 200 {object} models.ElementResponse
 //
 // @Router /api/v1/workspaces/{workspace_id}/elements/{element_id} [put]
+//
+//nolint:dupl,errcheck // Similar pattern needed for create/update operations
 func (h *CanvasHandler) UpdateElement(ctx context.Context, c *app.RequestContext) {
 	var req models.UpdateElementRequest
-	handleElementOperation(ctx, c, "element_id", &req, func(ctx context.Context, id uuid.UUID, userID uuid.UUID, reqPtr interface{}) (interface{}, error) {
-		element, err := h.canvasService.UpdateElement(ctx, id, userID, *reqPtr.(*models.UpdateElementRequest))
-		if err != nil {
-			return nil, err
-		}
-		return element.ToResponse(), nil
-	}, "Failed to update element", http.StatusOK)
+	handleElementOperation(
+		ctx, c, "element_id", &req,
+		func(ctx context.Context, id uuid.UUID, userID uuid.UUID, reqPtr interface{}) (interface{}, error) {
+			updateReq, ok := reqPtr.(*models.UpdateElementRequest)
+			if !ok {
+				return nil, ErrInvalidRequestType
+			}
+			return h.processElementRequest(ctx, id, userID, updateReq,
+				func(ctx context.Context, id, userID uuid.UUID, r interface{}) (*models.CanvasElement, error) {
+					return h.canvasService.UpdateElement(ctx, id, userID, *r.(*models.UpdateElementRequest))
+				})
+		},
+		"Failed to update element",
+		http.StatusOK,
+	)
 }
 
 // DeleteElement godoc
@@ -152,19 +209,30 @@ func (h *CanvasHandler) DeleteElement(ctx context.Context, c *app.RequestContext
 // @Success 201 {object} models.ElementListResponse
 //
 // @Router /api/v1/workspaces/{workspace_id}/elements/batch [post]
+//
+//nolint:dupl,errcheck // Similar pattern needed for batch create/update operations
 func (h *CanvasHandler) BatchCreateElements(ctx context.Context, c *app.RequestContext) {
 	var req models.BatchCreateRequest
-	handleBatchElementOperation(ctx, c, &req, func(ctx context.Context, workspaceID uuid.UUID, userID uuid.UUID, reqPtr interface{}) ([]interface{}, error) {
-		elements, err := h.canvasService.BatchCreateElements(ctx, workspaceID, userID, *reqPtr.(*models.BatchCreateRequest))
-		if err != nil {
-			return nil, err
-		}
-		results := make([]interface{}, len(elements))
-		for i := range elements {
-			results[i] = elements[i].ToResponse()
-		}
-		return results, nil
-	}, "Failed to batch create elements", http.StatusCreated)
+	handleBatchElementOperation(
+		ctx, c, &req,
+		func(
+			ctx context.Context,
+			workspaceID uuid.UUID,
+			userID uuid.UUID,
+			reqPtr interface{},
+		) ([]interface{}, error) {
+			batchReq, ok := reqPtr.(*models.BatchCreateRequest)
+			if !ok {
+				return nil, ErrInvalidRequestType
+			}
+			return h.processBatchElementRequest(ctx, workspaceID, userID, batchReq,
+				func(ctx context.Context, wID, uID uuid.UUID, r interface{}) ([]models.CanvasElement, error) {
+					return h.canvasService.BatchCreateElements(ctx, wID, uID, *r.(*models.BatchCreateRequest))
+				})
+		},
+		"Failed to batch create elements",
+		http.StatusCreated,
+	)
 }
 
 // BatchUpdateElements godoc
@@ -178,19 +246,30 @@ func (h *CanvasHandler) BatchCreateElements(ctx context.Context, c *app.RequestC
 // @Success 200 {object} models.ElementListResponse
 //
 // @Router /api/v1/workspaces/{workspace_id}/elements/batch [put]
+//
+//nolint:dupl,errcheck // Similar pattern needed for batch create/update operations
 func (h *CanvasHandler) BatchUpdateElements(ctx context.Context, c *app.RequestContext) {
 	var req models.BatchUpdateRequest
-	handleBatchElementOperation(ctx, c, &req, func(ctx context.Context, workspaceID uuid.UUID, userID uuid.UUID, reqPtr interface{}) ([]interface{}, error) {
-		elements, err := h.canvasService.BatchUpdateElements(ctx, workspaceID, userID, *reqPtr.(*models.BatchUpdateRequest))
-		if err != nil {
-			return nil, err
-		}
-		results := make([]interface{}, len(elements))
-		for i := range elements {
-			results[i] = elements[i].ToResponse()
-		}
-		return results, nil
-	}, "Failed to batch update elements", http.StatusOK)
+	handleBatchElementOperation(
+		ctx, c, &req,
+		func(
+			ctx context.Context,
+			workspaceID uuid.UUID,
+			userID uuid.UUID,
+			reqPtr interface{},
+		) ([]interface{}, error) {
+			batchReq, ok := reqPtr.(*models.BatchUpdateRequest)
+			if !ok {
+				return nil, ErrInvalidRequestType
+			}
+			return h.processBatchElementRequest(ctx, workspaceID, userID, batchReq,
+				func(ctx context.Context, wID, uID uuid.UUID, r interface{}) ([]models.CanvasElement, error) {
+					return h.canvasService.BatchUpdateElements(ctx, wID, uID, *r.(*models.BatchUpdateRequest))
+				})
+		},
+		"Failed to batch update elements",
+		http.StatusOK,
+	)
 }
 
 // BatchDeleteElements godoc

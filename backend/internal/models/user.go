@@ -85,9 +85,11 @@ type AuthResponse struct {
 }
 
 // UserResponse represents user data in API responses
+//
+//nolint:govet // Field order optimized for JSON readability, not memory alignment
 type UserResponse struct {
-	AvatarURL *string   `json:"avatar_url,omitempty"`
+	ID        uuid.UUID `json:"id"`
 	Email     string    `json:"email"`
 	Name      string    `json:"name"`
-	ID        uuid.UUID `json:"id"`
+	AvatarURL *string   `json:"avatar_url,omitempty"`
 }
