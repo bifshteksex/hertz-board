@@ -235,7 +235,7 @@ func (s *SnapshotService) parseSnapshotElement(elemData interface{}, workspaceID
 		return models.CanvasElement{}, err
 	}
 
-	id, _ := uuid.Parse(fmt.Sprintf("%v", elemMap["id"]))
+	// Parse original created_by for audit purposes
 	createdBy, _ := uuid.Parse(fmt.Sprintf("%v", elemMap["created_by"]))
 
 	var parentID *uuid.UUID
@@ -249,8 +249,9 @@ func (s *SnapshotService) parseSnapshotElement(elemData interface{}, workspaceID
 		zIndex = int(zVal)
 	}
 
+	// Generate new UUID to avoid conflicts with soft-deleted elements
 	return models.CanvasElement{
-		ID:          id,
+		ID:          uuid.New(),
 		WorkspaceID: workspaceID,
 		ElementType: models.ElementType(fmt.Sprintf("%v", elemMap["element_type"])),
 		ElementData: elementData,
