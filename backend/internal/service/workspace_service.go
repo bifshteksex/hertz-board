@@ -207,7 +207,11 @@ func (s *WorkspaceService) ListUserWorkspaces(
 }
 
 // DuplicateWorkspace creates a copy of a workspace
-func (s *WorkspaceService) DuplicateWorkspace(ctx context.Context, workspaceID, userID uuid.UUID, newName string) (*models.Workspace, error) {
+func (s *WorkspaceService) DuplicateWorkspace(
+	ctx context.Context,
+	workspaceID, userID uuid.UUID,
+	newName string,
+) (*models.Workspace, error) {
 	// Get original workspace
 	original, err := s.GetWorkspace(ctx, workspaceID)
 	if err != nil {
