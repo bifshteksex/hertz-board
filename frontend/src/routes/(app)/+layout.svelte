@@ -66,17 +66,21 @@
 			</nav>
 
 			<div class="border-t border-gray-200 p-4">
-				<button
-					onclick={() => (showUserMenu = !showUserMenu)}
-					class="user-menu-container relative flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left transition hover:bg-gray-100"
-				>
-					<div class="flex h-8 w-8 items-center justify-center rounded-full bg-blue-600 text-white">
-						{authStore.user?.name?.charAt(0).toUpperCase() || 'U'}
-					</div>
-					<div class="flex-1 overflow-hidden">
-						<p class="truncate text-sm font-medium text-gray-900">{authStore.user?.name}</p>
-						<p class="truncate text-xs text-gray-500">{authStore.user?.email}</p>
-					</div>
+				<div class="user-menu-container relative">
+					<button
+						onclick={() => (showUserMenu = !showUserMenu)}
+						class="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left transition hover:bg-gray-100"
+					>
+						<div
+							class="flex h-8 w-8 items-center justify-center rounded-full bg-blue-600 text-white"
+						>
+							{authStore.user?.name?.charAt(0).toUpperCase() || 'U'}
+						</div>
+						<div class="flex-1 overflow-hidden">
+							<p class="truncate text-sm font-medium text-gray-900">{authStore.user?.name}</p>
+							<p class="truncate text-xs text-gray-500">{authStore.user?.email}</p>
+						</div>
+					</button>
 
 					{#if showUserMenu}
 						<div
@@ -100,7 +104,7 @@
 							</div>
 						</div>
 					{/if}
-				</button>
+				</div>
 			</div>
 		</aside>
 
@@ -129,8 +133,15 @@
 		{#if showMobileMenu}
 			<div class="fixed inset-0 z-50 md:hidden">
 				<div
+					role="button"
+					tabindex="0"
 					class="bg-opacity-50 absolute inset-0 bg-black"
 					onclick={() => (showMobileMenu = false)}
+					onkeydown={(e) => {
+						if (e.key === 'Enter' || e.key === ' ') {
+							showMobileMenu = false;
+						}
+					}}
 				></div>
 				<aside class="absolute top-0 left-0 h-full w-64 bg-white">
 					<div class="flex h-16 items-center border-b border-gray-200 px-6">

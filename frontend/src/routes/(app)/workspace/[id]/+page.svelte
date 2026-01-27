@@ -12,6 +12,12 @@
 	let error = $state('');
 
 	onMount(async () => {
+		if (!workspaceId) {
+			error = 'Workspace ID is missing';
+			isLoading = false;
+			return;
+		}
+
 		try {
 			workspace = await api.getWorkspace(workspaceId);
 		} catch (err) {
