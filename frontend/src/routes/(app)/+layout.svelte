@@ -1,8 +1,10 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { authStore } from '$lib/stores/auth.svelte';
+	import { themeStore } from '$lib/stores/theme.svelte';
+	import { i18n } from '$lib/i18n';
 	import { onMount } from 'svelte';
-	import { Menu, Settings, LogOut, Bell, Home } from 'lucide-svelte';
+	import { Menu, Settings, LogOut, Bell, Home, Sun, Moon } from 'lucide-svelte';
 
 	let { children } = $props();
 	let showUserMenu = $state(false);
@@ -61,7 +63,7 @@
 					class="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-700 transition hover:bg-gray-100"
 				>
 					<Home size={20} />
-					<span>Workspaces</span>
+					<span>{i18n.t('nav.workspaces')}</span>
 				</a>
 			</nav>
 
@@ -92,14 +94,14 @@
 									class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
 								>
 									<Settings size={16} />
-									Settings
+									{i18n.t('nav.settings')}
 								</a>
 								<button
 									onclick={handleLogout}
 									class="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
 								>
 									<LogOut size={16} />
-									Logout
+									{i18n.t('nav.logout')}
 								</button>
 							</div>
 						</div>
@@ -117,6 +119,17 @@
 				</button>
 
 				<div class="flex items-center gap-4">
+					<button
+						onclick={() => themeStore.toggleTheme()}
+						class="rounded-lg p-2 text-gray-600 transition hover:bg-gray-100"
+						title="Toggle theme"
+					>
+						{#if themeStore.isDark}
+							<Sun size={20} />
+						{:else}
+							<Moon size={20} />
+						{/if}
+					</button>
 					<button class="rounded-lg p-2 text-gray-600 transition hover:bg-gray-100">
 						<Bell size={20} />
 					</button>
@@ -155,7 +168,7 @@
 							class="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-700 transition hover:bg-gray-100"
 						>
 							<Home size={20} />
-							<span>Workspaces</span>
+							<span>{i18n.t('nav.workspaces')}</span>
 						</a>
 					</nav>
 
@@ -177,14 +190,14 @@
 							class="flex items-center gap-2 rounded-lg px-3 py-2 text-gray-700 hover:bg-gray-100"
 						>
 							<Settings size={16} />
-							Settings
+							{i18n.t('nav.settings')}
 						</a>
 						<button
 							onclick={handleLogout}
 							class="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-gray-700 hover:bg-gray-100"
 						>
 							<LogOut size={16} />
-							Logout
+							{i18n.t('nav.logout')}
 						</button>
 					</div>
 				</aside>
