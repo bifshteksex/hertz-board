@@ -207,17 +207,23 @@ func (s *WorkspaceService) ListUserWorkspaces(
 }
 
 // DuplicateWorkspace creates a copy of a workspace
-func (s *WorkspaceService) DuplicateWorkspace(ctx context.Context, workspaceID, userID uuid.UUID) (*models.Workspace, error) {
+func (s *WorkspaceService) DuplicateWorkspace(ctx context.Context, workspaceID, userID uuid.UUID, newName string) (*models.Workspace, error) {
 	// Get original workspace
 	original, err := s.GetWorkspace(ctx, workspaceID)
 	if err != nil {
 		return nil, err
 	}
 
+	// Use provided name or default to original name + (Copy)
+	name := newName
+	if name == "" {
+		name = original.Name + " (Copy)"
+	}
+
 	// Create new workspace
 	newWorkspace := &models.Workspace{
 		ID:          uuid.New(),
-		Name:        original.Name + " (Copy)",
+		Name:        name,
 		Description: original.Description,
 		OwnerID:     userID,
 		IsPublic:    false, // Copies are private by default

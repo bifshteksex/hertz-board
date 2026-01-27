@@ -55,8 +55,14 @@ func (h *WorkspaceHandler) CreateWorkspace(ctx context.Context, c *app.RequestCo
 		return
 	}
 
+	// Return workspace with role (creator is always owner)
+	workspaceWithRole := &models.WorkspaceWithRole{
+		Workspace: *workspace,
+		UserRole:  models.WorkspaceRoleOwner,
+	}
+
 	c.JSON(http.StatusCreated, map[string]interface{}{
-		"workspace": workspace,
+		"workspace": workspaceWithRole,
 	})
 }
 
@@ -223,7 +229,18 @@ func (h *WorkspaceHandler) DuplicateWorkspace(ctx context.Context, c *app.Reques
 		return
 	}
 
-	workspace, err := h.workspaceService.DuplicateWorkspace(ctx, workspaceID, userID)
+	// Parse request body for new name
+	var req struct {
+		Name string `json:"name"`
+	}
+	if err := c.BindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, map[string]interface{}{
+			"error": "Invalid request body",
+		})
+		return
+	}
+
+	workspace, err := h.workspaceService.DuplicateWorkspace(ctx, workspaceID, userID, req.Name)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, map[string]interface{}{
 			"error": err.Error(),
@@ -231,8 +248,14 @@ func (h *WorkspaceHandler) DuplicateWorkspace(ctx context.Context, c *app.Reques
 		return
 	}
 
+	// Return workspace with role (duplicator is always owner)
+	workspaceWithRole := &models.WorkspaceWithRole{
+		Workspace: *workspace,
+		UserRole:  models.WorkspaceRoleOwner,
+	}
+
 	c.JSON(http.StatusCreated, map[string]interface{}{
-		"workspace": workspace,
+		"workspace": workspaceWithRole,
 	})
 }
 
