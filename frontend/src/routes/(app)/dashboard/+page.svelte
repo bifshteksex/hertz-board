@@ -143,7 +143,7 @@
 		}
 	}
 
-	function handleShareWorkspace(workspace: Workspace) {
+	function handleShareWorkspace(_workspace: Workspace) {
 		// TODO: Implement share modal in future phase
 		alert('Share functionality will be implemented in a future phase');
 		activeMenuId = null;

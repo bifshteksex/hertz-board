@@ -29,7 +29,12 @@ export default [
 			globals: {
 				...globals.browser,
 				...globals.node,
-				...globals.es2021
+				...globals.es2021,
+				$state: 'readonly',
+				$derived: 'readonly',
+				$effect: 'readonly',
+				$props: 'readonly',
+				$inspect: 'readonly'
 			}
 		},
 		plugins: {
@@ -52,14 +57,20 @@ export default [
 				extraFileExtensions: ['.svelte']
 			},
 			globals: {
-				...globals.browser
+				...globals.browser,
+				$state: 'readonly',
+				$derived: 'readonly',
+				$effect: 'readonly',
+				$props: 'readonly',
+				$inspect: 'readonly'
 			}
 		},
 		plugins: {
 			svelte: sveltePlugin
 		},
 		rules: {
-			...sveltePlugin.configs.recommended.rules
+			...sveltePlugin.configs.recommended.rules,
+			'no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }]
 		}
 	},
 	prettier

@@ -2,7 +2,7 @@
 	import { goto } from '$app/navigation';
 	import { authStore } from '$lib/stores/auth.svelte';
 	import { onMount } from 'svelte';
-	import { Menu, Settings, User, LogOut, Bell, Search, Home } from 'lucide-svelte';
+	import { Menu, Settings, LogOut, Bell, Home } from 'lucide-svelte';
 
 	let { children } = $props();
 	let showUserMenu = $state(false);

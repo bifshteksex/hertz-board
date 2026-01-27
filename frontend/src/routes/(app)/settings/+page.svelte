@@ -145,9 +145,15 @@
 
 				<!-- Avatar Preview -->
 				<div class="flex items-center gap-4">
-					<div class="flex h-20 w-20 items-center justify-center rounded-full bg-blue-600 text-3xl font-bold text-white">
+					<div
+						class="flex h-20 w-20 items-center justify-center rounded-full bg-blue-600 text-3xl font-bold text-white"
+					>
 						{#if profileAvatarUrl}
-							<img src={profileAvatarUrl} alt="Avatar" class="h-full w-full rounded-full object-cover" />
+							<img
+								src={profileAvatarUrl}
+								alt="Avatar"
+								class="h-full w-full rounded-full object-cover"
+							/>
 						{:else}
 							{profileName.charAt(0).toUpperCase()}
 						{/if}
@@ -167,7 +173,7 @@
 						type="text"
 						required
 						bind:value={profileName}
-						class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+						class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
 					/>
 				</div>
 
@@ -177,7 +183,7 @@
 						id="avatar"
 						type="url"
 						bind:value={profileAvatarUrl}
-						class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+						class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
 						placeholder="https://example.com/avatar.jpg"
 					/>
 					<p class="mt-1 text-xs text-gray-500">Optional: Enter a URL to your profile picture</p>
@@ -187,7 +193,7 @@
 					<button
 						type="submit"
 						disabled={isUpdatingProfile}
-						class="rounded-lg bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+						class="rounded-lg bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
 					>
 						{isUpdatingProfile ? 'Saving...' : 'Save Changes'}
 					</button>
@@ -204,7 +210,8 @@
 			{#if authStore.user?.provider !== 'email'}
 				<div class="rounded-md bg-yellow-50 p-4">
 					<p class="text-sm text-yellow-800">
-						You signed in with {authStore.user?.provider}. Password changes are not available for OAuth accounts.
+						You signed in with {authStore.user?.provider}. Password changes are not available for
+						OAuth accounts.
 					</p>
 				</div>
 			{:else}
@@ -230,7 +237,7 @@
 							type="password"
 							required
 							bind:value={currentPassword}
-							class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+							class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
 						/>
 					</div>
 
@@ -243,7 +250,7 @@
 							type="password"
 							required
 							bind:value={newPassword}
-							class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+							class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
 						/>
 						<p class="mt-1 text-xs text-gray-500">Minimum 8 characters</p>
 					</div>
@@ -257,7 +264,7 @@
 							type="password"
 							required
 							bind:value={confirmPassword}
-							class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+							class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
 						/>
 					</div>
 
@@ -265,7 +272,7 @@
 						<button
 							type="submit"
 							disabled={isChangingPassword}
-							class="rounded-lg bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+							class="rounded-lg bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
 						>
 							{isChangingPassword ? 'Changing...' : 'Change Password'}
 						</button>
@@ -287,11 +294,15 @@
 					</div>
 					<div class="flex justify-between">
 						<span class="text-sm text-gray-600">Account Type</span>
-						<span class="text-sm font-medium capitalize text-gray-900">{authStore.user?.provider}</span>
+						<span class="text-sm font-medium text-gray-900 capitalize"
+							>{authStore.user?.provider}</span
+						>
 					</div>
 					<div class="flex justify-between">
 						<span class="text-sm text-gray-600">Email Verified</span>
-						<span class={`text-sm font-medium ${authStore.user?.email_verified ? 'text-green-600' : 'text-yellow-600'}`}>
+						<span
+							class={`text-sm font-medium ${authStore.user?.email_verified ? 'text-green-600' : 'text-yellow-600'}`}
+						>
 							{authStore.user?.email_verified ? 'Yes' : 'No'}
 						</span>
 					</div>

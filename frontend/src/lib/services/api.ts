@@ -64,9 +64,13 @@ export class ApiClient {
 		return this.accessToken;
 	}
 
-	private async request<T>(endpoint: string, options: RequestInit = {}, retry = true): Promise<T> {
+	private async request<T>(
+		endpoint: string,
+		options: globalThis.RequestInit = {},
+		retry = true
+	): Promise<T> {
 		const url = `${API_BASE_URL}${endpoint}`;
-		const headers: HeadersInit = {
+		const headers: globalThis.HeadersInit = {
 			'Content-Type': 'application/json',
 			...options.headers
 		};

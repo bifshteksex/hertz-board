@@ -4,7 +4,7 @@
 	import { onMount } from 'svelte';
 	import { api } from '$lib/services/api';
 	import type { Workspace } from '$lib/types/api';
-	import { ArrowLeft, Users, Share2 } from 'lucide-svelte';
+	import { ArrowLeft, Users } from 'lucide-svelte';
 
 	const workspaceId = $derived($page.params.id);
 	let workspace = $state<Workspace | null>(null);
