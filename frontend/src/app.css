@@ -1,5 +1,30 @@
 @import 'tailwindcss';
 
+@font-face {
+	font-family: 'CoralPixels';
+	src: url('lib/fonts/CoralPixels-Regular.ttf') format('truetype');
+	font-style: normal;
+	font-weight: normal;
+}
+
+@font-face {
+	font-family: 'FusionPixelLat';
+	src: url('lib/fonts/fusion-pixel-12px-monospaced-latin.ttf') format('truetype');
+	font-style: normal;
+	font-weight: normal;
+}
+
+@font-face {
+	font-family: 'FusionPixelZh';
+	src: url('lib/fonts/fusion-pixel-12px-monospaced-zh_hans.ttf') format('truetype');
+	font-style: normal;
+	font-weight: normal;
+}
+
+html {
+	font-family: 'FusionPixelLat';
+}
+
 /* Dark mode styles */
 :root {
 	color-scheme: light;

@@ -191,7 +191,7 @@
 		</div>
 		<button
 			onclick={() => (showCreateModal = true)}
-			class="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-700"
+			class="flex cursor-pointer items-center gap-2 bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-700"
 		>
 			<Plus size={20} />
 			New Workspace
@@ -205,7 +205,7 @@
 			type="text"
 			bind:value={searchQuery}
 			placeholder="Search workspaces..."
-			class="w-full rounded-lg border border-gray-300 py-2 pr-4 pl-10 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+			class="w-full border border-gray-300 py-2 pr-4 pl-10 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
 		/>
 	</div>
 
@@ -231,15 +231,15 @@
 			</button>
 		</div>
 	{:else}
-		<div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+		<div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
 			{#each workspaceStore.workspaces as workspace (workspace.id)}
 				<div
-					class="group relative flex flex-col rounded-lg border border-gray-200 bg-white shadow-sm transition hover:shadow-md"
+					class="group relative flex flex-col border border-gray-200 bg-white shadow-sm transition hover:shadow-md"
 				>
 					<!-- Thumbnail -->
 					<button
 						onclick={() => goto(`/workspace/${workspace.id}`)}
-						class="aspect-video w-full overflow-hidden rounded-t-lg bg-gradient-to-br from-blue-50 to-indigo-100"
+						class="aspect-video w-full overflow-hidden bg-gradient-to-br from-blue-50 to-indigo-100"
 					>
 						{#if workspace.thumbnail_url}
 							<img
@@ -288,14 +288,14 @@
 								e.stopPropagation();
 								activeMenuId = activeMenuId === workspace.id ? null : workspace.id;
 							}}
-							class="rounded-lg bg-white p-1 opacity-0 shadow-sm transition group-hover:opacity-100 hover:bg-gray-50"
+							class="bg-white p-1 opacity-0 shadow-sm transition group-hover:opacity-100 hover:bg-gray-50"
 						>
 							<MoreVertical size={16} />
 						</button>
 
 						{#if activeMenuId === workspace.id}
 							<div
-								class="ring-opacity-5 absolute top-8 right-0 z-10 w-56 rounded-lg bg-white shadow-lg ring-1 ring-black"
+								class="ring-opacity-5 absolute top-8 right-0 z-10 w-56 bg-white shadow-lg ring-1 ring-black"
 							>
 								<div class="py-1">
 									<button

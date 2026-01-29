@@ -2,6 +2,7 @@
 	import { goto } from '$app/navigation';
 	import { authStore } from '$lib/stores/auth.svelte';
 	import { onMount } from 'svelte';
+	import PixelButton from '$lib/components/PixelButton.svelte';
 
 	let email = $state('');
 	let password = $state('');
@@ -39,7 +40,7 @@
 	}
 </script>
 
-<div class="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12 sm:px-6 lg:px-8">
+<div class="flex min-h-screen items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
 	<div class="w-full max-w-md space-y-8">
 		<div>
 			<h1 class="text-center text-4xl font-bold text-gray-900">HertzBoard</h1>
@@ -65,7 +66,7 @@
 						autocomplete="email"
 						required
 						bind:value={email}
-						class="relative block w-full rounded-md border-0 px-3 py-2 text-gray-900 ring-1 ring-gray-300 ring-inset placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-blue-600 focus:ring-inset sm:text-sm sm:leading-6"
+						class="relative block w-full border bg-white px-3 py-2 text-gray-900 ring-1 ring-gray-300 ring-inset placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-blue-600 focus:ring-inset sm:text-sm sm:leading-6"
 						placeholder="Email address"
 					/>
 				</div>
@@ -78,7 +79,7 @@
 						autocomplete="current-password"
 						required
 						bind:value={password}
-						class="relative block w-full rounded-md border-0 px-3 py-2 text-gray-900 ring-1 ring-gray-300 ring-inset placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-blue-600 focus:ring-inset sm:text-sm sm:leading-6"
+						class="relative block w-full border bg-white px-3 py-2 text-gray-900 ring-1 ring-gray-300 ring-inset placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-blue-600 focus:ring-inset sm:text-sm sm:leading-6"
 						placeholder="Password"
 					/>
 				</div>
@@ -93,13 +94,9 @@
 			</div>
 
 			<div>
-				<button
-					type="submit"
-					disabled={isLoading}
-					class="group relative flex w-full justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:cursor-not-allowed disabled:opacity-50"
+				<PixelButton variant="main" type="submit" disabled={isLoading}
+					>{isLoading ? 'Signing in...' : 'Sign in'}</PixelButton
 				>
-					{isLoading ? 'Signing in...' : 'Sign in'}
-				</button>
 			</div>
 
 			<div class="relative">
@@ -107,7 +104,7 @@
 					<div class="w-full border-t border-gray-300"></div>
 				</div>
 				<div class="relative flex justify-center text-sm">
-					<span class="bg-gray-50 px-2 text-gray-500">Or continue with</span>
+					<span class="bg-[#f2efe8] px-2 text-gray-500">Or continue with</span>
 				</div>
 			</div>
 
@@ -115,7 +112,7 @@
 				<button
 					type="button"
 					onclick={() => handleOAuth('google')}
-					class="flex w-full items-center justify-center gap-3 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-gray-300 ring-inset hover:bg-gray-50"
+					class="flex w-full items-center justify-center gap-3 bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-gray-300 ring-inset hover:bg-gray-50"
 				>
 					<svg class="h-5 w-5" viewBox="0 0 24 24">
 						<path
@@ -140,7 +137,7 @@
 				<button
 					type="button"
 					onclick={() => handleOAuth('github')}
-					class="flex w-full items-center justify-center gap-3 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-gray-300 ring-inset hover:bg-gray-50"
+					class="flex w-full items-center justify-center gap-3 bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-gray-300 ring-inset hover:bg-gray-50"
 				>
 					<svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
 						<path
