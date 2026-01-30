@@ -3,6 +3,7 @@
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import { api } from '$lib/services/api';
+	import { i18n } from '$lib/stores/i18n.svelte';
 	import type { Workspace } from '$lib/types/api';
 	import { ArrowLeft, Users } from 'lucide-svelte';
 
@@ -13,7 +14,7 @@
 
 	onMount(async () => {
 		if (!workspaceId) {
-			error = 'Workspace ID is missing';
+			error = i18n.t('workspaceDetail.errors.missingId');
 			isLoading = false;
 			return;
 		}
@@ -21,7 +22,7 @@
 		try {
 			workspace = await api.getWorkspace(workspaceId);
 		} catch (err) {
-			error = err instanceof Error ? err.message : 'Failed to load workspace';
+			error = err instanceof Error ? err.message : i18n.t('workspaceDetail.errors.loadFailed');
 		} finally {
 			isLoading = false;
 		}
@@ -34,7 +35,7 @@
 			<div
 				class="mb-4 inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-blue-600 border-r-transparent"
 			></div>
-			<p class="text-gray-600">Loading workspace...</p>
+			<p class="text-gray-600">{i18n.t('workspaceDetail.loading')}</p>
 		</div>
 	</div>
 {:else if error}
@@ -45,7 +46,7 @@
 				onclick={() => goto('/dashboard')}
 				class="rounded-lg bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-700"
 			>
-				Back to Dashboard
+				{i18n.t('workspaceDetail.backToDashboard')}
 			</button>
 		</div>
 	</div>
@@ -73,7 +74,7 @@
 					class="flex items-center gap-2 rounded-lg border border-gray-300 px-3 py-2 text-sm transition hover:bg-gray-50"
 				>
 					<Users size={16} />
-					Share
+					{i18n.t('workspaceDetail.share')}
 				</button>
 			</div>
 		</header>
@@ -81,16 +82,18 @@
 		<!-- Canvas Area (Placeholder) -->
 		<div class="flex flex-1 items-center justify-center bg-gray-50">
 			<div class="text-center">
-				<h2 class="mb-2 text-2xl font-bold text-gray-900">Canvas Coming Soon</h2>
-				<p class="text-gray-600">The canvas editor will be implemented in Phase 6</p>
+				<h2 class="mb-2 text-2xl font-bold text-gray-900">
+					{i18n.t('workspaceDetail.canvasComingSoon')}
+				</h2>
+				<p class="text-gray-600">{i18n.t('workspaceDetail.canvasDescription')}</p>
 				<div class="mt-8 rounded-lg bg-white p-6 shadow-sm">
 					<p class="mb-4 text-sm text-gray-700">
-						Workspace ID: <code class="rounded bg-gray-100 px-2 py-1 font-mono text-xs"
-							>{workspaceId}</code
-						>
+						{i18n.t('workspaceDetail.workspaceId')}
+						<code class="rounded bg-gray-100 px-2 py-1 font-mono text-xs">{workspaceId}</code>
 					</p>
 					<p class="text-sm text-gray-700">
-						Role: <span class="font-medium capitalize"
+						{i18n.t('workspaceDetail.role')}
+						<span class="font-medium capitalize"
 							>{workspace.user_role || workspace.role || 'viewer'}</span
 						>
 					</p>

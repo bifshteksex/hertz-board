@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { authStore } from '$lib/stores/auth.svelte';
+	import { i18n } from '$lib/stores/i18n.svelte';
 	import { onMount } from 'svelte';
 
 	let name = $state('');
@@ -26,12 +27,12 @@
 
 		// Validation
 		if (password !== confirmPassword) {
-			error = 'Passwords do not match';
+			error = i18n.t('auth.errorPasswordMatch');
 			return;
 		}
 
 		if (password.length < 8) {
-			error = 'Password must be at least 8 characters';
+			error = i18n.t('auth.errorPasswordLength');
 			return;
 		}
 
@@ -56,9 +57,9 @@
 <div class="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12 sm:px-6 lg:px-8">
 	<div class="w-full max-w-md space-y-8">
 		<div>
-			<h1 class="text-center text-4xl font-bold text-gray-900">HertzBoard</h1>
+			<h1 class="text-center text-4xl font-bold text-gray-900">{i18n.t('auth.appName')}</h1>
 			<h2 class="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">
-				Create your account
+				{i18n.t('auth.registerTitle')}
 			</h2>
 		</div>
 
@@ -71,7 +72,7 @@
 
 			<div class="space-y-4 rounded-md shadow-sm">
 				<div>
-					<label for="name" class="sr-only">Full name</label>
+					<label for="name" class="sr-only">{i18n.t('auth.fullName')}</label>
 					<input
 						id="name"
 						name="name"
@@ -79,11 +80,11 @@
 						required
 						bind:value={name}
 						class="relative block w-full rounded-md border-0 px-3 py-2 text-gray-900 ring-1 ring-gray-300 ring-inset placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-blue-600 focus:ring-inset sm:text-sm sm:leading-6"
-						placeholder="Full name"
+						placeholder={i18n.t('auth.fullName')}
 					/>
 				</div>
 				<div>
-					<label for="email" class="sr-only">Email address</label>
+					<label for="email" class="sr-only">{i18n.t('auth.email')}</label>
 					<input
 						id="email"
 						name="email"
@@ -92,11 +93,11 @@
 						required
 						bind:value={email}
 						class="relative block w-full rounded-md border-0 px-3 py-2 text-gray-900 ring-1 ring-gray-300 ring-inset placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-blue-600 focus:ring-inset sm:text-sm sm:leading-6"
-						placeholder="Email address"
+						placeholder={i18n.t('auth.emailPlaceholder')}
 					/>
 				</div>
 				<div>
-					<label for="password" class="sr-only">Password</label>
+					<label for="password" class="sr-only">{i18n.t('auth.password')}</label>
 					<input
 						id="password"
 						name="password"
@@ -105,11 +106,11 @@
 						required
 						bind:value={password}
 						class="relative block w-full rounded-md border-0 px-3 py-2 text-gray-900 ring-1 ring-gray-300 ring-inset placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-blue-600 focus:ring-inset sm:text-sm sm:leading-6"
-						placeholder="Password (min 8 characters)"
+						placeholder={i18n.t('auth.passwordMinPlaceholder')}
 					/>
 				</div>
 				<div>
-					<label for="confirm-password" class="sr-only">Confirm password</label>
+					<label for="confirm-password" class="sr-only">{i18n.t('auth.confirmPassword')}</label>
 					<input
 						id="confirm-password"
 						name="confirm-password"
@@ -118,7 +119,7 @@
 						required
 						bind:value={confirmPassword}
 						class="relative block w-full rounded-md border-0 px-3 py-2 text-gray-900 ring-1 ring-gray-300 ring-inset placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-blue-600 focus:ring-inset sm:text-sm sm:leading-6"
-						placeholder="Confirm password"
+						placeholder={i18n.t('auth.confirmPasswordPlaceholder')}
 					/>
 				</div>
 			</div>
@@ -129,7 +130,7 @@
 					disabled={isLoading}
 					class="group relative flex w-full justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:cursor-not-allowed disabled:opacity-50"
 				>
-					{isLoading ? 'Creating account...' : 'Sign up'}
+					{isLoading ? i18n.t('auth.creatingAccount') : i18n.t('auth.signUp')}
 				</button>
 			</div>
 
@@ -138,7 +139,7 @@
 					<div class="w-full border-t border-gray-300"></div>
 				</div>
 				<div class="relative flex justify-center text-sm">
-					<span class="bg-gray-50 px-2 text-gray-500">Or continue with</span>
+					<span class="bg-gray-50 px-2 text-gray-500">{i18n.t('auth.orContinueWith')}</span>
 				</div>
 			</div>
 
@@ -166,7 +167,7 @@
 							fill="#EA4335"
 						/>
 					</svg>
-					Google
+					{i18n.t('auth.googleButton')}
 				</button>
 				<button
 					type="button"
@@ -178,13 +179,15 @@
 							d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"
 						/>
 					</svg>
-					GitHub
+					{i18n.t('auth.githubButton')}
 				</button>
 			</div>
 
 			<p class="text-center text-sm text-gray-600">
-				Already have an account?
-				<a href="/auth/login" class="font-medium text-blue-600 hover:text-blue-500"> Sign in </a>
+				{i18n.t('auth.hasAccount')}
+				<a href="/auth/login" class="font-medium text-blue-600 hover:text-blue-500">
+					{i18n.t('auth.signIn')}
+				</a>
 			</p>
 		</form>
 	</div>

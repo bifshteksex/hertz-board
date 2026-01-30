@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { workspaceStore } from '$lib/stores/workspace.svelte';
+	import { i18n } from '$lib/stores/i18n.svelte';
 	import {
 		Plus,
 		MoreVertical,
@@ -74,7 +75,7 @@
 	}
 
 	async function handleDeleteWorkspace(id: string) {
-		if (!confirm('Are you sure you want to delete this workspace?')) {
+		if (!confirm(i18n.t('dashboard.alerts.deleteConfirm'))) {
 			return;
 		}
 
@@ -145,14 +146,14 @@
 
 	function handleShareWorkspace(_workspace: Workspace) {
 		// TODO: Implement share modal in future phase
-		alert('Share functionality will be implemented in a future phase');
+		alert(i18n.t('dashboard.alerts.shareComingSoon'));
 		activeMenuId = null;
 	}
 
 	function handleCopyLink(workspace: Workspace) {
 		const url = `${window.location.origin}/workspace/${workspace.id}`;
 		navigator.clipboard.writeText(url).then(() => {
-			alert('Link copied to clipboard!');
+			alert(i18n.t('dashboard.alerts.linkCopied'));
 			activeMenuId = null;
 		});
 	}
@@ -163,11 +164,17 @@
 		const diff = now.getTime() - date.getTime();
 		const days = Math.floor(diff / (1000 * 60 * 60 * 24));
 
-		if (days === 0) return 'Today';
-		if (days === 1) return 'Yesterday';
-		if (days < 7) return `${days} days ago`;
-		if (days < 30) return `${Math.floor(days / 7)} weeks ago`;
-		if (days < 365) return `${Math.floor(days / 30)} months ago`;
+		if (days === 0) return i18n.t('dashboard.time.today');
+		if (days === 1) return i18n.t('dashboard.time.yesterday');
+		if (days < 7) return i18n.t('dashboard.time.daysAgo', { count: days.toString() });
+		if (days < 30)
+			return i18n.t('dashboard.time.weeksAgo', {
+				count: Math.floor(days / 7).toString()
+			});
+		if (days < 365)
+			return i18n.t('dashboard.time.monthsAgo', {
+				count: Math.floor(days / 30).toString()
+			});
 		return date.toLocaleDateString();
 	}
 
@@ -186,15 +193,15 @@
 	<!-- Header -->
 	<div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
 		<div>
-			<h1 class="text-3xl font-bold text-gray-900">Workspaces</h1>
-			<p class="mt-1 text-gray-600">Manage your collaborative boards</p>
+			<h1 class="text-3xl font-bold text-gray-900">{i18n.t('dashboard.title')}</h1>
+			<p class="mt-1 text-gray-600">{i18n.t('dashboard.subtitle')}</p>
 		</div>
 		<button
 			onclick={() => (showCreateModal = true)}
 			class="flex cursor-pointer items-center gap-2 bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-700"
 		>
 			<Plus size={20} />
-			New Workspace
+			{i18n.t('dashboard.newWorkspace')}
 		</button>
 	</div>
 
@@ -204,7 +211,7 @@
 		<input
 			type="text"
 			bind:value={searchQuery}
-			placeholder="Search workspaces..."
+			placeholder={i18n.t('dashboard.searchPlaceholder')}
 			class="w-full border border-gray-300 py-2 pr-4 pl-10 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
 		/>
 	</div>
@@ -216,18 +223,18 @@
 				<div
 					class="mb-4 inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-blue-600 border-r-transparent"
 				></div>
-				<p class="text-gray-600">Loading workspaces...</p>
+				<p class="text-gray-600">{i18n.t('dashboard.loading')}</p>
 			</div>
 		</div>
 	{:else if workspaceStore.workspaces.length === 0}
 		<div class="flex flex-col items-center justify-center py-12">
-			<p class="mb-4 text-gray-600">No workspaces found</p>
+			<p class="mb-4 text-gray-600">{i18n.t('dashboard.noWorkspaces')}</p>
 			<button
 				onclick={() => (showCreateModal = true)}
 				class="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-700"
 			>
 				<Plus size={20} />
-				Create your first workspace
+				{i18n.t('dashboard.createFirst')}
 			</button>
 		</div>
 	{:else}
@@ -272,11 +279,14 @@
 								<div class="flex items-center gap-2 text-xs text-gray-500">
 									<Users size={14} />
 									{workspace.member_count}
-									{workspace.member_count === 1 ? 'member' : 'members'}
+									{workspace.member_count === 1
+										? i18n.t('dashboard.member')
+										: i18n.t('dashboard.members')}
 								</div>
 							{/if}
 							<div class="text-xs text-gray-500">
-								Role: <span class="font-medium capitalize">{getWorkspaceRole(workspace)}</span>
+								{i18n.t('dashboard.role')}:
+								<span class="font-medium capitalize">{getWorkspaceRole(workspace)}</span>
 							</div>
 						</div>
 					</div>
@@ -306,7 +316,7 @@
 										class="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
 									>
 										<Search size={16} />
-										Open
+										{i18n.t('dashboard.menu.open')}
 									</button>
 
 									{#if getWorkspaceRole(workspace) === 'owner' || getWorkspaceRole(workspace) === 'editor'}
@@ -315,7 +325,7 @@
 											class="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
 										>
 											<Edit2 size={16} />
-											Rename
+											{i18n.t('dashboard.menu.rename')}
 										</button>
 									{/if}
 
@@ -324,7 +334,7 @@
 										class="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
 									>
 										<Copy size={16} />
-										Copy link
+										{i18n.t('dashboard.menu.copyLink')}
 									</button>
 
 									{#if getWorkspaceRole(workspace) === 'owner' || getWorkspaceRole(workspace) === 'editor'}
@@ -333,7 +343,7 @@
 											class="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
 										>
 											<Share2 size={16} />
-											Share
+											{i18n.t('dashboard.menu.share')}
 										</button>
 									{/if}
 
@@ -345,7 +355,7 @@
 											class="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
 										>
 											<Copy size={16} />
-											Duplicate
+											{i18n.t('dashboard.menu.duplicate')}
 										</button>
 
 										<button
@@ -353,7 +363,7 @@
 											class="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-red-600 hover:bg-gray-100"
 										>
 											<Trash2 size={16} />
-											Delete
+											{i18n.t('dashboard.menu.delete')}
 										</button>
 									{/if}
 								</div>
@@ -370,7 +380,7 @@
 {#if showCreateModal}
 	<div class="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black">
 		<div class="w-full max-w-md rounded-lg bg-white p-6 shadow-xl">
-			<h2 class="mb-4 text-xl font-bold text-gray-900">Create New Workspace</h2>
+			<h2 class="mb-4 text-xl font-bold text-gray-900">{i18n.t('dashboard.modal.create.title')}</h2>
 
 			<form onsubmit={handleCreateWorkspace}>
 				{#if createError}
@@ -381,27 +391,29 @@
 
 				<div class="space-y-4">
 					<div>
-						<label for="name" class="block text-sm font-medium text-gray-700">Name</label>
+						<label for="name" class="block text-sm font-medium text-gray-700"
+							>{i18n.t('dashboard.modal.create.name')}</label
+						>
 						<input
 							id="name"
 							type="text"
 							required
 							bind:value={createName}
 							class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-							placeholder="My Workspace"
+							placeholder={i18n.t('dashboard.modal.create.namePlaceholder')}
 						/>
 					</div>
 
 					<div>
 						<label for="description" class="block text-sm font-medium text-gray-700">
-							Description (optional)
+							{i18n.t('dashboard.modal.create.description')}
 						</label>
 						<textarea
 							id="description"
 							bind:value={createDescription}
 							rows="3"
 							class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-							placeholder="Describe your workspace..."
+							placeholder={i18n.t('dashboard.modal.create.descriptionPlaceholder')}
 						></textarea>
 					</div>
 				</div>
@@ -417,14 +429,16 @@
 						}}
 						class="flex-1 rounded-lg border border-gray-300 px-4 py-2 text-gray-700 transition hover:bg-gray-50"
 					>
-						Cancel
+						{i18n.t('common.cancel')}
 					</button>
 					<button
 						type="submit"
 						disabled={isCreating}
 						class="flex-1 rounded-lg bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
 					>
-						{isCreating ? 'Creating...' : 'Create'}
+						{isCreating
+							? i18n.t('dashboard.modal.create.creating')
+							: i18n.t('dashboard.modal.create.create')}
 					</button>
 				</div>
 			</form>
@@ -436,7 +450,9 @@
 {#if showDuplicateModal && duplicateWorkspace}
 	<div class="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black">
 		<div class="w-full max-w-md rounded-lg bg-white p-6 shadow-xl">
-			<h2 class="mb-4 text-xl font-bold text-gray-900">Duplicate Workspace</h2>
+			<h2 class="mb-4 text-xl font-bold text-gray-900">
+				{i18n.t('dashboard.modal.duplicate.title')}
+			</h2>
 
 			<form onsubmit={submitDuplicate}>
 				{#if duplicateError}
@@ -447,7 +463,7 @@
 
 				<div class="mb-4">
 					<label for="duplicate-name" class="block text-sm font-medium text-gray-700">
-						New workspace name
+						{i18n.t('dashboard.modal.duplicate.newName')}
 					</label>
 					<input
 						id="duplicate-name"
@@ -458,7 +474,7 @@
 						placeholder="My Workspace (Copy)"
 					/>
 					<p class="mt-1 text-xs text-gray-500">
-						This will create a copy of "{duplicateWorkspace.name}"
+						{i18n.t('dashboard.modal.duplicate.copyOf', { name: duplicateWorkspace.name })}
 					</p>
 				</div>
 
@@ -473,14 +489,16 @@
 						}}
 						class="flex-1 rounded-lg border border-gray-300 px-4 py-2 text-gray-700 transition hover:bg-gray-50"
 					>
-						Cancel
+						{i18n.t('common.cancel')}
 					</button>
 					<button
 						type="submit"
 						disabled={isDuplicating}
 						class="flex-1 rounded-lg bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
 					>
-						{isDuplicating ? 'Duplicating...' : 'Duplicate'}
+						{isDuplicating
+							? i18n.t('dashboard.modal.duplicate.duplicating')
+							: i18n.t('dashboard.modal.duplicate.duplicate')}
 					</button>
 				</div>
 			</form>
@@ -492,7 +510,7 @@
 {#if showRenameModal && renameWorkspace}
 	<div class="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black">
 		<div class="w-full max-w-md rounded-lg bg-white p-6 shadow-xl">
-			<h2 class="mb-4 text-xl font-bold text-gray-900">Rename Workspace</h2>
+			<h2 class="mb-4 text-xl font-bold text-gray-900">{i18n.t('dashboard.modal.rename.title')}</h2>
 
 			<form onsubmit={submitRename}>
 				{#if renameError}
@@ -503,27 +521,29 @@
 
 				<div class="space-y-4">
 					<div>
-						<label for="rename-name" class="block text-sm font-medium text-gray-700">Name</label>
+						<label for="rename-name" class="block text-sm font-medium text-gray-700"
+							>{i18n.t('dashboard.modal.create.name')}</label
+						>
 						<input
 							id="rename-name"
 							type="text"
 							required
 							bind:value={renameName}
 							class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-							placeholder="My Workspace"
+							placeholder={i18n.t('dashboard.modal.create.namePlaceholder')}
 						/>
 					</div>
 
 					<div>
 						<label for="rename-description" class="block text-sm font-medium text-gray-700">
-							Description (optional)
+							{i18n.t('dashboard.modal.create.description')}
 						</label>
 						<textarea
 							id="rename-description"
 							bind:value={renameDescription}
 							rows="3"
 							class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-							placeholder="Describe your workspace..."
+							placeholder={i18n.t('dashboard.modal.create.descriptionPlaceholder')}
 						></textarea>
 					</div>
 				</div>
@@ -540,14 +560,16 @@
 						}}
 						class="flex-1 rounded-lg border border-gray-300 px-4 py-2 text-gray-700 transition hover:bg-gray-50"
 					>
-						Cancel
+						{i18n.t('common.cancel')}
 					</button>
 					<button
 						type="submit"
 						disabled={isRenaming}
 						class="flex-1 rounded-lg bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
 					>
-						{isRenaming ? 'Saving...' : 'Save Changes'}
+						{isRenaming
+							? i18n.t('dashboard.modal.rename.saving')
+							: i18n.t('dashboard.modal.rename.saveChanges')}
 					</button>
 				</div>
 			</form>
