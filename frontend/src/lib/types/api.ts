@@ -72,37 +72,69 @@ export interface WorkspaceListResponse {
 }
 
 // Canvas Element Types
-export type ElementType = 'text' | 'shape' | 'sticky' | 'image' | 'freehand' | 'list' | 'connector';
+export type ElementType =
+	| 'text'
+	| 'rectangle'
+	| 'ellipse'
+	| 'triangle'
+	| 'line'
+	| 'arrow'
+	| 'sticky'
+	| 'image'
+	| 'freehand'
+	| 'list'
+	| 'connector';
 
 export interface ElementStyle {
-	fill_color?: string;
-	stroke_color?: string;
-	stroke_width?: number;
-	font_family?: string;
-	font_size?: number;
-	font_weight?: string;
-	text_align?: string;
+	backgroundColor?: string;
+	strokeColor?: string;
+	strokeWidth?: number;
+	fontFamily?: string;
+	fontSize?: number;
+	fontWeight?: string;
+	textAlign?: 'left' | 'center' | 'right';
 	opacity?: number;
+	borderRadius?: number;
+	color?: string;
+	listType?: 'bullet' | 'numbered' | 'checkbox';
+	connectorType?: 'straight' | 'curved' | 'elbow';
+}
+
+export interface ConnectorData {
+	startElementId?: string;
+	endElementId?: string;
+	startX: number;
+	startY: number;
+	endX: number;
+	endY: number;
+	startArrow?: boolean;
+	endArrow?: boolean;
+	label?: string;
 }
 
 export interface CanvasElement {
 	id: string;
 	workspace_id: string;
 	type: ElementType;
-	content: string; // JSON string
+	content?: string;
+	html_content?: string;
 	pos_x: number;
 	pos_y: number;
-	width: number;
-	height: number;
-	rotation: number;
+	width?: number;
+	height?: number;
+	rotation?: number;
 	z_index: number;
-	style: ElementStyle;
-	locked: boolean;
+	style?: ElementStyle;
+	locked?: boolean;
 	parent_id?: string;
-	created_by: string;
-	created_at: string;
-	updated_at: string;
-	version: number;
+	group_id?: string;
+	image_url?: string;
+	path_data?: string;
+	connector_data?: ConnectorData;
+	created_by?: string;
+	created_at?: string;
+	updated_at?: string;
+	version?: number;
 }
 
 export interface Asset {
