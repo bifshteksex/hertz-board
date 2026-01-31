@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { canvasStore } from '$lib/stores/canvas.svelte';
+	import { canvas } from '$lib/stores/canvasWithHistory.svelte';
 	import type { CanvasElement as CanvasElementType } from '$lib/types/api';
 	import CanvasGrid from './CanvasGrid.svelte';
 	import CanvasElement from './CanvasElement.svelte';
@@ -11,6 +12,7 @@
 	import FreehandDrawing from './FreehandDrawing.svelte';
 	import ImageUploader from './ImageUploader.svelte';
 	import ConnectorCreator from './ConnectorCreator.svelte';
+	import ContextMenu from './ContextMenu.svelte';
 
 	let canvasContainer: HTMLDivElement;
 	let svgCanvas: SVGSVGElement;
@@ -55,6 +57,12 @@
 	// Track if any element is being edited
 	let isEditingText = $state(false);
 
+	// Context menu state
+	let showContextMenu = $state(false);
+	let contextMenuX = $state(0);
+	let contextMenuY = $state(0);
+	let contextMenuTargetId = $state<string | null>(null);
+
 	onMount(() => {
 		// Fit to screen при загрузке
 		if (canvasContainer) {
@@ -77,14 +85,14 @@
 				e.preventDefault();
 				isSpacePressed = true;
 				if (canvasContainer) {
-					canvasContainer.style.cursor = 'grab';
+					canvasContainer.classList.add('cursor-grab');
 				}
 			}
 
 			// Delete для удаления выделенных элементов
 			if ((e.code === 'Delete' || e.code === 'Backspace') && canvasStore.selectedIds.length > 0) {
 				e.preventDefault();
-				canvasStore.deleteElements(canvasStore.selectedIds);
+				canvas.deleteElements(canvasStore.selectedIds);
 			}
 
 			// Ctrl/Cmd + A для выделения всех
@@ -109,7 +117,7 @@
 			if (e.code === 'Space') {
 				isSpacePressed = false;
 				if (canvasContainer && !isPanningActive) {
-					canvasContainer.style.cursor = 'default';
+					canvasContainer.classList.remove('cursor-grab', 'cursor-grabbing');
 				}
 			}
 			if (e.code === 'ShiftLeft' || e.code === 'ShiftRight') {
@@ -163,7 +171,7 @@
 			image_url: imageUrl
 		};
 
-		canvasStore.addElement(newElement);
+		canvas.addElement(newElement);
 	}
 
 	function createShapeElement(
@@ -208,7 +216,7 @@
 			}
 		};
 
-		canvasStore.addElement(newElement);
+		canvas.addElement(newElement);
 		canvasStore.select(newElement.id);
 	}
 
@@ -250,7 +258,7 @@
 			}
 		};
 
-		canvasStore.addElement(newElement);
+		canvas.addElement(newElement);
 	}
 
 	function createTextElement(x: number, y: number) {
@@ -275,7 +283,7 @@
 			}
 		};
 
-		canvasStore.addElement(newElement);
+		canvas.addElement(newElement);
 		canvasStore.select(newElement.id);
 	}
 
@@ -303,7 +311,7 @@
 			}
 		};
 
-		canvasStore.addElement(newElement);
+		canvas.addElement(newElement);
 		canvasStore.select(newElement.id);
 	}
 
@@ -329,7 +337,7 @@
 			}
 		};
 
-		canvasStore.addElement(newElement);
+		canvas.addElement(newElement);
 		canvasStore.select(newElement.id);
 	}
 
@@ -365,7 +373,7 @@
 			}
 		};
 
-		canvasStore.addElement(newElement);
+		canvas.addElement(newElement);
 		canvasStore.select(newElement.id);
 	}
 
@@ -376,6 +384,10 @@
 
 		isDraggingElements = true;
 		canvasStore.setIsDragging(true);
+
+		if (canvasContainer) {
+			canvasContainer.classList.add('cursor-grabbing');
+		}
 
 		const canvasPoint = canvasStore.screenToCanvas(e.clientX, e.clientY);
 		dragStart = canvasPoint;
@@ -417,7 +429,7 @@
 					newY = snapped.y;
 				}
 
-				canvasStore.updateElement(el.id, {
+				canvas.updateElement(el.id, {
 					pos_x: newX,
 					pos_y: newY
 				});
@@ -430,6 +442,10 @@
 		canvasStore.setIsDragging(false);
 		dragStart = null;
 		elementStartPositions.clear();
+
+		if (canvasContainer) {
+			canvasContainer.classList.remove('cursor-grabbing');
+		}
 
 		// TODO: Отправить обновления на сервер
 	}
@@ -538,7 +554,7 @@
 			newWidth = Math.max(20, newWidth);
 			newHeight = Math.max(20, newHeight);
 
-			canvasStore.updateElement(el.id, {
+			canvas.updateElement(el.id, {
 				pos_x: newX,
 				pos_y: newY,
 				width: newWidth,
@@ -578,7 +594,8 @@
 			canvasStore.setIsPanning(true);
 			panStart = { x: e.clientX, y: e.clientY };
 			if (canvasContainer) {
-				canvasContainer.style.cursor = 'grabbing';
+				canvasContainer.classList.remove('cursor-grab');
+				canvasContainer.classList.add('cursor-grabbing');
 			}
 			return;
 		}
@@ -758,7 +775,10 @@
 			isPanningActive = false;
 			canvasStore.setIsPanning(false);
 			if (canvasContainer) {
-				canvasContainer.style.cursor = isSpacePressed ? 'grab' : 'default';
+				canvasContainer.classList.remove('cursor-grabbing');
+				if (isSpacePressed) {
+					canvasContainer.classList.add('cursor-grab');
+				}
 			}
 			return;
 		}
@@ -829,6 +849,162 @@
 		}
 	}
 
+	function handleContextMenu(e: MouseEvent) {
+		e.preventDefault();
+
+		// Get element under cursor
+		const target = e.target as SVGElement;
+		const elementId = target.closest('[data-element-id]')?.getAttribute('data-element-id');
+
+		if (elementId) {
+			// Right-click on element
+			if (!canvasStore.isSelected(elementId)) {
+				canvasStore.select(elementId);
+			}
+			contextMenuTargetId = elementId;
+		} else {
+			// Right-click on canvas
+			contextMenuTargetId = null;
+			if (canvasStore.selectedIds.length === 0) {
+				return; // Don't show menu if nothing selected
+			}
+		}
+
+		contextMenuX = e.clientX;
+		contextMenuY = e.clientY;
+		showContextMenu = true;
+	}
+
+	// Context menu handlers
+	function handleCut() {
+		handleCopy();
+		canvas.deleteElements(canvasStore.selectedIds);
+	}
+
+	function handleCopy() {
+		const selectedElements = canvasStore.selectedElements;
+		if (selectedElements.length > 0) {
+			// Store in clipboard
+			const clipboardData = JSON.stringify(selectedElements);
+			navigator.clipboard.writeText(clipboardData).catch(() => {
+				// Fallback: store in sessionStorage
+				sessionStorage.setItem('hertz-board-clipboard', clipboardData);
+			});
+		}
+	}
+
+	function handlePaste() {
+		// Try to get from clipboard first
+		navigator.clipboard
+			.readText()
+			.then((text) => {
+				try {
+					const elements = JSON.parse(text) as CanvasElementType[];
+					pasteElements(elements);
+				} catch {
+					// Not valid JSON, try sessionStorage
+					const stored = sessionStorage.getItem('hertz-board-clipboard');
+					if (stored) {
+						const elements = JSON.parse(stored) as CanvasElementType[];
+						pasteElements(elements);
+					}
+				}
+			})
+			.catch(() => {
+				// Fallback: sessionStorage
+				const stored = sessionStorage.getItem('hertz-board-clipboard');
+				if (stored) {
+					const elements = JSON.parse(stored) as CanvasElementType[];
+					pasteElements(elements);
+				}
+			});
+	}
+
+	function pasteElements(elements: CanvasElementType[]) {
+		const offset = 20; // Offset for pasted elements
+		const newIds: string[] = [];
+
+		elements.forEach((el) => {
+			const newElement: CanvasElementType = {
+				...el,
+				id: crypto.randomUUID(),
+				pos_x: el.pos_x + offset,
+				pos_y: el.pos_y + offset,
+				z_index: (el.z_index || 0) + 1
+			};
+			canvas.addElement(newElement);
+			newIds.push(newElement.id);
+			// TODO: Save to server
+		});
+
+		// Select pasted elements
+		canvasStore.clearSelection();
+		canvasStore.selectMultiple(newIds);
+	}
+
+	function handleDuplicate() {
+		const selectedElements = canvasStore.selectedElements;
+		const offset = 20;
+		const newIds: string[] = [];
+
+		selectedElements.forEach((el) => {
+			const newElement: CanvasElementType = {
+				...el,
+				id: crypto.randomUUID(),
+				pos_x: el.pos_x + offset,
+				pos_y: el.pos_y + offset,
+				z_index: (el.z_index || 0) + 1
+			};
+			canvas.addElement(newElement);
+			newIds.push(newElement.id);
+			// TODO: Save to server
+		});
+
+		// Select duplicated elements
+		canvasStore.clearSelection();
+		canvasStore.selectMultiple(newIds);
+	}
+
+	function handleDelete() {
+		canvas.deleteElements(canvasStore.selectedIds);
+		// TODO: Delete from server
+	}
+
+	function handleLock() {
+		canvasStore.selectedIds.forEach((id) => {
+			canvas.updateElement(id, { locked: true });
+		});
+	}
+
+	function handleUnlock() {
+		canvasStore.selectedIds.forEach((id) => {
+			canvas.updateElement(id, { locked: false });
+		});
+	}
+
+	function handleGroup() {
+		canvasStore.groupSelected();
+	}
+
+	function handleUngroup() {
+		canvasStore.ungroupSelected();
+	}
+
+	function handleBringToFront() {
+		canvasStore.bringToFront();
+	}
+
+	function handleSendToBack() {
+		canvasStore.sendToBack();
+	}
+
+	function handleCopyLink() {
+		if (contextMenuTargetId) {
+			const link = `${window.location.href}#element-${contextMenuTargetId}`;
+			navigator.clipboard.writeText(link);
+		}
+	}
+
 	function handleWheel(e: WheelEvent) {
 		e.preventDefault();
 
@@ -852,13 +1028,17 @@
 	const selectionBox = $derived(canvasStore.selectionBox);
 
 	// Виртуализация: рендерим только видимые элементы + небольшой margin
+	// ВАЖНО: Сортируем по z-index для правильного порядка рендеринга в SVG
 	const visibleElements = $derived(() => {
-		if (!canvasContainer) return elements;
+		if (!canvasContainer) {
+			// Sort by z-index (ascending - lower z-index rendered first, higher on top)
+			return [...elements].sort((a, b) => (a.z_index || 0) - (b.z_index || 0));
+		}
 
 		const rect = canvasContainer.getBoundingClientRect();
 		const margin = 200; // margin в пикселях
 
-		return elements.filter((el) => {
+		const filtered = elements.filter((el) => {
 			// Преобразуем позицию элемента в screen координаты
 			const screenPos = {
 				x: el.pos_x * viewport.zoom + viewport.x,
@@ -875,6 +1055,9 @@
 				screenPos.y > rect.height + margin
 			);
 		});
+
+		// Sort by z-index (ascending - lower z-index rendered first, higher on top)
+		return filtered.sort((a, b) => (a.z_index || 0) - (b.z_index || 0));
 	});
 </script>
 
@@ -885,8 +1068,10 @@
 	onmousemove={handleMouseMove}
 	onmouseup={handleMouseUp}
 	onmouseleave={handleMouseUp}
+	oncontextmenu={handleContextMenu}
 	onwheel={handleWheel}
-	role="img"
+	role="application"
+	tabindex="0"
 	aria-label="Canvas workspace"
 >
 	<svg bind:this={svgCanvas} class="canvas-svg" width="100%" height="100%">
@@ -959,6 +1144,33 @@
 			bind:this={imageUploader}
 			workspaceId={canvasStore.workspaceId}
 			onImageUploaded={handleImageUploaded}
+		/>
+	{/if}
+
+	<!-- Context Menu -->
+	{#if showContextMenu}
+		{@const selectedElements = canvasStore.selectedElements}
+		{@const hasGroupedElements = selectedElements.some((el) => el.group_id)}
+		{@const isLocked = selectedElements.some((el) => el.locked)}
+		<ContextMenu
+			x={contextMenuX}
+			y={contextMenuY}
+			selectedCount={canvasStore.selectedIds.length}
+			{hasGroupedElements}
+			{isLocked}
+			onCut={handleCut}
+			onCopy={handleCopy}
+			onPaste={handlePaste}
+			onDuplicate={handleDuplicate}
+			onDelete={handleDelete}
+			onLock={handleLock}
+			onUnlock={handleUnlock}
+			onGroup={handleGroup}
+			onUngroup={handleUngroup}
+			onBringToFront={handleBringToFront}
+			onSendToBack={handleSendToBack}
+			onCopyLink={handleCopyLink}
+			onClose={() => (showContextMenu = false)}
 		/>
 	{/if}
 </div>

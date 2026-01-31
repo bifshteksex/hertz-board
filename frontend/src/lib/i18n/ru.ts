@@ -190,7 +190,7 @@ export default {
 				description: 'Высокопроизводительный бэкенд на базе CloudWeGo Hertz и WebSockets'
 			}
 		},
-		footer: 'Сделано с ❤️'
+		footer: 'Сделано с {heart}'
 	},
 	workspaceDetail: {
 		loading: 'Загрузка рабочей области...',

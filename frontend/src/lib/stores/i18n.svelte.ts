@@ -13,11 +13,21 @@ class I18nStore {
 	private translations = $state<LocaleData>({});
 
 	constructor() {
-		// Load saved locale from localStorage on initialization
+		// Load saved locale from localStorage or auto-detect browser language
 		if (typeof window !== 'undefined') {
 			const savedLocale = localStorage.getItem('locale') as Locale | null;
 			if (savedLocale && ['en', 'ru', 'zh'].includes(savedLocale)) {
 				this.currentLocale = savedLocale;
+			} else {
+				// Auto-detect browser language
+				const browserLang = navigator.language.split('-')[0];
+				if (browserLang === 'ru') {
+					this.currentLocale = 'ru';
+				} else if (browserLang === 'zh') {
+					this.currentLocale = 'zh';
+				} else {
+					this.currentLocale = 'en';
+				}
 			}
 		}
 	}

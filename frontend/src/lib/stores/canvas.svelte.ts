@@ -307,6 +307,20 @@ class CanvasStore {
 	}
 
 	/**
+	 * Batch update нескольких элементов (более эффективно)
+	 */
+	updateElements(updates: Array<{ id: string; updates: Partial<CanvasElement> }>) {
+		updates.forEach(({ id, updates: elementUpdates }) => {
+			const element = this._elements.get(id);
+			if (element) {
+				this._elements.set(id, { ...element, ...elementUpdates });
+			}
+		});
+		// Trigger reactivity once for all updates
+		this._elements = new Map(this._elements);
+	}
+
+	/**
 	 * Удалить элемент
 	 */
 	deleteElement(id: string) {
@@ -591,9 +605,12 @@ class CanvasStore {
 
 		const maxZ = Math.max(...this.elements.map((el) => el.z_index || 0), 0);
 
-		targetIds.forEach((id, index) => {
-			this.updateElement(id, { z_index: maxZ + index + 1 });
-		});
+		const updates = targetIds.map((id, index) => ({
+			id,
+			updates: { z_index: maxZ + index + 1 }
+		}));
+
+		this.updateElements(updates);
 	}
 
 	/**
@@ -605,9 +622,12 @@ class CanvasStore {
 
 		const minZ = Math.min(...this.elements.map((el) => el.z_index || 0), 0);
 
-		targetIds.forEach((id, index) => {
-			this.updateElement(id, { z_index: minZ - targetIds.length + index });
-		});
+		const updates = targetIds.map((id, index) => ({
+			id,
+			updates: { z_index: minZ - targetIds.length + index }
+		}));
+
+		this.updateElements(updates);
 	}
 
 	/**
@@ -617,11 +637,18 @@ class CanvasStore {
 		const targetIds = ids || this.selectedIds;
 		if (targetIds.length === 0) return;
 
-		targetIds.forEach((id) => {
-			const element = this.getElement(id);
-			if (!element) return;
-			this.updateElement(id, { z_index: (element.z_index || 0) + 1 });
-		});
+		const updates = targetIds
+			.map((id) => {
+				const element = this.getElement(id);
+				if (!element) return null;
+				return {
+					id,
+					updates: { z_index: (element.z_index || 0) + 1 }
+				};
+			})
+			.filter((u) => u !== null);
+
+		this.updateElements(updates as Array<{ id: string; updates: Partial<CanvasElement> }>);
 	}
 
 	/**
@@ -631,11 +658,18 @@ class CanvasStore {
 		const targetIds = ids || this.selectedIds;
 		if (targetIds.length === 0) return;
 
-		targetIds.forEach((id) => {
-			const element = this.getElement(id);
-			if (!element) return;
-			this.updateElement(id, { z_index: (element.z_index || 0) - 1 });
-		});
+		const updates = targetIds
+			.map((id) => {
+				const element = this.getElement(id);
+				if (!element) return null;
+				return {
+					id,
+					updates: { z_index: (element.z_index || 0) - 1 }
+				};
+			})
+			.filter((u) => u !== null);
+
+		this.updateElements(updates as Array<{ id: string; updates: Partial<CanvasElement> }>);
 	}
 
 	// Группировка

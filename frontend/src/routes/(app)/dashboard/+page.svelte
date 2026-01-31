@@ -8,12 +8,14 @@
 		MoreVertical,
 		Users,
 		Calendar,
-		Search,
 		Edit2,
 		Copy,
 		Share2,
-		Trash2
+		Trash2,
+		ExternalLink
 	} from 'lucide-svelte';
+	import IconSearch from '$components/icons/IconSearch.svelte';
+	import PixelModal from '$lib/components/PixelModal.svelte';
 	import type { Workspace } from '$lib/types/api';
 
 	let showCreateModal = $state(false);
@@ -207,12 +209,12 @@
 
 	<!-- Search -->
 	<div class="relative">
-		<Search class="absolute top-1/2 left-3 -translate-y-1/2 text-gray-400" size={20} />
+		<IconSearch class="absolute top-1/2 left-3 -translate-y-1/2 text-gray-400" size={20} />
 		<input
 			type="text"
 			bind:value={searchQuery}
 			placeholder={i18n.t('dashboard.searchPlaceholder')}
-			class="w-full border border-gray-300 py-2 pr-4 pl-10 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+			class="w-full border border-gray-300 bg-white py-2 pr-4 pl-10 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
 		/>
 	</div>
 
@@ -315,7 +317,7 @@
 										}}
 										class="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
 									>
-										<Search size={16} />
+										<ExternalLink size={16} />
 										{i18n.t('dashboard.menu.open')}
 									</button>
 
@@ -377,202 +379,210 @@
 </div>
 
 <!-- Create Workspace Modal -->
-{#if showCreateModal}
-	<div class="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black">
-		<div class="w-full max-w-md rounded-lg bg-white p-6 shadow-xl">
-			<h2 class="mb-4 text-xl font-bold text-gray-900">{i18n.t('dashboard.modal.create.title')}</h2>
+<PixelModal
+	show={showCreateModal}
+	title={i18n.t('dashboard.modal.create.title')}
+	onClose={() => {
+		showCreateModal = false;
+		createName = '';
+		createDescription = '';
+		createError = '';
+	}}
+>
+	<form onsubmit={handleCreateWorkspace}>
+		{#if createError}
+			<div class="mb-4 rounded-md bg-red-50 p-3">
+				<p class="text-sm text-red-800">{createError}</p>
+			</div>
+		{/if}
 
-			<form onsubmit={handleCreateWorkspace}>
-				{#if createError}
-					<div class="mb-4 rounded-md bg-red-50 p-3">
-						<p class="text-sm text-red-800">{createError}</p>
-					</div>
-				{/if}
+		<div class="space-y-4">
+			<div>
+				<label for="name" class="block text-sm font-medium text-gray-700"
+					>{i18n.t('dashboard.modal.create.name')}</label
+				>
+				<input
+					id="name"
+					type="text"
+					required
+					bind:value={createName}
+					class="mt-1 block w-full border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+					placeholder={i18n.t('dashboard.modal.create.namePlaceholder')}
+				/>
+			</div>
 
-				<div class="space-y-4">
-					<div>
-						<label for="name" class="block text-sm font-medium text-gray-700"
-							>{i18n.t('dashboard.modal.create.name')}</label
-						>
-						<input
-							id="name"
-							type="text"
-							required
-							bind:value={createName}
-							class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-							placeholder={i18n.t('dashboard.modal.create.namePlaceholder')}
-						/>
-					</div>
-
-					<div>
-						<label for="description" class="block text-sm font-medium text-gray-700">
-							{i18n.t('dashboard.modal.create.description')}
-						</label>
-						<textarea
-							id="description"
-							bind:value={createDescription}
-							rows="3"
-							class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-							placeholder={i18n.t('dashboard.modal.create.descriptionPlaceholder')}
-						></textarea>
-					</div>
-				</div>
-
-				<div class="mt-6 flex gap-3">
-					<button
-						type="button"
-						onclick={() => {
-							showCreateModal = false;
-							createName = '';
-							createDescription = '';
-							createError = '';
-						}}
-						class="flex-1 rounded-lg border border-gray-300 px-4 py-2 text-gray-700 transition hover:bg-gray-50"
-					>
-						{i18n.t('common.cancel')}
-					</button>
-					<button
-						type="submit"
-						disabled={isCreating}
-						class="flex-1 rounded-lg bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
-					>
-						{isCreating
-							? i18n.t('dashboard.modal.create.creating')
-							: i18n.t('dashboard.modal.create.create')}
-					</button>
-				</div>
-			</form>
+			<div>
+				<label for="description" class="block text-sm font-medium text-gray-700">
+					{i18n.t('dashboard.modal.create.description')}
+				</label>
+				<textarea
+					id="description"
+					bind:value={createDescription}
+					rows="3"
+					class="mt-1 block w-full border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+					placeholder={i18n.t('dashboard.modal.create.descriptionPlaceholder')}
+				></textarea>
+			</div>
 		</div>
-	</div>
-{/if}
+
+		<div class="pixel-modal-buttons">
+			<button
+				type="button"
+				onclick={() => {
+					showCreateModal = false;
+					createName = '';
+					createDescription = '';
+					createError = '';
+				}}
+				class="flex-1 border-2 border-gray-300 bg-white px-4 py-2 text-gray-700 transition hover:bg-gray-50"
+			>
+				{i18n.t('common.cancel')}
+			</button>
+			<button
+				type="submit"
+				disabled={isCreating}
+				class="flex-1 border-2 border-blue-600 bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+			>
+				{isCreating
+					? i18n.t('dashboard.modal.create.creating')
+					: i18n.t('dashboard.modal.create.create')}
+			</button>
+		</div>
+	</form>
+</PixelModal>
 
 <!-- Duplicate Workspace Modal -->
-{#if showDuplicateModal && duplicateWorkspace}
-	<div class="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black">
-		<div class="w-full max-w-md rounded-lg bg-white p-6 shadow-xl">
-			<h2 class="mb-4 text-xl font-bold text-gray-900">
-				{i18n.t('dashboard.modal.duplicate.title')}
-			</h2>
+<PixelModal
+	show={showDuplicateModal && duplicateWorkspace !== null}
+	title={i18n.t('dashboard.modal.duplicate.title')}
+	onClose={() => {
+		showDuplicateModal = false;
+		duplicateWorkspace = null;
+		duplicateName = '';
+		duplicateError = '';
+	}}
+>
+	<form onsubmit={submitDuplicate}>
+		{#if duplicateError}
+			<div class="mb-4 rounded-md bg-red-50 p-3">
+				<p class="text-sm text-red-800">{duplicateError}</p>
+			</div>
+		{/if}
 
-			<form onsubmit={submitDuplicate}>
-				{#if duplicateError}
-					<div class="mb-4 rounded-md bg-red-50 p-3">
-						<p class="text-sm text-red-800">{duplicateError}</p>
-					</div>
-				{/if}
-
-				<div class="mb-4">
-					<label for="duplicate-name" class="block text-sm font-medium text-gray-700">
-						{i18n.t('dashboard.modal.duplicate.newName')}
-					</label>
-					<input
-						id="duplicate-name"
-						type="text"
-						required
-						bind:value={duplicateName}
-						class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-						placeholder="My Workspace (Copy)"
-					/>
-					<p class="mt-1 text-xs text-gray-500">
-						{i18n.t('dashboard.modal.duplicate.copyOf', { name: duplicateWorkspace.name })}
-					</p>
-				</div>
-
-				<div class="mt-6 flex gap-3">
-					<button
-						type="button"
-						onclick={() => {
-							showDuplicateModal = false;
-							duplicateWorkspace = null;
-							duplicateName = '';
-							duplicateError = '';
-						}}
-						class="flex-1 rounded-lg border border-gray-300 px-4 py-2 text-gray-700 transition hover:bg-gray-50"
-					>
-						{i18n.t('common.cancel')}
-					</button>
-					<button
-						type="submit"
-						disabled={isDuplicating}
-						class="flex-1 rounded-lg bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
-					>
-						{isDuplicating
-							? i18n.t('dashboard.modal.duplicate.duplicating')
-							: i18n.t('dashboard.modal.duplicate.duplicate')}
-					</button>
-				</div>
-			</form>
+		<div class="mb-4">
+			<label for="duplicate-name" class="block text-sm font-medium text-gray-700">
+				{i18n.t('dashboard.modal.duplicate.newName')}
+			</label>
+			<input
+				id="duplicate-name"
+				type="text"
+				required
+				bind:value={duplicateName}
+				class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+				placeholder="My Workspace (Copy)"
+			/>
+			<p class="mt-1 text-xs text-gray-500">
+				{i18n.t('dashboard.modal.duplicate.copyOf', { name: duplicateWorkspace.name })}
+			</p>
 		</div>
-	</div>
-{/if}
+
+		<div class="pixel-modal-buttons">
+			<button
+				type="button"
+				onclick={() => {
+					showDuplicateModal = false;
+					duplicateWorkspace = null;
+					duplicateName = '';
+					duplicateError = '';
+				}}
+				class="flex-1 border-2 border-gray-300 bg-white px-4 py-2 text-gray-700 transition hover:bg-gray-50"
+			>
+				{i18n.t('common.cancel')}
+			</button>
+			<button
+				type="submit"
+				disabled={isDuplicating}
+				class="flex-1 border-2 border-blue-600 bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+			>
+				{isDuplicating
+					? i18n.t('dashboard.modal.duplicate.duplicating')
+					: i18n.t('dashboard.modal.duplicate.duplicate')}
+			</button>
+		</div>
+	</form>
+</PixelModal>
 
 <!-- Rename Workspace Modal -->
-{#if showRenameModal && renameWorkspace}
-	<div class="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black">
-		<div class="w-full max-w-md rounded-lg bg-white p-6 shadow-xl">
-			<h2 class="mb-4 text-xl font-bold text-gray-900">{i18n.t('dashboard.modal.rename.title')}</h2>
+<PixelModal
+	show={showRenameModal && renameWorkspace !== null}
+	title={i18n.t('dashboard.modal.rename.title')}
+	onClose={() => {
+		showRenameModal = false;
+		renameWorkspace = null;
+		renameName = '';
+		renameDescription = '';
+		renameError = '';
+	}}
+>
+	<form onsubmit={submitRename}>
+		{#if renameError}
+			<div class="mb-4 rounded-md bg-red-50 p-3">
+				<p class="text-sm text-red-800">{renameError}</p>
+			</div>
+		{/if}
 
-			<form onsubmit={submitRename}>
-				{#if renameError}
-					<div class="mb-4 rounded-md bg-red-50 p-3">
-						<p class="text-sm text-red-800">{renameError}</p>
-					</div>
-				{/if}
+		<div class="space-y-4">
+			<div>
+				<label for="rename-name" class="block text-sm font-medium text-gray-700"
+					>{i18n.t('dashboard.modal.create.name')}</label
+				>
+				<input
+					id="rename-name"
+					type="text"
+					required
+					bind:value={renameName}
+					class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+					placeholder={i18n.t('dashboard.modal.create.namePlaceholder')}
+				/>
+			</div>
 
-				<div class="space-y-4">
-					<div>
-						<label for="rename-name" class="block text-sm font-medium text-gray-700"
-							>{i18n.t('dashboard.modal.create.name')}</label
-						>
-						<input
-							id="rename-name"
-							type="text"
-							required
-							bind:value={renameName}
-							class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-							placeholder={i18n.t('dashboard.modal.create.namePlaceholder')}
-						/>
-					</div>
-
-					<div>
-						<label for="rename-description" class="block text-sm font-medium text-gray-700">
-							{i18n.t('dashboard.modal.create.description')}
-						</label>
-						<textarea
-							id="rename-description"
-							bind:value={renameDescription}
-							rows="3"
-							class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-							placeholder={i18n.t('dashboard.modal.create.descriptionPlaceholder')}
-						></textarea>
-					</div>
-				</div>
-
-				<div class="mt-6 flex gap-3">
-					<button
-						type="button"
-						onclick={() => {
-							showRenameModal = false;
-							renameWorkspace = null;
-							renameName = '';
-							renameDescription = '';
-							renameError = '';
-						}}
-						class="flex-1 rounded-lg border border-gray-300 px-4 py-2 text-gray-700 transition hover:bg-gray-50"
-					>
-						{i18n.t('common.cancel')}
-					</button>
-					<button
-						type="submit"
-						disabled={isRenaming}
-						class="flex-1 rounded-lg bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
-					>
-						{isRenaming
-							? i18n.t('dashboard.modal.rename.saving')
-							: i18n.t('dashboard.modal.rename.saveChanges')}
-					</button>
-				</div>
-			</form>
+			<div>
+				<label for="rename-description" class="block text-sm font-medium text-gray-700">
+					{i18n.t('dashboard.modal.create.description')}
+				</label>
+				<textarea
+					id="rename-description"
+					bind:value={renameDescription}
+					rows="3"
+					class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+					placeholder={i18n.t('dashboard.modal.create.descriptionPlaceholder')}
+				></textarea>
+			</div>
 		</div>
-	</div>
-{/if}
+
+		<div class="pixel-modal-buttons">
+			<button
+				type="button"
+				onclick={() => {
+					showRenameModal = false;
+					renameWorkspace = null;
+					renameName = '';
+					renameDescription = '';
+					renameError = '';
+				}}
+				class="flex-1 border-2 border-gray-300 bg-white px-4 py-2 text-gray-700 transition hover:bg-gray-50"
+			>
+				{i18n.t('common.cancel')}
+			</button>
+			<button
+				type="submit"
+				disabled={isRenaming}
+				class="flex-1 border-2 border-blue-600 bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+			>
+				{isRenaming
+					? i18n.t('dashboard.modal.rename.saving')
+					: i18n.t('dashboard.modal.rename.saveChanges')}
+			</button>
+		</div>
+	</form>
+</PixelModal>

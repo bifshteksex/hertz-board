@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { api } from '$lib/services/api';
 	import { i18n } from '$lib/stores/i18n.svelte';
+	import LanguageSwitcher from '$lib/components/LanguageSwitcher.svelte';
 
 	let email = $state('');
 	let error = $state('');
@@ -24,6 +25,8 @@
 </script>
 
 <div class="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12 sm:px-6 lg:px-8">
+	<LanguageSwitcher />
+
 	<div class="w-full max-w-md space-y-8">
 		<div>
 			<h1 class="text-center text-4xl font-bold text-gray-900">{i18n.t('auth.appName')}</h1>

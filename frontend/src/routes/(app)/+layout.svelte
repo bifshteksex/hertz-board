@@ -4,7 +4,10 @@
 	import { themeStore } from '$lib/stores/theme.svelte';
 	import { i18n } from '$lib/i18n';
 	import { onMount } from 'svelte';
-	import { Menu, Settings, LogOut, Bell, Home, Sun, Moon } from 'lucide-svelte';
+	import { Menu, Bell, Home, Sun, Moon } from 'lucide-svelte';
+	import IconSettings from '$components/icons/IconSettings.svelte';
+	import IconSignout from '$components/icons/IconSignout.svelte';
+	import PixelMenu from '$lib/components/PixelMenu.svelte';
 
 	let { children } = $props();
 	let showUserMenu = $state(false);
@@ -84,28 +87,16 @@
 						</div>
 					</button>
 
-					{#if showUserMenu}
-						<div
-							class="ring-opacity-5 absolute bottom-full left-0 mb-2 w-full rounded-lg bg-white shadow-lg ring-1 ring-black"
-						>
-							<div class="py-1">
-								<a
-									href="/settings"
-									class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-								>
-									<Settings size={16} />
-									{i18n.t('nav.settings')}
-								</a>
-								<button
-									onclick={handleLogout}
-									class="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
-								>
-									<LogOut size={16} />
-									{i18n.t('nav.logout')}
-								</button>
-							</div>
-						</div>
-					{/if}
+					<PixelMenu show={showUserMenu} position="top-right">
+						<a href="/settings" class="pixel-menu-item">
+							<IconSettings size={16} />
+							<span>{i18n.t('nav.settings')}</span>
+						</a>
+						<button onclick={handleLogout} class="pixel-menu-item">
+							<IconSignout size={16} />
+							<span>{i18n.t('nav.logout')}</span>
+						</button>
+					</PixelMenu>
 				</div>
 			</div>
 		</aside>
@@ -189,14 +180,14 @@
 							onclick={() => (showMobileMenu = false)}
 							class="flex items-center gap-2 rounded-lg px-3 py-2 text-gray-700 hover:bg-gray-100"
 						>
-							<Settings size={16} />
+							<IconSettings size={16} />
 							{i18n.t('nav.settings')}
 						</a>
 						<button
 							onclick={handleLogout}
 							class="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-gray-700 hover:bg-gray-100"
 						>
-							<LogOut size={16} />
+							<IconSignout size={16} />
 							{i18n.t('nav.logout')}
 						</button>
 					</div>

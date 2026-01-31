@@ -187,7 +187,7 @@ export default {
 				description: '由 CloudWeGo Hertz 和 WebSockets 提供支持的高性能后端'
 			}
 		},
-		footer: '用 ❤️ 制作'
+		footer: '用 {heart} 制作'
 	},
 	workspaceDetail: {
 		loading: '加载工作区中...',

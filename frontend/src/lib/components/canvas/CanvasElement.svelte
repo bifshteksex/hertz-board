@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { CanvasElement as CanvasElementType } from '$lib/types/api';
-	import { canvasStore } from '$lib/stores/canvas.svelte';
+	import { canvas } from '$lib/stores/canvasWithHistory.svelte';
 	import TextEditor from './TextEditor.svelte';
 
 	interface Props {
@@ -33,7 +33,7 @@
 	}
 
 	function handleTextUpdate(content: string, html: string) {
-		canvasStore.updateElement(element.id, {
+		canvas.updateElement(element.id, {
 			content: content,
 			html_content: html
 		});

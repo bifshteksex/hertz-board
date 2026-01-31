@@ -188,7 +188,7 @@ export default {
 				description: 'High-performance backend powered by CloudWeGo Hertz and WebSockets'
 			}
 		},
-		footer: 'Made with ❤️ by'
+		footer: 'Made with {heart} by'
 	},
 	workspaceDetail: {
 		loading: 'Loading workspace...',

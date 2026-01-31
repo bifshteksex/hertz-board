@@ -4,7 +4,13 @@
 	import { authStore } from '$lib/stores/auth.svelte';
 	import { i18n } from '$lib/stores/i18n.svelte';
 	import PixelButton from '$lib/components/PixelButton.svelte';
+	import IconHeart from '$components/icons/IconHeart.svelte';
+	import IconGitHub from '$components/icons/IconGitHub.svelte';
+
+	import LanguageSwitcher from '$lib/components/LanguageSwitcher.svelte';
 	import tv from '$lib/tv-new.webp';
+
+	const currentYear = new Date().getFullYear();
 
 	onMount(async () => {
 		// Initialize auth and redirect if already logged in
@@ -16,6 +22,8 @@
 </script>
 
 <div class="flex h-screen flex-col justify-between">
+	<LanguageSwitcher />
+
 	<div class="flex h-full flex-col items-center justify-center">
 		<div class="flex items-center">
 			<h1 class="mb-4 flex flex-col font-[CoralPixels] text-[10rem] leading-30 text-gray-900">
@@ -60,8 +68,48 @@
 			</p>
 		</div>
 	</div>
-	<span class="flex justify-center border-2 border-[#372d2e] p-6"
-		>{i18n.t('landing.footer')}
-		<a class="underline" target="_blank" href="https://rshang.in/">Roman Shangin</a></span
-	>
+	<div class="flex items-center justify-center border-2 border-[#372d2e] p-6">
+		<span class="border-r-2 border-[#372d2e] px-3">© {currentYear} HertzBoard</span>
+		<span class="flex items-center justify-center gap-1 border-r-2 border-[#372d2e] px-3">
+			{i18n.t('landing.footer').split('{heart}')[0]}
+			<span class="pixel-heartbeat">
+				<IconHeart size={20} />
+			</span>
+			{i18n.t('landing.footer').split('{heart}')[1]}
+			<a class="ml-1 underline" target="_blank" href="https://rshang.in/">Roman Shangin</a></span
+		>
+		<a
+			target="_blank"
+			href="https://github.com/bifshteksex/hertz-board"
+			class="flex items-center gap-1 px-3"><IconGitHub /><span class="underline">GitHub</span></a
+		>
+	</div>
 </div>
+
+<style>
+	@keyframes pixelHeartbeat {
+		0% {
+			transform: scale(1);
+		}
+		10% {
+			transform: scale(1.2);
+		}
+		20% {
+			transform: scale(1);
+		}
+		30% {
+			transform: scale(1.3);
+		}
+		40% {
+			transform: scale(1);
+		}
+		100% {
+			transform: scale(1);
+		}
+	}
+
+	.pixel-heartbeat {
+		display: inline-flex;
+		animation: pixelHeartbeat 2s steps(1) infinite;
+	}
+</style>

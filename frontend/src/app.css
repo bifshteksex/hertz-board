@@ -2,27 +2,109 @@
 
 @font-face {
 	font-family: 'CoralPixels';
-	src: url('lib/fonts/CoralPixels-Regular.ttf') format('truetype');
+	src: url('/fonts/CoralPixels-Regular.ttf') format('truetype');
 	font-style: normal;
 	font-weight: normal;
 }
 
 @font-face {
 	font-family: 'FusionPixelLat';
-	src: url('lib/fonts/fusion-pixel-12px-monospaced-latin.ttf') format('truetype');
+	src: url('/fonts/fusion-pixel-12px-monospaced-latin.ttf') format('truetype');
 	font-style: normal;
 	font-weight: normal;
 }
 
 @font-face {
 	font-family: 'FusionPixelZh';
-	src: url('lib/fonts/fusion-pixel-12px-monospaced-zh_hans.ttf') format('truetype');
+	src: url('/fonts/fusion-pixel-12px-monospaced-zh_hans.ttf') format('truetype');
 	font-style: normal;
 	font-weight: normal;
 }
 
 html {
 	font-family: 'FusionPixelLat';
+}
+
+/* Custom pixel cursors */
+* {
+	cursor:
+		url('/cursors/default.svg') 0 0,
+		auto;
+}
+
+button,
+button *,
+a,
+a *,
+[role='button'],
+[role='button'] *,
+input[type='submit'],
+input[type='button'],
+select,
+.cursor-pointer,
+label[for] {
+	cursor:
+		url('/cursors/pointer.svg') 0 0,
+		pointer;
+}
+
+/* Input cursor for text inputs */
+input[type='text'],
+input[type='email'],
+input[type='password'],
+input[type='search'],
+input[type='tel'],
+input[type='url'],
+input[type='number'],
+textarea {
+	cursor:
+		url('/cursors/input.svg') 8 8,
+		text;
+}
+
+input[type='text']:hover,
+input[type='email']:hover,
+input[type='password']:hover,
+input[type='search']:hover,
+input[type='tel']:hover,
+input[type='url']:hover,
+input[type='number']:hover,
+textarea:hover,
+input[type='text']:focus,
+input[type='email']:focus,
+input[type='password']:focus,
+input[type='search']:focus,
+input[type='tel']:focus,
+input[type='url']:focus,
+input[type='number']:focus,
+textarea:focus {
+	cursor:
+		url('/cursors/input.svg') 8 8,
+		text;
+}
+
+/* Grab cursor for draggable elements */
+.cursor-grab,
+.cursor-grab * {
+	cursor:
+		url('/cursors/grab.svg') 8 8,
+		grab !important;
+}
+
+.cursor-grabbing,
+.cursor-grabbing * {
+	cursor:
+		url('/cursors/grab.svg') 8 8,
+		grabbing !important;
+}
+
+/* Ensure disabled elements use default cursor */
+button:disabled,
+a.disabled,
+[disabled] {
+	cursor:
+		url('/cursors/default.svg') 0 0,
+		not-allowed;
 }
 
 /* Dark mode styles */

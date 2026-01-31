@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { canvasStore, MIN_ZOOM, MAX_ZOOM, ZOOM_STEP } from '$lib/stores/canvas.svelte';
-	import { ZoomIn, ZoomOut, Maximize2 } from 'lucide-svelte';
+	import { Maximize2 } from 'lucide-svelte';
+	import IconZoomIn from '$components/icons/IconZoomIn.svelte';
+	import IconZoomOut from '$components/icons/IconZoomOut.svelte';
 
 	const viewport = $derived(canvasStore.viewport);
 	const zoomPercent = $derived(Math.round(viewport.zoom * 100));
@@ -37,7 +39,7 @@
 		title="Zoom Out (Ctrl + -)"
 		aria-label="Zoom out"
 	>
-		<ZoomOut size={18} />
+		<IconZoomOut size={18} />
 	</button>
 
 	<button
@@ -56,7 +58,7 @@
 		title="Zoom In (Ctrl + +)"
 		aria-label="Zoom in"
 	>
-		<ZoomIn size={18} />
+		<IconZoomIn size={18} />
 	</button>
 
 	<div class="separator"></div>
