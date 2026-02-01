@@ -460,8 +460,8 @@ export class AutosaveService {
 			// Размер
 			if (change.updates.width !== undefined || change.updates.height !== undefined) {
 				update.element_data.size = {
-					width: change.updates.width,
-					height: change.updates.height
+					width: change.updates.width ?? 0,
+					height: change.updates.height ?? 0
 				};
 			}
 

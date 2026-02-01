@@ -63,7 +63,7 @@
 				console.log('[Workspace] Loading elements for workspace:', workspaceId);
 				const response = await api.listElements(workspaceId);
 				console.log('[Workspace] Loaded elements:', response);
-				const backendElements = response?.elements || [];
+				const backendElements = response || [];
 
 				// Преобразуем из формата backend в формат frontend
 				const elements = backendElements.map((el: any) => {
@@ -177,8 +177,8 @@
 			// Center viewport on user's cursor
 			canvasStore.setViewport({
 				zoom: canvasStore.viewport.zoom,
-				offsetX: -user.cursor.x * canvasStore.viewport.zoom + window.innerWidth / 2,
-				offsetY: -user.cursor.y * canvasStore.viewport.zoom + window.innerHeight / 2
+				x: -user.cursor.x * canvasStore.viewport.zoom + window.innerWidth / 2,
+				y: -user.cursor.y * canvasStore.viewport.zoom + window.innerHeight / 2
 			});
 		}
 	}

@@ -140,18 +140,18 @@
 
 	<!-- Profile Tab -->
 	{#if activeTab === 'profile'}
-		<div class="rounded-lg border border-gray-200 bg-white p-6">
+		<div class="border border-gray-200 bg-white p-6">
 			<h2 class="mb-6 text-lg font-semibold text-gray-900">{i18n.t('settings.profile.title')}</h2>
 
 			<form onsubmit={handleUpdateProfile} class="space-y-6">
 				{#if profileError}
-					<div class="rounded-md bg-red-50 p-4">
+					<div class="bg-red-50 p-4">
 						<p class="text-sm text-red-800">{profileError}</p>
 					</div>
 				{/if}
 
 				{#if profileSuccess}
-					<div class="rounded-md bg-green-50 p-4">
+					<div class="bg-green-50 p-4">
 						<p class="text-sm text-green-800">{i18n.t('settings.profile.successMessage')}</p>
 					</div>
 				{/if}
@@ -189,7 +189,7 @@
 						type="text"
 						required
 						bind:value={profileName}
-						class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+						class="mt-1 block w-full border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
 					/>
 				</div>
 
@@ -201,7 +201,7 @@
 						id="avatar"
 						type="url"
 						bind:value={profileAvatarUrl}
-						class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+						class="mt-1 block w-full border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
 						placeholder={i18n.t('settings.profile.avatarPlaceholder')}
 					/>
 					<p class="mt-1 text-xs text-gray-500">{i18n.t('settings.profile.avatarHint')}</p>
@@ -211,7 +211,7 @@
 					<button
 						type="submit"
 						disabled={isUpdatingProfile}
-						class="rounded-lg bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+						class=" bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
 					>
 						{isUpdatingProfile
 							? i18n.t('settings.profile.saving')
@@ -224,11 +224,11 @@
 
 	<!-- Password Tab -->
 	{#if activeTab === 'password'}
-		<div class="rounded-lg border border-gray-200 bg-white p-6">
+		<div class="border border-gray-200 bg-white p-6">
 			<h2 class="mb-6 text-lg font-semibold text-gray-900">{i18n.t('settings.password.title')}</h2>
 
 			{#if authStore.user?.provider !== 'email'}
-				<div class="rounded-md bg-yellow-50 p-4">
+				<div class="bg-yellow-50 p-4">
 					<p class="text-sm text-yellow-800">
 						{i18n.t('settings.password.oauthWarning', { provider: authStore.user?.provider || '' })}
 					</p>
@@ -236,13 +236,13 @@
 			{:else}
 				<form onsubmit={handleChangePassword} class="space-y-6">
 					{#if passwordError}
-						<div class="rounded-md bg-red-50 p-4">
+						<div class="bg-red-50 p-4">
 							<p class="text-sm text-red-800">{passwordError}</p>
 						</div>
 					{/if}
 
 					{#if passwordSuccess}
-						<div class="rounded-md bg-green-50 p-4">
+						<div class="bg-green-50 p-4">
 							<p class="text-sm text-green-800">{i18n.t('settings.password.successMessage')}</p>
 						</div>
 					{/if}
@@ -256,7 +256,7 @@
 							type="password"
 							required
 							bind:value={currentPassword}
-							class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+							class="mt-1 block w-full border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
 						/>
 					</div>
 
@@ -269,7 +269,7 @@
 							type="password"
 							required
 							bind:value={newPassword}
-							class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+							class="mt-1 block w-full border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
 						/>
 						<p class="mt-1 text-xs text-gray-500">{i18n.t('settings.password.hint')}</p>
 					</div>
@@ -283,7 +283,7 @@
 							type="password"
 							required
 							bind:value={confirmPassword}
-							class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+							class="mt-1 block w-full border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
 						/>
 					</div>
 
@@ -291,7 +291,7 @@
 						<button
 							type="submit"
 							disabled={isChangingPassword}
-							class="rounded-lg bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+							class="bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
 						>
 							{isChangingPassword
 								? i18n.t('settings.password.changing')
@@ -306,7 +306,7 @@
 	<!-- Account Tab -->
 	{#if activeTab === 'account'}
 		<div class="space-y-6">
-			<div class="rounded-lg border border-gray-200 bg-white p-6">
+			<div class="border border-gray-200 bg-white p-6">
 				<h2 class="mb-4 text-lg font-semibold text-gray-900">{i18n.t('settings.account.title')}</h2>
 				<div class="space-y-4">
 					<div class="flex justify-between">
@@ -338,7 +338,7 @@
 				</div>
 			</div>
 
-			<div class="rounded-lg border border-red-200 bg-red-50 p-6">
+			<div class="border border-red-200 bg-red-50 p-6">
 				<h2 class="mb-2 text-lg font-semibold text-red-900">
 					{i18n.t('settings.account.dangerZone')}
 				</h2>
@@ -347,7 +347,7 @@
 				</p>
 				<button
 					onclick={() => alert('Account deletion is not yet implemented')}
-					class="rounded-lg border border-red-600 bg-white px-4 py-2 text-red-600 transition hover:bg-red-50"
+					class="border border-red-600 bg-white px-4 py-2 text-red-600 transition hover:bg-red-50"
 				>
 					{i18n.t('settings.account.deleteAccount')}
 				</button>
@@ -357,7 +357,7 @@
 
 	<!-- Preferences Tab -->
 	{#if activeTab === 'preferences'}
-		<div class="rounded-lg border border-gray-200 bg-white p-6">
+		<div class="border border-gray-200 bg-white p-6">
 			<h2 class="mb-6 text-lg font-semibold text-gray-900">
 				{i18n.t('settings.preferences.title')}
 			</h2>
@@ -372,7 +372,7 @@
 						id="language"
 						value={i18n.locale}
 						onchange={(e) => i18n.setLocale(e.currentTarget.value as 'en' | 'ru' | 'zh')}
-						class="block w-full max-w-xs rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+						class="block w-full max-w-xs border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
 					>
 						<option value="en">{i18n.t('settings.preferences.languageEn')}</option>
 						<option value="ru">{i18n.t('settings.preferences.languageRu')}</option>
@@ -389,7 +389,7 @@
 					<div class="flex gap-4">
 						<button
 							onclick={() => themeStore.setTheme('light')}
-							class={`flex items-center gap-2 rounded-lg border-2 px-4 py-3 transition ${
+							class={`flex items-center gap-2 border-2 px-4 py-3 transition ${
 								themeStore.theme === 'light'
 									? 'border-blue-600 bg-blue-50 text-blue-700'
 									: 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
@@ -408,7 +408,7 @@
 
 						<button
 							onclick={() => themeStore.setTheme('dark')}
-							class={`flex items-center gap-2 rounded-lg border-2 px-4 py-3 transition ${
+							class={`flex items-center gap-2 border-2 px-4 py-3 transition ${
 								themeStore.theme === 'dark'
 									? 'border-blue-600 bg-blue-50 text-blue-700'
 									: 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'

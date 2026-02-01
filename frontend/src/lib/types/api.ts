@@ -98,6 +98,7 @@ export interface ElementStyle {
 	color?: string;
 	listType?: 'bullet' | 'numbered' | 'checkbox';
 	connectorType?: 'straight' | 'curved' | 'elbow';
+	[key: string]: string | number | undefined;
 }
 
 export interface ConnectorData {
@@ -131,6 +132,8 @@ export interface CanvasElement {
 	image_url?: string;
 	path_data?: string;
 	connector_data?: ConnectorData;
+	items?: any[]; // For list elements
+	points?: Array<{ x: number; y: number }>; // For freehand elements
 	created_by?: string;
 	created_at?: string;
 	updated_at?: string;

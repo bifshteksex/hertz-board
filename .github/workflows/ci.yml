@@ -193,6 +193,3 @@ jobs:
 
       - name: Build API Gateway
         run: cd backend && go build -o bin/api-gateway cmd/api-gateway/main.go
-
-      - name: Build WebSocket Server
-        run: cd backend && go build -o bin/ws-server cmd/ws-server/main.go

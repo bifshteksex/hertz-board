@@ -1,4 +1,5 @@
 <script lang="ts">
+	import IconCross from '$components/icons/IconCross.svelte';
 	interface Props {
 		show?: boolean;
 		title?: string;
@@ -36,27 +37,7 @@
 					<h2 class="pixel-modal-title">{title}</h2>
 					{#if onClose}
 						<button onclick={onClose} class="pixel-modal-close" aria-label="Close">
-							<svg
-								width="16"
-								height="16"
-								viewBox="0 0 16 16"
-								fill="none"
-								xmlns="http://www.w3.org/2000/svg"
-							>
-								<path d="M2 2H4V4H2V2Z" fill="currentColor" />
-								<path d="M4 4H6V6H4V4Z" fill="currentColor" />
-								<path d="M6 6H8V8H6V6Z" fill="currentColor" />
-								<path d="M8 8H10V10H8V8Z" fill="currentColor" />
-								<path d="M10 6H12V8H10V6Z" fill="currentColor" />
-								<path d="M12 4H14V6H12V4Z" fill="currentColor" />
-								<path d="M14 2H16V4H14V2Z" fill="currentColor" />
-								<path d="M14 10H16V12H14V10Z" fill="currentColor" />
-								<path d="M12 12H14V14H12V12Z" fill="currentColor" />
-								<path d="M10 10H12V12H10V10Z" fill="currentColor" />
-								<path d="M6 10H8V12H6V10Z" fill="currentColor" />
-								<path d="M4 12H6V14H4V12Z" fill="currentColor" />
-								<path d="M2 14H4V16H2V14Z" fill="currentColor" />
-							</svg>
+							<IconCross size="22" />
 						</button>
 					{/if}
 				</div>
@@ -118,7 +99,6 @@
 		border: 2px solid #372d2e;
 		background: white;
 		color: #374151;
-		cursor: pointer;
 		transition: all 0.15s;
 	}
 

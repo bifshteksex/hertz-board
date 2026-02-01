@@ -31,6 +31,7 @@
 	}
 
 	.pixel-menu.top-right {
+		width: 100%;
 		bottom: calc(100% + 8px);
 		right: 0;
 	}
