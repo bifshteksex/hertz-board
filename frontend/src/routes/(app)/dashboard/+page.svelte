@@ -482,7 +482,7 @@
 				placeholder="My Workspace (Copy)"
 			/>
 			<p class="mt-1 text-xs text-gray-500">
-				{i18n.t('dashboard.modal.duplicate.copyOf', { name: duplicateWorkspace.name })}
+				{i18n.t('dashboard.modal.duplicate.copyOf', { name: duplicateWorkspace?.name || '' })}
 			</p>
 		</div>
 

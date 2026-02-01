@@ -383,9 +383,9 @@
 
 				<!-- Theme Selection -->
 				<div>
-					<label class="mb-2 block text-sm font-medium text-gray-700"
-						>{i18n.t('settings.preferences.themeLabel')}</label
-					>
+					<div class="mb-2 block text-sm font-medium text-gray-700">
+						{i18n.t('settings.preferences.themeLabel')}
+					</div>
 					<div class="flex gap-4">
 						<button
 							onclick={() => themeStore.setTheme('light')}

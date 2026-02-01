@@ -37,7 +37,7 @@
 					<h2 class="pixel-modal-title">{title}</h2>
 					{#if onClose}
 						<button onclick={onClose} class="pixel-modal-close" aria-label="Close">
-							<IconCross size="22" />
+							<IconCross size={22} />
 						</button>
 					{/if}
 				</div>

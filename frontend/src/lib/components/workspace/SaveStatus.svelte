@@ -54,7 +54,10 @@
 </script>
 
 <div class="flex items-center gap-2 text-sm {statusColor}">
-	<svelte:component this={statusIcon} size={16} class={shouldAnimate ? 'animate-spin' : ''} />
+	{#if statusIcon}
+		{@const StatusIcon = statusIcon}
+		<StatusIcon size={16} class={shouldAnimate ? 'animate-spin' : ''} />
+	{/if}
 	<span>{statusText}</span>
 	{#if lastError && status === 'error'}
 		<button

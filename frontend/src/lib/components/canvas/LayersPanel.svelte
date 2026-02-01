@@ -192,6 +192,8 @@
 					{@const isDragging = draggedElement === element.id}
 					{@const isDropTarget = dropTarget === element.id}
 
+					<!-- svelte-ignore a11y_click_events_have_key_events -->
+					<!-- svelte-ignore a11y_no_static_element_interactions -->
 					<div
 						class="mb-0.5 flex cursor-pointer items-center gap-2 rounded-md px-2 py-2 transition-all duration-150 select-none hover:bg-gray-100"
 						class:bg-blue-100={isSelected}
@@ -200,6 +202,19 @@
 						class:border-t-2={isDropTarget}
 						class:border-blue-500={isDropTarget}
 						onclick={(e) => handleElementClick(element.id, e)}
+						role="button"
+						tabindex="0"
+						onkeydown={(e) => {
+							if (e.key === 'Enter' || e.key === ' ') {
+								e.preventDefault();
+								// Create a fake MouseEvent for compatibility
+								const fakeEvent = new MouseEvent('click', {
+									bubbles: true,
+									cancelable: true
+								});
+								handleElementClick(element.id, fakeEvent);
+							}
+						}}
 						draggable="true"
 						ondragstart={(e) => handleDragStart(element.id, e)}
 						ondragover={(e) => handleDragOver(element.id, e)}

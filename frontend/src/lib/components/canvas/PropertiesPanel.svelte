@@ -327,7 +327,7 @@
 					</div>
 
 					<div class="mb-2 flex flex-col gap-1.5">
-						<label class="text-xs font-medium text-gray-700">Alignment</label>
+						<div class="text-xs font-medium text-gray-700">Alignment</div>
 						<div class="grid grid-cols-3 gap-1">
 							<button
 								class="flex cursor-pointer items-center justify-center rounded-md border border-gray-200 bg-white px-2 py-2 text-gray-500 transition-all duration-150 hover:bg-gray-100 hover:text-gray-900 disabled:cursor-not-allowed disabled:opacity-50 {textAlign ===

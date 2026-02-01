@@ -450,10 +450,6 @@
 		cursor: pointer;
 	}
 
-	.canvas-element.selected {
-		/* Additional selected styling if needed */
-	}
-
 	.text-content {
 		width: 100%;
 		height: 100%;

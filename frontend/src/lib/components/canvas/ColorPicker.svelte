@@ -30,7 +30,7 @@
 
 	// Custom color picker state
 	let showCustomPicker = $state(false);
-	let customColor = $state(value);
+	let customColor = $state('');
 	let hue = $state(0);
 	let saturation = $state(100);
 	let lightness = $state(50);
@@ -46,7 +46,8 @@
 			}
 		}
 
-		// Parse current color to HSL
+		// Initialize customColor and parse current color to HSL
+		customColor = value;
 		parseColorToHSL(value);
 	});
 

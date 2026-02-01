@@ -204,7 +204,10 @@
 				title="Shapes"
 				aria-label="Shapes"
 			>
-				<svelte:component this={shapeIcons[activeShapeType]} size={18} />
+				{#if shapeIcons[activeShapeType]}
+					{@const ShapeIcon = shapeIcons[activeShapeType]}
+					<ShapeIcon size={18} />
+				{/if}
 				<SubmenuIcon size={12} class="submenu-indicator" />
 			</button>
 			{#if showShapeSubmenu}
@@ -221,7 +224,10 @@
 				title="Lists"
 				aria-label="Lists"
 			>
-				<svelte:component this={listIcons[activeListType]} size={18} />
+				{#if listIcons[activeListType]}
+					{@const ListIcon = listIcons[activeListType]}
+					<ListIcon size={18} />
+				{/if}
 				<SubmenuIcon size={12} class="submenu-indicator" />
 			</button>
 			{#if showListSubmenu}

@@ -63,9 +63,18 @@
 	});
 </script>
 
+<!-- svelte-ignore a11y_click_events_have_key_events -->
+<!-- svelte-ignore a11y_no_static_element_interactions -->
 <div
 	class="fixed inset-0 z-[10000] flex items-center justify-center bg-black/50"
+	role="button"
+	tabindex="-1"
 	onclick={handleBackdropClick}
+	onkeydown={(e) => {
+		if (e.key === 'Escape') {
+			onClose();
+		}
+	}}
 >
 	<div
 		bind:this={panelElement}
