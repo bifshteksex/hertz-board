@@ -120,27 +120,39 @@ func (h *Hub) runRoom(room *models.Room) {
 	for {
 		select {
 		case client := <-room.Register:
+			// Check if this user already has another connection in the room
+			isFirstConnection := true
+			for _, existingClient := range room.Clients {
+				if existingClient.UserID == client.UserID {
+					isFirstConnection = false
+					break
+				}
+			}
+
 			// Add client to room
 			room.Clients[client.ID] = client
 
-			log.Printf("Client %s joined room %s (%d total clients)",
-				client.UserID, room.WorkspaceID, len(room.Clients))
+			log.Printf("Client %s joined room %s (%d total clients, first connection: %v)",
+				client.UserID, room.WorkspaceID, len(room.Clients), isFirstConnection)
 
 			// Send list of existing users to new client
 			h.sendExistingPresences(client, room)
 
-			// Broadcast user_joined to other clients
-			joinMsg := &models.WSMessage{
-				Type:      models.MessageTypeUserJoined,
-				UserID:    client.UserID,
-				Timestamp: time.Now(),
-				Payload: models.UserJoinedPayload{
+			// Only broadcast user_joined if this is the user's first connection to the room
+			// (avoid duplicate user_joined events when user opens multiple tabs)
+			if isFirstConnection {
+				joinMsg := &models.WSMessage{
+					Type:      models.MessageTypeUserJoined,
 					UserID:    client.UserID,
-					UserName:  client.UserName,
-					UserColor: client.UserColor,
-				},
+					Timestamp: time.Now(),
+					Payload: models.UserJoinedPayload{
+						UserID:    client.UserID,
+						UserName:  client.UserName,
+						UserColor: client.UserColor,
+					},
+				}
+				h.broadcastToRoomClients(room, joinMsg, client.ID)
 			}
-			h.broadcastToRoomClients(room, joinMsg, client.ID)
 
 		case client := <-room.Unregister:
 			if _, ok := room.Clients[client.ID]; ok {
@@ -148,19 +160,31 @@ func (h *Hub) runRoom(room *models.Room) {
 				delete(room.Clients, client.ID)
 				close(client.Send)
 
-				log.Printf("Client %s left room %s (%d remaining clients)",
-					client.UserID, room.WorkspaceID, len(room.Clients))
-
-				// Broadcast user_left to other clients
-				leaveMsg := &models.WSMessage{
-					Type:      models.MessageTypeUserLeft,
-					UserID:    client.UserID,
-					Timestamp: time.Now(),
-					Payload: models.UserLeftPayload{
-						UserID: client.UserID,
-					},
+				// Check if this user still has other connections in the room
+				hasOtherConnections := false
+				for _, remainingClient := range room.Clients {
+					if remainingClient.UserID == client.UserID {
+						hasOtherConnections = true
+						break
+					}
 				}
-				h.broadcastToRoomClients(room, leaveMsg, uuid.Nil)
+
+				log.Printf("Client %s left room %s (%d remaining clients, has other connections: %v)",
+					client.UserID, room.WorkspaceID, len(room.Clients), hasOtherConnections)
+
+				// Only broadcast user_left if this was the user's last connection
+				// (avoid duplicate user_left events when user closes one of multiple tabs)
+				if !hasOtherConnections {
+					leaveMsg := &models.WSMessage{
+						Type:      models.MessageTypeUserLeft,
+						UserID:    client.UserID,
+						Timestamp: time.Now(),
+						Payload: models.UserLeftPayload{
+							UserID: client.UserID,
+						},
+					}
+					h.broadcastToRoomClients(room, leaveMsg, uuid.Nil)
+				}
 
 				// If room is empty, it will be cleaned up by cleanupEmptyRooms
 			}
@@ -192,12 +216,22 @@ func (h *Hub) broadcastToRoomClients(room *models.Room, msg *models.WSMessage, e
 
 // sendExistingPresences sends the list of existing users to a newly joined client
 func (h *Hub) sendExistingPresences(client *models.Client, room *models.Room) {
+	// Track unique users to avoid sending duplicate user_joined events
+	// (one user can have multiple connections/tabs open)
+	seenUsers := make(map[uuid.UUID]bool)
+
 	for _, existingClient := range room.Clients {
 		if existingClient.ID == client.ID {
 			continue
 		}
 
-		// Send user_joined for each existing user
+		// Skip if we already sent user_joined for this UserID
+		if seenUsers[existingClient.UserID] {
+			continue
+		}
+		seenUsers[existingClient.UserID] = true
+
+		// Send user_joined for each existing unique user
 		msg := &models.WSMessage{
 			Type:      models.MessageTypeUserJoined,
 			UserID:    existingClient.UserID,

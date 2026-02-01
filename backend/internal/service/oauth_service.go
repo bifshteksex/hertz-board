@@ -211,8 +211,8 @@ func (s *OAuthService) findOrCreateUser(
 		}
 	}
 
-	// Generate tokens
-	accessToken, expiresAt, err := s.jwtService.GenerateAccessToken(user.ID, user.Email)
+	// Generate tokens with username
+	accessToken, expiresAt, err := s.jwtService.GenerateAccessToken(user.ID, user.Email, user.Name)
 	if err != nil {
 		return nil, fmt.Errorf("failed to generate access token: %w", err)
 	}

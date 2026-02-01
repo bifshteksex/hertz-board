@@ -67,10 +67,6 @@ backend-run:
 	@echo "Running backend API gateway..."
 	cd backend && go run cmd/api-gateway/main.go
 
-backend-ws:
-	@echo "Running WebSocket server..."
-	cd backend && go run cmd/ws-server/main.go
-
 backend-test:
 	@echo "Running backend tests..."
 	cd backend && go test -v -race -coverprofile=coverage.out ./...
@@ -82,7 +78,6 @@ backend-lint:
 backend-build:
 	@echo "Building backend services..."
 	cd backend && go build -o bin/api-gateway cmd/api-gateway/main.go
-	cd backend && go build -o bin/ws-server cmd/ws-server/main.go
 
 # Frontend commands
 frontend-run:
@@ -181,7 +176,6 @@ build: backend-build frontend-build
 docker-build:
 	@echo "Building Docker images..."
 	docker build -t hertzboard-api-gateway -f deploy/docker/Dockerfile.api-gateway .
-	docker build -t hertzboard-ws-server -f deploy/docker/Dockerfile.ws-server .
 	docker build -t hertzboard-frontend -f deploy/docker/Dockerfile.frontend .
 
 # Development

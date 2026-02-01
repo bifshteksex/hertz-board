@@ -1,6 +1,12 @@
 <script lang="ts">
 	/**
 	 * FreehandDrawing - компонент для рисования от руки
+	 *
+	 * NOTE: Eraser tool can be implemented by:
+	 * 1. Detecting intersection between eraser path and existing strokes
+	 * 2. Splitting strokes at intersection points
+	 * 3. Creating new segments from non-erased portions
+	 * For MVP, users can delete entire freehand elements via Delete key
 	 */
 	import { getStroke } from 'perfect-freehand';
 

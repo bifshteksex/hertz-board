@@ -219,8 +219,8 @@ func (s *AuthService) ResetPassword(ctx context.Context, token, newPassword stri
 
 // generateTokenPair generates access and refresh token pair
 func (s *AuthService) generateTokenPair(ctx context.Context, user *models.User) (*models.TokenPair, error) {
-	// Generate access token
-	accessToken, expiresAt, err := s.jwtService.GenerateAccessToken(user.ID, user.Email)
+	// Generate access token with username
+	accessToken, expiresAt, err := s.jwtService.GenerateAccessToken(user.ID, user.Email, user.Name)
 	if err != nil {
 		return nil, err
 	}

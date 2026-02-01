@@ -140,8 +140,7 @@ make clean             # Очистить build артефакты
 
 ```bash
 cd backend
-go run cmd/api-gateway/main.go    # Запустить API Gateway
-go run cmd/ws-server/main.go      # Запустить WebSocket Server
+go run cmd/api-gateway/main.go    # Запустить API Gateway (включает WebSocket)
 go test ./...                     # Запустить тесты
 ```
 

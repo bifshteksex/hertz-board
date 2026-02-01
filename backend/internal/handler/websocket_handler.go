@@ -288,13 +288,13 @@ func (h *WebSocketHandler) handleCursorMove(client *models.Client, msg *models.W
 		return
 	}
 
-	position, ok := payload["position"].(map[string]interface{})
+	cursor, ok := payload["cursor"].(map[string]interface{})
 	if !ok {
 		return
 	}
 
-	x, _ := position["x"].(float64)
-	y, _ := position["y"].(float64)
+	x, _ := cursor["x"].(float64)
+	y, _ := cursor["y"].(float64)
 
 	// Update client presence
 	if client.Presence != nil {
@@ -324,7 +324,7 @@ func (h *WebSocketHandler) handleSelectionChange(client *models.Client, msg *mod
 		return
 	}
 
-	elementIDsRaw, ok := payload["element_ids"].([]interface{})
+	elementIDsRaw, ok := payload["selected_elements"].([]interface{})
 	if !ok {
 		return
 	}

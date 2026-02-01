@@ -13,6 +13,10 @@
 	import ImageUploader from './ImageUploader.svelte';
 	import ConnectorCreator from './ConnectorCreator.svelte';
 	import ContextMenu from './ContextMenu.svelte';
+	import UserCursor from './UserCursor.svelte';
+	import { presenceStore } from '$lib/stores/presence.svelte';
+	import { collaborationStore } from '$lib/stores/collaboration.svelte';
+	import { authStore } from '$lib/stores/auth.svelte';
 
 	let canvasContainer: HTMLDivElement;
 	let svgCanvas: SVGSVGElement;
@@ -554,7 +558,8 @@
 			newWidth = Math.max(20, newWidth);
 			newHeight = Math.max(20, newHeight);
 
-			canvas.updateElement(el.id, {
+			// Обновляем локально БЕЗ истории и WebSocket (чтобы избежать лагов)
+			canvasStore.updateElement(el.id, {
 				pos_x: newX,
 				pos_y: newY,
 				width: newWidth,
@@ -564,11 +569,32 @@
 	}
 
 	function endResize() {
+		if (!resizeStartData) return;
+
+		// Отправляем финальные обновления через canvas (с историей и WebSocket)
+		canvasStore.selectedElements.forEach((el) => {
+			const startData = resizeStartData!.elements.get(el.id);
+			if (!startData) return;
+
+			// Отправляем только если реально изменилось
+			if (
+				el.pos_x !== startData.x ||
+				el.pos_y !== startData.y ||
+				el.width !== startData.width ||
+				el.height !== startData.height
+			) {
+				canvas.updateElement(el.id, {
+					pos_x: el.pos_x,
+					pos_y: el.pos_y,
+					width: el.width,
+					height: el.height
+				});
+			}
+		});
+
 		isResizing = false;
 		resizeHandle = null;
 		resizeStartData = null;
-
-		// TODO: Отправить обновления на сервер
 	}
 
 	// Mouse handlers
@@ -766,6 +792,12 @@
 					connectorCurrent = point;
 					return;
 				}
+
+				// Send cursor position to other users (if connected)
+				if (collaborationStore.isConnected) {
+					const point = getCanvasPoint(event);
+					collaborationStore.sendCursorMove(point.x, point.y);
+				}
 			});
 		}
 	}
@@ -883,14 +915,32 @@
 
 	function handleCopy() {
 		const selectedElements = canvasStore.selectedElements;
-		if (selectedElements.length > 0) {
-			// Store in clipboard
-			const clipboardData = JSON.stringify(selectedElements);
-			navigator.clipboard.writeText(clipboardData).catch(() => {
-				// Fallback: store in sessionStorage
-				sessionStorage.setItem('hertz-board-clipboard', clipboardData);
-			});
-		}
+		if (selectedElements.length === 0) return;
+
+		// Create a deep copy of elements to preserve all data
+		const elementsCopy = selectedElements.map((el) => ({
+			...el,
+			style: el.style ? { ...el.style } : undefined,
+			// Preserve all type-specific data
+			...(el.type === 'list' && el.items ? { items: JSON.parse(JSON.stringify(el.items)) } : {}),
+			...(el.type === 'freehand' && el.points ? { points: [...el.points] } : {})
+		}));
+
+		// Store in clipboard with metadata
+		const clipboardData = JSON.stringify({
+			type: 'hertz-board-elements',
+			version: 1,
+			elements: elementsCopy,
+			timestamp: new Date().toISOString()
+		});
+
+		// Try modern clipboard API first
+		navigator.clipboard.writeText(clipboardData).catch(() => {
+			// Fallback to sessionStorage for same-window paste
+			sessionStorage.setItem('hertz-board-clipboard', clipboardData);
+		});
+
+		console.log(`[Canvas] Copied ${selectedElements.length} elements to clipboard`);
 	}
 
 	function handlePaste() {
@@ -899,14 +949,28 @@
 			.readText()
 			.then((text) => {
 				try {
-					const elements = JSON.parse(text) as CanvasElementType[];
-					pasteElements(elements);
+					const parsed = JSON.parse(text);
+
+					// Check if it's our format
+					if (parsed.type === 'hertz-board-elements' && parsed.elements) {
+						pasteElements(parsed.elements);
+					} else {
+						// Try direct array format (backward compatibility)
+						if (Array.isArray(parsed)) {
+							pasteElements(parsed);
+						}
+					}
 				} catch {
 					// Not valid JSON, try sessionStorage
 					const stored = sessionStorage.getItem('hertz-board-clipboard');
 					if (stored) {
-						const elements = JSON.parse(stored) as CanvasElementType[];
-						pasteElements(elements);
+						try {
+							const parsed = JSON.parse(stored);
+							const elements = parsed.elements || parsed;
+							pasteElements(elements);
+						} catch (e) {
+							console.error('[Canvas] Failed to parse clipboard data:', e);
+						}
 					}
 				}
 			})
@@ -914,55 +978,82 @@
 				// Fallback: sessionStorage
 				const stored = sessionStorage.getItem('hertz-board-clipboard');
 				if (stored) {
-					const elements = JSON.parse(stored) as CanvasElementType[];
-					pasteElements(elements);
+					try {
+						const parsed = JSON.parse(stored);
+						const elements = parsed.elements || parsed;
+						pasteElements(elements);
+					} catch (e) {
+						console.error('[Canvas] Failed to parse clipboard data:', e);
+					}
 				}
 			});
 	}
 
 	function pasteElements(elements: CanvasElementType[]) {
+		if (!elements || elements.length === 0) return;
+
 		const offset = 20; // Offset for pasted elements
 		const newIds: string[] = [];
 
 		elements.forEach((el) => {
+			// Create a deep copy to avoid reference issues
 			const newElement: CanvasElementType = {
 				...el,
 				id: crypto.randomUUID(),
+				workspace_id: canvasStore.workspaceId || el.workspace_id,
 				pos_x: el.pos_x + offset,
 				pos_y: el.pos_y + offset,
-				z_index: (el.z_index || 0) + 1
+				z_index: (el.z_index || 0) + 1,
+				// Deep copy complex properties
+				style: el.style ? { ...el.style } : undefined,
+				items: el.items ? JSON.parse(JSON.stringify(el.items)) : undefined,
+				points: el.points ? [...el.points] : undefined,
+				created_at: new Date().toISOString(),
+				updated_at: new Date().toISOString()
 			};
+
 			canvas.addElement(newElement);
 			newIds.push(newElement.id);
-			// TODO: Save to server
 		});
 
 		// Select pasted elements
 		canvasStore.clearSelection();
 		canvasStore.selectMultiple(newIds);
+
+		console.log(`[Canvas] Pasted ${newIds.length} elements`);
 	}
 
 	function handleDuplicate() {
 		const selectedElements = canvasStore.selectedElements;
+		if (selectedElements.length === 0) return;
+
 		const offset = 20;
 		const newIds: string[] = [];
 
 		selectedElements.forEach((el) => {
+			// Create a deep copy
 			const newElement: CanvasElementType = {
 				...el,
 				id: crypto.randomUUID(),
 				pos_x: el.pos_x + offset,
 				pos_y: el.pos_y + offset,
-				z_index: (el.z_index || 0) + 1
+				z_index: (el.z_index || 0) + 1,
+				// Deep copy complex properties
+				style: el.style ? { ...el.style } : undefined,
+				items: el.items ? JSON.parse(JSON.stringify(el.items)) : undefined,
+				points: el.points ? [...el.points] : undefined,
+				created_at: new Date().toISOString(),
+				updated_at: new Date().toISOString()
 			};
 			canvas.addElement(newElement);
 			newIds.push(newElement.id);
-			// TODO: Save to server
 		});
 
 		// Select duplicated elements
 		canvasStore.clearSelection();
 		canvasStore.selectMultiple(newIds);
+
+		console.log(`[Canvas] Duplicated ${newIds.length} elements`);
 	}
 
 	function handleDelete() {
@@ -1134,6 +1225,19 @@
 			<SelectionHandles elements={canvasStore.selectedElements} {viewport} />
 		{/if}
 	</svg>
+
+	<!-- User cursors (other users, excluding self) -->
+	{#if true}
+		{@const otherUsers = presenceStore.users.filter((u) => u.user_id !== authStore.user?.id)}
+		{#each otherUsers as user (user.user_id)}
+			<UserCursor
+				{user}
+				viewportZoom={viewport.zoom}
+				viewportOffsetX={viewport.x}
+				viewportOffsetY={viewport.y}
+			/>
+		{/each}
+	{/if}
 
 	<!-- Zoom controls -->
 	<ZoomControls />

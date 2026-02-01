@@ -6,6 +6,8 @@
 	import { canvasStore } from '$lib/stores/canvas.svelte';
 	import { canvas } from '$lib/stores/canvasWithHistory.svelte';
 	import { historyStore } from '$lib/stores/history.svelte';
+	import { collaborationStore } from '$lib/stores/collaboration.svelte';
+	import { presenceStore } from '$lib/stores/presence.svelte';
 	import type { Workspace } from '$lib/types/api';
 	import { ArrowLeft, Users, Layers as LayersIcon } from 'lucide-svelte';
 	import Canvas from '$lib/components/canvas/Canvas.svelte';
@@ -15,6 +17,9 @@
 	import KeyboardShortcuts from '$lib/components/canvas/KeyboardShortcuts.svelte';
 	import ShortcutsPanel from '$lib/components/canvas/ShortcutsPanel.svelte';
 	import SaveStatus from '$lib/components/workspace/SaveStatus.svelte';
+	import ConnectionStatus from '$lib/components/workspace/ConnectionStatus.svelte';
+	import ActiveUsers from '$lib/components/workspace/ActiveUsers.svelte';
+	import UserSelection from '$lib/components/canvas/UserSelection.svelte';
 
 	let showLayersPanel = $state(false);
 	let showShortcutsHelp = $state(false);
@@ -27,6 +32,14 @@
 	let workspace = $state<Workspace | null>(null);
 	let isLoading = $state(true);
 	let error = $state('');
+
+	// Derived state for collaboration
+	const activeUsers = $derived(presenceStore.users);
+	const viewportState = $derived({
+		zoom: canvasStore.viewport.zoom,
+		offsetX: canvasStore.viewport.x,
+		offsetY: canvasStore.viewport.y
+	});
 
 	onMount(async () => {
 		if (!workspaceId) {
@@ -93,6 +106,24 @@
 				// Начинаем с пустого workspace
 				canvasStore.setElements([]);
 			}
+
+			// Connect to collaboration (WebSocket)
+			try {
+				const token = api.getAccessToken();
+				if (token) {
+					// Set canvas reference for applying remote operations
+					collaborationStore.setCanvasRef(canvas);
+
+					await collaborationStore.connect(workspaceId, token);
+					console.log('[Workspace] Connected to collaboration');
+
+					// Subscribe to canvas changes to send operations
+					setupCollaborationSync();
+				}
+			} catch (err) {
+				console.error('[Workspace] Failed to connect to collaboration:', err);
+				// Continue without collaboration
+			}
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to load workspace';
 		} finally {
@@ -101,6 +132,9 @@
 	});
 
 	onDestroy(() => {
+		// Disconnect from collaboration
+		collaborationStore.disconnect();
+
 		// Сохраняем все pending изменения перед выходом
 		canvas.saveNow();
 
@@ -109,6 +143,45 @@
 		canvasStore.reset();
 		historyStore.clear();
 	});
+
+	// Setup collaboration sync
+	function setupCollaborationSync() {
+		// Track selection changes
+		let lastSelection: string[] = [];
+
+		// Subscribe to selection changes
+		const checkSelectionChanges = () => {
+			const currentSelection = canvasStore.selectedIds;
+			const changed =
+				currentSelection.length !== lastSelection.length ||
+				!currentSelection.every((id, i) => id === lastSelection[i]);
+
+			if (changed) {
+				collaborationStore.sendSelectionChange(currentSelection);
+				lastSelection = [...currentSelection];
+			}
+		};
+
+		// Setup interval for selection check
+		const selectionInterval = setInterval(checkSelectionChanges, 200);
+
+		// Cleanup
+		return () => {
+			clearInterval(selectionInterval);
+		};
+	}
+
+	// Handle user click (center viewport on user)
+	function handleUserClick(user: any) {
+		if (user.cursor) {
+			// Center viewport on user's cursor
+			canvasStore.setViewport({
+				zoom: canvasStore.viewport.zoom,
+				offsetX: -user.cursor.x * canvasStore.viewport.zoom + window.innerWidth / 2,
+				offsetY: -user.cursor.y * canvasStore.viewport.zoom + window.innerHeight / 2
+			});
+		}
+	}
 
 	// Keyboard shortcuts handlers
 	function handleUndo() {
@@ -200,6 +273,16 @@
 			</div>
 
 			<div class="flex items-center gap-4">
+				<!-- Connection Status -->
+				<ConnectionStatus />
+
+				<div class="h-6 w-px bg-gray-300"></div>
+
+				<!-- Active Users -->
+				<ActiveUsers onUserClick={handleUserClick} />
+
+				<div class="h-6 w-px bg-gray-300"></div>
+
 				<!-- Save Status Indicator -->
 				<SaveStatus />
 
@@ -260,8 +343,22 @@
 			{/if}
 
 			<!-- Canvas (center, takes remaining space) -->
-			<div class="min-h-0 flex-1">
+			<div class="relative min-h-0 flex-1">
 				<Canvas />
+
+				<!-- Collaboration overlay (selections only - cursors are rendered inside Canvas) -->
+				<div class="collaboration-overlay">
+					<!-- Other users' selections -->
+					{#each activeUsers as user (user.user_id)}
+						<UserSelection
+							{user}
+							elements={canvasStore.elements}
+							viewportZoom={viewportState.zoom}
+							viewportOffsetX={viewportState.offsetX}
+							viewportOffsetY={viewportState.offsetY}
+						/>
+					{/each}
+				</div>
 			</div>
 
 			<!-- Properties Panel (right side, always visible) -->
@@ -269,3 +366,12 @@
 		</div>
 	</div>
 {/if}
+
+<style>
+	.collaboration-overlay {
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+		z-index: 1000;
+	}
+</style>

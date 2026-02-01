@@ -13,9 +13,12 @@ import {
 	batchUpdateAction
 } from './history.svelte';
 import { autosaveStore } from './autosave.svelte';
+import { collaborationStore } from './collaboration.svelte';
 import type { CanvasElement } from '$lib/types/api';
 
 class CanvasWithHistory {
+	// Flag to prevent sending operations when applying remote changes
+	private isApplyingRemoteOperation = false;
 	// Проксируем все геттеры из canvasStore
 	get viewport() {
 		return canvasStore.viewport;
@@ -131,6 +134,15 @@ class CanvasWithHistory {
 
 		// Автосохранение - отслеживаем создание элемента (isNew = true)
 		autosaveStore.trackChange(element.id, element, true);
+
+		// WebSocket sync - отправляем операцию создания (если не применяем удаленную операцию)
+		if (!this.isApplyingRemoteOperation && collaborationStore.isConnected) {
+			collaborationStore.sendOperation(
+				element.id,
+				'create',
+				element as unknown as Record<string, unknown>
+			);
+		}
 	}
 
 	/**
@@ -150,12 +162,17 @@ class CanvasWithHistory {
 			newData[k] = updates[k];
 		}
 
-		// Определяем тип операции для description
+		// Определяем тип операции для description и WebSocket
 		let description = 'Update element';
-		if ('pos_x' in updates || 'pos_y' in updates) {
-			description = 'Move element';
-		} else if ('width' in updates || 'height' in updates) {
+		let wsOpType: 'update' | 'move' = 'update';
+
+		// Приоритет: если меняется размер - это update, даже если меняется и позиция
+		if ('width' in updates || 'height' in updates) {
 			description = 'Resize element';
+			wsOpType = 'update';
+		} else if ('pos_x' in updates || 'pos_y' in updates) {
+			description = 'Move element';
+			wsOpType = 'move';
 		} else if ('rotation' in updates) {
 			description = 'Rotate element';
 		} else if ('z_index' in updates) {
@@ -178,6 +195,11 @@ class CanvasWithHistory {
 
 		// Автосохранение - отслеживаем изменение элемента
 		autosaveStore.trackChange(id, updates);
+
+		// WebSocket sync - отправляем операцию обновления
+		if (!this.isApplyingRemoteOperation && collaborationStore.isConnected) {
+			collaborationStore.sendOperation(id, wsOpType, updates as unknown as Record<string, unknown>);
+		}
 	}
 
 	/**
@@ -251,6 +273,11 @@ class CanvasWithHistory {
 		autosaveStore.trackChange(id, {
 			deleted_at: new Date().toISOString()
 		} as Partial<CanvasElement>);
+
+		// WebSocket sync - отправляем операцию удаления
+		if (!this.isApplyingRemoteOperation && collaborationStore.isConnected) {
+			collaborationStore.sendOperation(id, 'delete');
+		}
 	}
 
 	/**
@@ -519,6 +546,44 @@ class CanvasWithHistory {
 
 	cancelBatch() {
 		historyStore.cancelBatch();
+	}
+
+	/**
+	 * Применить удаленную операцию (БЕЗ записи в history и отправки на WebSocket)
+	 * Используется для синхронизации с другими пользователями
+	 */
+	applyRemoteOperation(
+		elementId: string,
+		opType: 'create' | 'update' | 'delete' | 'move',
+		data?: Partial<CanvasElement>
+	) {
+		this.isApplyingRemoteOperation = true;
+
+		try {
+			switch (opType) {
+				case 'create':
+					if (data) {
+						canvasStore.addElement(data as CanvasElement);
+						console.log('[CanvasWithHistory] Applied remote create:', elementId);
+					}
+					break;
+
+				case 'update':
+				case 'move':
+					if (data) {
+						canvasStore.updateElement(elementId, data);
+						console.log('[CanvasWithHistory] Applied remote update/move:', elementId);
+					}
+					break;
+
+				case 'delete':
+					canvasStore.deleteElement(elementId);
+					console.log('[CanvasWithHistory] Applied remote delete:', elementId);
+					break;
+			}
+		} finally {
+			this.isApplyingRemoteOperation = false;
+		}
 	}
 
 	/**

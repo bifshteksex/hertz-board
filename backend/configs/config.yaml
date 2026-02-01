@@ -84,7 +84,7 @@ cors:
   max_age: 86400
 
 websocket:
-  port: 8081
+  # WebSocket is integrated into API Gateway (no separate port)
   read_buffer_size: 1024
   write_buffer_size: 1024
   max_message_size: 10485760
