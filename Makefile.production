@@ -210,8 +210,12 @@ prod-build: prod-env-check
 # Deploy to production
 prod-deploy: prod-env-check prod-build
 	@echo "Deploying to production..."
-	@echo "1. Creating docker-compose.production.yml..."
-	@envsubst < docker-compose.yml > docker-compose.production.yml
+	@echo "1. Checking docker-compose.production.yml exists..."
+	@if [ ! -f docker-compose.production.yml ]; then \
+		echo "Error: docker-compose.production.yml not found!"; \
+		echo "This file should be in git repository."; \
+		exit 1; \
+	fi
 
 	@echo "2. Stopping old containers..."
 	docker-compose -f docker-compose.production.yml --env-file .env.production down
