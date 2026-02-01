@@ -31,10 +31,10 @@ jobs:
             cd /opt/hertz-board
 
             echo "1. Stashing local changes and pulling latest code..."
-            git fetch --all --tags
-            git stash push -m "Auto-stash before deployment at $(date)"
-            git checkout ${{ github.ref_name }}
-            git pull origin ${{ github.ref_name }}
+            git fetch --all --tags --force
+            git stash push -m "Auto-stash before deployment at $(date)" || true
+            git checkout -f ${{ github.ref_name }}
+            git reset --hard origin/${{ github.ref_name }} || git reset --hard ${{ github.ref_name }}
 
             echo "2. Creating backup before deployment..."
             make -f Makefile.production prod-backup || echo "Backup failed, continuing anyway"
