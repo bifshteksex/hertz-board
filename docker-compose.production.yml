@@ -167,7 +167,9 @@ services:
       - JWT_ACCESS_TOKEN_EXPIRY=${JWT_ACCESS_TOKEN_EXPIRY}
       - JWT_REFRESH_TOKEN_EXPIRY=${JWT_REFRESH_TOKEN_EXPIRY}
     networks:
-      - hertz-network
+      hertz-network:
+        aliases:
+          - backend
     security_opt:
       - no-new-privileges:true
     tmpfs:
