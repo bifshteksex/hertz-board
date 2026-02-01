@@ -306,11 +306,14 @@ export class ApiClient {
 		});
 	}
 
-	async acceptInvitation(token: string): Promise<{ workspace: any; message: string }> {
-		return this.request<{ workspace: any; message: string }>('/workspaces/invites/accept', {
-			method: 'POST',
-			body: JSON.stringify({ token })
-		});
+	async acceptInvitation(token: string): Promise<{ workspace: Workspace | null; message: string }> {
+		return this.request<{ workspace: Workspace | null; message: string }>(
+			'/workspaces/invites/accept',
+			{
+				method: 'POST',
+				body: JSON.stringify({ token })
+			}
+		);
 	}
 
 	async declineInvitation(invitationId: string): Promise<void> {

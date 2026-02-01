@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { api } from '$lib/services/api';
 	import type { WorkspaceMember, WorkspaceRole } from '$lib/types/api';
-	import { Users, Mail, MoreVertical, UserX, Shield, Eye, Edit3, Crown, Copy, Check } from 'lucide-svelte';
+	import { Users, Mail, MoreVertical, UserX, Eye, Edit3, Crown, Copy, Check } from 'lucide-svelte';
 
 	interface Props {
 		workspaceId: string;
@@ -21,7 +21,6 @@
 	let inviteError = $state('');
 	let isInviting = $state(false);
 	let inviteSuccess = $state(false);
-	let inviteToken = $state('');
 	let inviteUrl = $state('');
 
 	// Menu state
@@ -64,7 +63,6 @@
 
 			// Успех!
 			inviteSuccess = true;
-			inviteToken = response.token;
 
 			// Формируем полный URL
 			const baseUrl = window.location.origin;
@@ -155,7 +153,6 @@
 	function closeInviteModal() {
 		showInviteModal = false;
 		inviteSuccess = false;
-		inviteToken = '';
 		inviteUrl = '';
 		inviteEmail = '';
 		inviteRole = 'editor';
@@ -339,7 +336,12 @@
 					</div>
 
 					<div class="modal-footer">
-						<button type="button" class="button secondary" onclick={closeInviteModal} disabled={isInviting}>
+						<button
+							type="button"
+							class="button secondary"
+							onclick={closeInviteModal}
+							disabled={isInviting}
+						>
 							Cancel
 						</button>
 						<button type="submit" class="button primary" disabled={isInviting}>

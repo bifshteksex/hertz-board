@@ -4,9 +4,9 @@ on:
   push:
     tags:
       - "v*.*.*"
-      - "v*.*.*-*" # Supports beta, alpha, rc tags (e.g., v0.1.1-beta)
+      - "v*.*.*-*"
   release:
-    types: [published] # Also trigger when GitHub Release is created manually
+    types: [published]
 
 jobs:
   deploy-production:
@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: production
-      url: https://hertzboard.dev
+      url: https://hertz.rshang.in
 
     steps:
       - name: Deploy to Production Server

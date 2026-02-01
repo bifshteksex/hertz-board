@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
-	import { page } from '$app/stores';
 	import { api } from '$lib/services/api';
 	import { Mail, CheckCircle, XCircle, Loader } from 'lucide-svelte';
 
