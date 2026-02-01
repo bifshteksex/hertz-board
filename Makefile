@@ -2,7 +2,7 @@
 
 # Default target
 help:
-	@echo "Available commands:"
+	@echo "=== Development Commands ==="
 	@echo "  make dev-up          - Start all development services (Docker Compose)"
 	@echo "  make dev-down        - Stop all development services"
 	@echo "  make dev-logs        - Show logs from all services"
@@ -14,6 +14,13 @@ help:
 	@echo "  make lint            - Run linters"
 	@echo "  make clean           - Clean build artifacts and dependencies"
 	@echo "  make build           - Build all services"
+	@echo ""
+	@echo "=== Production Commands ==="
+	@echo "  make -f Makefile.production help          - Show production commands"
+	@echo "  make -f Makefile.production prod-setup    - Initial production setup"
+	@echo "  make -f Makefile.production prod-deploy   - Deploy to production"
+	@echo ""
+	@echo "For full production documentation, see DEPLOYMENT.md"
 
 # Docker Compose commands
 dev-up:

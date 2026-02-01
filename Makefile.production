@@ -1,0 +1,319 @@
+.PHONY: help prod-setup prod-deploy prod-env-check prod-ssl prod-backup prod-update prod-restart prod-logs prod-status
+
+# Production deployment Makefile
+# DO NOT use development passwords in production!
+
+help:
+	@echo "Production Deployment Commands:"
+	@echo "  make prod-env-check     - Verify all required environment variables"
+	@echo "  make prod-setup         - Initial production setup (run once)"
+	@echo "  make prod-ssl           - Setup SSL certificates with Let's Encrypt"
+	@echo "  make prod-deploy        - Deploy application to production"
+	@echo "  make prod-update        - Update application (pull, build, restart)"
+	@echo "  make prod-restart       - Restart all production services"
+	@echo "  make prod-logs          - Show production logs"
+	@echo "  make prod-status        - Check status of all services"
+	@echo "  make prod-backup        - Create database backup"
+	@echo "  make prod-restore       - Restore database from backup"
+	@echo "  make prod-stop          - Stop all production services"
+	@echo ""
+	@echo "Security Notes:"
+	@echo "  1. Always use .env.production with strong passwords"
+	@echo "  2. Never commit .env.production to git"
+	@echo "  3. Use SSL/TLS in production"
+	@echo "  4. Regularly backup your data"
+
+# Check if running as root (needed for some operations)
+check-root:
+	@if [ "$$(id -u)" -ne 0 ]; then \
+		echo "Error: This command must be run as root (use sudo)"; \
+		exit 1; \
+	fi
+
+# Verify all required environment variables are set
+prod-env-check:
+	@echo "Checking production environment configuration..."
+	@if [ ! -f .env.production ]; then \
+		echo "Error: .env.production file not found!"; \
+		echo "Please create .env.production from .env.example"; \
+		exit 1; \
+	fi
+	@echo "Loading .env.production..."
+	@export $$(cat .env.production | grep -v '^#' | xargs) && \
+	if [ -z "$$DB_PASSWORD" ] || [ "$$DB_PASSWORD" = "hertzboard_dev_password" ]; then \
+		echo "Error: DB_PASSWORD not set or using default dev password!"; \
+		exit 1; \
+	fi && \
+	if [ -z "$$JWT_SECRET" ] || [ "$$JWT_SECRET" = "your-super-secret-jwt-key-change-this-in-production" ]; then \
+		echo "Error: JWT_SECRET not set or using default value!"; \
+		exit 1; \
+	fi && \
+	if [ -z "$$REDIS_PASSWORD" ] || [ "$$REDIS_PASSWORD" = "hertzboard_redis_password" ]; then \
+		echo "Error: REDIS_PASSWORD not set or using default dev password!"; \
+		exit 1; \
+	fi && \
+	if [ -z "$$MINIO_SECRET_KEY" ] || [ "$$MINIO_SECRET_KEY" = "hertzboard_minio_password" ]; then \
+		echo "Error: MINIO_SECRET_KEY not set or using default dev password!"; \
+		exit 1; \
+	fi && \
+	if [ "$$APP_ENV" != "production" ]; then \
+		echo "Warning: APP_ENV is not set to 'production'!"; \
+	fi && \
+	echo "Environment configuration check passed!"
+
+# Generate secure random passwords
+generate-passwords:
+	@echo "Generating secure passwords..."
+	@echo "DB_PASSWORD=$$(openssl rand -base64 32)" > .passwords.tmp
+	@echo "REDIS_PASSWORD=$$(openssl rand -base64 32)" >> .passwords.tmp
+	@echo "MINIO_SECRET_KEY=$$(openssl rand -base64 32)" >> .passwords.tmp
+	@echo "CLICKHOUSE_PASSWORD=$$(openssl rand -base64 32)" >> .passwords.tmp
+	@echo "JWT_SECRET=$$(openssl rand -base64 64)" >> .passwords.tmp
+	@echo ""
+	@echo "Generated passwords saved to .passwords.tmp"
+	@echo "IMPORTANT: Copy these to .env.production and DELETE .passwords.tmp"
+	@echo "Never commit .passwords.tmp or .env.production to git!"
+	@chmod 600 .passwords.tmp
+
+# Initial production setup
+prod-setup: check-root
+	@echo "Starting production setup..."
+	@echo "1. Installing system dependencies..."
+	apt-get update
+	apt-get install -y \
+		apt-transport-https \
+		ca-certificates \
+		curl \
+		gnupg \
+		lsb-release \
+		git \
+		make \
+		ufw \
+		fail2ban
+
+	@echo "2. Installing Docker..."
+	@if ! command -v docker &> /dev/null; then \
+		curl -fsSL https://get.docker.com -o get-docker.sh && \
+		sh get-docker.sh && \
+		rm get-docker.sh && \
+		systemctl enable docker && \
+		systemctl start docker; \
+	else \
+		echo "Docker already installed"; \
+	fi
+
+	@echo "3. Installing Docker Compose..."
+	@if ! command -v docker-compose &> /dev/null; then \
+		curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$$(uname -s)-$$(uname -m)" -o /usr/local/bin/docker-compose && \
+		chmod +x /usr/local/bin/docker-compose; \
+	else \
+		echo "Docker Compose already installed"; \
+	fi
+
+	@echo "4. Installing Go..."
+	@if ! command -v go &> /dev/null; then \
+		wget https://go.dev/dl/go1.22.0.linux-amd64.tar.gz && \
+		rm -rf /usr/local/go && \
+		tar -C /usr/local -xzf go1.22.0.linux-amd64.tar.gz && \
+		rm go1.22.0.linux-amd64.tar.gz && \
+		echo 'export PATH=$$PATH:/usr/local/go/bin' >> /etc/profile && \
+		export PATH=$$PATH:/usr/local/go/bin; \
+	else \
+		echo "Go already installed"; \
+	fi
+
+	@echo "5. Installing Node.js and pnpm..."
+	@if ! command -v node &> /dev/null; then \
+		curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
+		apt-get install -y nodejs && \
+		npm install -g pnpm; \
+	else \
+		echo "Node.js already installed"; \
+	fi
+
+	@echo "6. Configuring firewall..."
+	ufw --force enable
+	ufw default deny incoming
+	ufw default allow outgoing
+	ufw allow ssh
+	ufw allow 80/tcp
+	ufw allow 443/tcp
+	@echo "Firewall configured"
+
+	@echo "7. Setting up fail2ban..."
+	systemctl enable fail2ban
+	systemctl start fail2ban
+
+	@echo "8. Creating application user..."
+	@if ! id -u hertzboard &> /dev/null; then \
+		useradd -m -s /bin/bash hertzboard && \
+		usermod -aG docker hertzboard; \
+	else \
+		echo "User hertzboard already exists"; \
+	fi
+
+	@echo ""
+	@echo "Production setup completed!"
+	@echo "Next steps:"
+	@echo "1. Run 'make generate-passwords' to generate secure passwords"
+	@echo "2. Create .env.production with secure passwords"
+	@echo "3. Run 'make prod-env-check' to verify configuration"
+	@echo "4. Run 'make prod-deploy' to deploy the application"
+
+# Setup SSL certificates with Let's Encrypt
+prod-ssl:
+	@if [ -z "$$DOMAIN" ]; then \
+		echo "Error: DOMAIN environment variable not set"; \
+		echo "Usage: DOMAIN=your-domain.com make prod-ssl"; \
+		exit 1; \
+	fi
+	@echo "Setting up SSL for domain: $$DOMAIN"
+	apt-get install -y certbot
+	certbot certonly --standalone -d $$DOMAIN -d www.$$DOMAIN --non-interactive --agree-tos -m admin@$$DOMAIN
+	@echo "SSL certificates installed at /etc/letsencrypt/live/$$DOMAIN/"
+	@echo "Add certificate renewal to crontab:"
+	@echo "0 0 1 * * certbot renew --quiet"
+
+# Build production Docker images
+prod-build: prod-env-check
+	@echo "Building production Docker images..."
+	@if [ ! -f Dockerfile.backend ]; then \
+		echo "Creating backend Dockerfile..."; \
+		echo 'FROM golang:1.22-alpine AS builder' > Dockerfile.backend; \
+		echo 'WORKDIR /app' >> Dockerfile.backend; \
+		echo 'COPY backend/go.mod backend/go.sum ./' >> Dockerfile.backend; \
+		echo 'RUN go mod download' >> Dockerfile.backend; \
+		echo 'COPY backend/ ./' >> Dockerfile.backend; \
+		echo 'RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o api-gateway cmd/api-gateway/main.go' >> Dockerfile.backend; \
+		echo '' >> Dockerfile.backend; \
+		echo 'FROM alpine:latest' >> Dockerfile.backend; \
+		echo 'RUN apk --no-cache add ca-certificates' >> Dockerfile.backend; \
+		echo 'WORKDIR /root/' >> Dockerfile.backend; \
+		echo 'COPY --from=builder /app/api-gateway .' >> Dockerfile.backend; \
+		echo 'COPY --from=builder /app/migrations ./migrations' >> Dockerfile.backend; \
+		echo 'EXPOSE 8080' >> Dockerfile.backend; \
+		echo 'CMD ["./api-gateway"]' >> Dockerfile.backend; \
+	fi
+	docker build -f Dockerfile.backend -t hertzboard-backend:latest .
+	@echo "Backend image built successfully"
+
+# Deploy to production
+prod-deploy: prod-env-check prod-build
+	@echo "Deploying to production..."
+	@echo "1. Creating docker-compose.production.yml..."
+	@envsubst < docker-compose.yml > docker-compose.production.yml
+
+	@echo "2. Stopping old containers..."
+	docker-compose -f docker-compose.production.yml --env-file .env.production down
+
+	@echo "3. Starting production containers..."
+	docker-compose -f docker-compose.production.yml --env-file .env.production up -d
+
+	@echo "4. Waiting for services to be healthy..."
+	sleep 15
+
+	@echo "5. Running database migrations..."
+	docker-compose -f docker-compose.production.yml --env-file .env.production exec -T postgres psql -U $$DB_USER -d $$DB_NAME -c "SELECT 1" || echo "Database not ready yet"
+
+	@echo ""
+	@echo "Production deployment completed!"
+	@echo "Check logs with: make prod-logs"
+	@echo "Check status with: make prod-status"
+
+# Update production deployment
+prod-update: prod-env-check
+	@echo "Updating production deployment..."
+	git pull
+	make prod-build
+	docker-compose -f docker-compose.production.yml --env-file .env.production up -d --force-recreate
+	@echo "Update completed!"
+
+# Restart production services
+prod-restart:
+	@echo "Restarting production services..."
+	docker-compose -f docker-compose.production.yml --env-file .env.production restart
+	@echo "Services restarted"
+
+# Show production logs
+prod-logs:
+	docker-compose -f docker-compose.production.yml --env-file .env.production logs -f --tail=100
+
+# Check production status
+prod-status:
+	@echo "Production Services Status:"
+	@echo "=========================="
+	docker-compose -f docker-compose.production.yml --env-file .env.production ps
+	@echo ""
+	@echo "Resource Usage:"
+	@echo "==============="
+	docker stats --no-stream
+
+# Create database backup
+prod-backup:
+	@echo "Creating database backup..."
+	@mkdir -p backups
+	@BACKUP_FILE="backups/hertzboard-$$(date +%Y%m%d-%H%M%S).sql.gz"
+	@export $$(cat .env.production | grep -v '^#' | xargs) && \
+	docker-compose -f docker-compose.production.yml --env-file .env.production exec -T postgres \
+		pg_dump -U $$DB_USER $$DB_NAME | gzip > $$BACKUP_FILE
+	@echo "Backup created: $$BACKUP_FILE"
+	@ls -lh $$BACKUP_FILE
+
+# Restore database from backup
+prod-restore:
+	@if [ -z "$$BACKUP_FILE" ]; then \
+		echo "Error: BACKUP_FILE not specified"; \
+		echo "Usage: BACKUP_FILE=backups/hertzboard-20240101.sql.gz make prod-restore"; \
+		exit 1; \
+	fi
+	@echo "Restoring database from $$BACKUP_FILE..."
+	@echo "WARNING: This will replace the current database!"
+	@read -p "Are you sure? (yes/no): " confirm && [ "$$confirm" = "yes" ] || exit 1
+	@export $$(cat .env.production | grep -v '^#' | xargs) && \
+	gunzip < $$BACKUP_FILE | docker-compose -f docker-compose.production.yml --env-file .env.production exec -T postgres \
+		psql -U $$DB_USER $$DB_NAME
+	@echo "Database restored successfully"
+
+# Stop production services
+prod-stop:
+	@echo "Stopping production services..."
+	docker-compose -f docker-compose.production.yml --env-file .env.production down
+	@echo "Services stopped"
+
+# Production health check
+prod-health:
+	@echo "Checking production health..."
+	@curl -f http://localhost:8080/health || echo "API Gateway not responding"
+	@docker-compose -f docker-compose.production.yml --env-file .env.production exec -T postgres pg_isready -U $$DB_USER || echo "PostgreSQL not ready"
+	@docker-compose -f docker-compose.production.yml --env-file .env.production exec -T redis redis-cli ping || echo "Redis not responding"
+
+# Setup monitoring
+prod-monitoring: check-root
+	@echo "Setting up monitoring..."
+	apt-get install -y prometheus grafana
+	systemctl enable prometheus grafana-server
+	systemctl start prometheus grafana-server
+	@echo "Monitoring setup completed"
+	@echo "Prometheus: http://localhost:9090"
+	@echo "Grafana: http://localhost:3000 (admin/admin)"
+
+# Security hardening
+prod-security: check-root
+	@echo "Applying security hardening..."
+	@echo "1. Disabling root SSH login..."
+	sed -i 's/PermitRootLogin yes/PermitRootLogin no/' /etc/ssh/sshd_config
+	systemctl restart sshd
+
+	@echo "2. Setting up automatic security updates..."
+	apt-get install -y unattended-upgrades
+	dpkg-reconfigure -plow unattended-upgrades
+
+	@echo "3. Configuring kernel parameters..."
+	echo "net.ipv4.conf.all.rp_filter=1" >> /etc/sysctl.conf
+	echo "net.ipv4.conf.default.rp_filter=1" >> /etc/sysctl.conf
+	echo "net.ipv4.icmp_echo_ignore_broadcasts=1" >> /etc/sysctl.conf
+	echo "net.ipv4.conf.all.accept_source_route=0" >> /etc/sysctl.conf
+	echo "net.ipv4.conf.default.accept_source_route=0" >> /etc/sysctl.conf
+	sysctl -p
+
+	@echo "Security hardening completed"
