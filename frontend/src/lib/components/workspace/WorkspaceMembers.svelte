@@ -102,17 +102,6 @@
 		}
 	}
 
-	function getRoleIcon(role: WorkspaceRole) {
-		switch (role) {
-			case 'owner':
-				return Crown;
-			case 'editor':
-				return Edit3;
-			case 'viewer':
-				return Eye;
-		}
-	}
-
 	function getRoleColor(role: WorkspaceRole) {
 		switch (role) {
 			case 'owner':
@@ -188,7 +177,6 @@
 	{:else}
 		<div class="members-list">
 			{#each members as member (member.id)}
-				{@const RoleIcon = getRoleIcon(member.role)}
 				<div class="member-item">
 					<!-- Avatar -->
 					<div class="member-avatar">
