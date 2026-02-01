@@ -28,6 +28,7 @@ const (
 	DefaultWSMaxMessageSize        = 10485760 // 10MB
 	DefaultWSPingPeriod            = 54
 	DefaultWSPongWait              = 60
+	DefaultWSWriteWait             = 10
 	DefaultMaxUploadSize           = 10485760 // 10MB
 	DefaultRateLimitRequests       = 100
 	DefaultMetricsPort             = 9090
@@ -303,7 +304,7 @@ func LoadFromEnv() (*Config, error) {
 			MaxMessageSize:  getEnvAsIntOrDefault("WS_MAX_MESSAGE_SIZE", DefaultWSMaxMessageSize),
 			PingPeriod:      getEnvAsIntOrDefault("WS_PING_PERIOD", DefaultWSPingPeriod),
 			PongWait:        getEnvAsIntOrDefault("WS_PONG_WAIT", DefaultWSPongWait),
-			WriteWait:       getEnvAsIntOrDefault("WS_WRITE_WAIT", 10),
+			WriteWait:       getEnvAsIntOrDefault("WS_WRITE_WAIT", DefaultWSWriteWait),
 		},
 		Upload: UploadConfig{
 			MaxSize:      int64(getEnvAsIntOrDefault("MAX_UPLOAD_SIZE", DefaultMaxUploadSize)),
