@@ -132,7 +132,7 @@ export interface CanvasElement {
 	image_url?: string;
 	path_data?: string;
 	connector_data?: ConnectorData;
-	items?: any[]; // For list elements
+	items?: Array<{ id: string; text: string; checked?: boolean }>; // For list elements
 	points?: Array<{ x: number; y: number }>; // For freehand elements
 	created_by?: string;
 	created_at?: string;

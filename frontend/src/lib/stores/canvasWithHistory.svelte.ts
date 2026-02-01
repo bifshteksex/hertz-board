@@ -158,8 +158,8 @@ class CanvasWithHistory {
 
 		for (const key in updates) {
 			const k = key as keyof CanvasElement;
-			(oldData as any)[k] = element[k];
-			(newData as any)[k] = updates[k];
+			(oldData as Record<string, unknown>)[k] = element[k];
+			(newData as Record<string, unknown>)[k] = updates[k];
 		}
 
 		// Определяем тип операции для description и WebSocket
@@ -216,8 +216,8 @@ class CanvasWithHistory {
 
 			for (const key in elementUpdates) {
 				const k = key as keyof CanvasElement;
-				(oldData as any)[k] = element[k];
-				(newData as any)[k] = elementUpdates[k];
+				(oldData as Record<string, unknown>)[k] = element[k];
+				(newData as Record<string, unknown>)[k] = elementUpdates[k];
 			}
 
 			return { id, oldData, newData };
