@@ -43,12 +43,10 @@ jobs:
 
             echo "3. Building production Docker images..."
             make -f Makefile.production prod-build
+            docker-compose -f docker-compose.production.yml --env-file .env.production build frontend
 
-            echo "4. Stopping old containers..."
-            docker-compose -f docker-compose.production.yml --env-file .env.production down
-
-            echo "5. Starting updated containers..."
-            docker-compose -f docker-compose.production.yml --env-file .env.production up -d
+            echo "4. Restarting containers with new images..."
+            docker-compose -f docker-compose.production.yml --env-file .env.production up -d --force-recreate --no-deps backend frontend
 
             echo "6. Waiting for services to be healthy..."
             sleep 20
