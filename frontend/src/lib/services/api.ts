@@ -261,11 +261,17 @@ export class ApiClient {
 		return this.request<WorkspaceMember[]>(`/workspaces/${workspaceId}/members`);
 	}
 
-	async inviteMember(workspaceId: string, data: InviteMemberRequest): Promise<void> {
-		return this.request(`/workspaces/${workspaceId}/members/invite`, {
-			method: 'POST',
-			body: JSON.stringify(data)
-		});
+	async inviteMember(
+		workspaceId: string,
+		data: InviteMemberRequest
+	): Promise<{ token: string; expires_at: string; invite_url: string }> {
+		return this.request<{ token: string; expires_at: string; invite_url: string }>(
+			`/workspaces/${workspaceId}/invites`,
+			{
+				method: 'POST',
+				body: JSON.stringify(data)
+			}
+		);
 	}
 
 	async updateMemberRole(
@@ -290,9 +296,20 @@ export class ApiClient {
 		return this.request<WorkspaceInvitation[]>('/invitations');
 	}
 
-	async acceptInvitation(invitationId: string): Promise<void> {
-		return this.request(`/invitations/${invitationId}/accept`, {
-			method: 'POST'
+	async listWorkspaceInvites(workspaceId: string): Promise<WorkspaceInvitation[]> {
+		return this.request<WorkspaceInvitation[]>(`/workspaces/${workspaceId}/invites`);
+	}
+
+	async revokeInvite(workspaceId: string, inviteId: string): Promise<void> {
+		return this.request(`/workspaces/${workspaceId}/invites/${inviteId}`, {
+			method: 'DELETE'
+		});
+	}
+
+	async acceptInvitation(token: string): Promise<{ workspace: any; message: string }> {
+		return this.request<{ workspace: any; message: string }>('/workspaces/invites/accept', {
+			method: 'POST',
+			body: JSON.stringify({ token })
 		});
 	}
 

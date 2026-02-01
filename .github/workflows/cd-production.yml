@@ -3,84 +3,128 @@ name: CD Production
 on:
   push:
     tags:
-      - 'v*.*.*'
-
-env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+      - "v*.*.*"
+      - "v*.*.*-*" # Supports beta, alpha, rc tags (e.g., v0.1.1-beta)
+  release:
+    types: [published] # Also trigger when GitHub Release is created manually
 
 jobs:
-  build-and-push:
-    name: Build and Push Docker Images
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-
-    strategy:
-      matrix:
-        service:
-          - api-gateway
-          - ws-server
-          - frontend
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Log in to Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Extract metadata
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/${{ matrix.service }}
-          tags: |
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-            type=semver,pattern={{major}}
-            type=raw,value=latest
-
-      - name: Build and push
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: ./deploy/docker/Dockerfile.${{ matrix.service }}
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
   deploy-production:
     name: Deploy to Production
     runs-on: ubuntu-latest
-    needs: build-and-push
     environment:
       name: production
       url: https://hertzboard.dev
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Deploy to Production Server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.PROD_HOST }}
+          username: ${{ secrets.PROD_USER }}
+          key: ${{ secrets.PROD_SSH_KEY }}
+          port: 22
+          script: |
+            set -e
 
-      - name: Deploy to Kubernetes
-        run: |
-          echo "Deployment to production would happen here"
-          # kubectl apply -f deploy/kubernetes/production/
+            echo "===== Starting Production Deployment ====="
+            cd /opt/hertz-board
 
-      - name: Create Release
+            echo "1. Pulling latest code from GitHub..."
+            git fetch --all --tags
+            git checkout ${{ github.ref_name }}
+            git pull origin ${{ github.ref_name }}
+
+            echo "2. Creating backup before deployment..."
+            make -f Makefile.production prod-backup || echo "Backup failed, continuing anyway"
+
+            echo "3. Building production Docker images..."
+            make -f Makefile.production prod-build
+
+            echo "4. Stopping old containers..."
+            docker-compose -f docker-compose.production.yml --env-file .env.production down
+
+            echo "5. Starting updated containers..."
+            docker-compose -f docker-compose.production.yml --env-file .env.production up -d
+
+            echo "6. Waiting for services to be healthy..."
+            sleep 20
+
+            echo "7. Checking deployment status..."
+            docker-compose -f docker-compose.production.yml ps
+
+            echo "8. Cleaning up old Docker images..."
+            docker image prune -f
+
+            echo "===== Deployment Completed Successfully ====="
+            echo "Tag: ${{ github.ref_name }}"
+            echo "Commit: ${{ github.sha }}"
+
+      - name: Health Check
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.PROD_HOST }}
+          username: ${{ secrets.PROD_USER }}
+          key: ${{ secrets.PROD_SSH_KEY }}
+          port: 22
+          script: |
+            echo "Running health checks..."
+            cd /opt/hertz-board
+
+            # Check if containers are running
+            if [ $(docker ps | grep hertz-board | wc -l) -lt 5 ]; then
+              echo "ERROR: Not all containers are running!"
+              docker-compose -f docker-compose.production.yml ps
+              exit 1
+            fi
+
+            # Check backend health
+            sleep 5
+            BACKEND_HEALTH=$(docker-compose -f docker-compose.production.yml exec -T backend wget -q -O- http://localhost:8080/health || echo "failed")
+            if [ "$BACKEND_HEALTH" = "failed" ]; then
+              echo "WARNING: Backend health check failed"
+            else
+              echo "Backend health check: OK"
+            fi
+
+            echo "Health checks completed"
+
+      - name: Create GitHub Release
+        if: github.event_name == 'push' # Only create release if triggered by tag push, not manual release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ github.ref }}
           release_name: Release ${{ github.ref }}
+          body: |
+            ## Production Deployment
+
+            Deployed to production server at: ${{ github.event.head_commit.timestamp }}
+
+            ### Changes
+            ${{ github.event.head_commit.message }}
+
+            ### Deployment Details
+            - Tag: ${{ github.ref_name }}
+            - Commit: ${{ github.sha }}
+            - Environment: Production
           draft: false
-          prerelease: false
+          prerelease: ${{ contains(github.ref_name, '-beta') || contains(github.ref_name, '-alpha') || contains(github.ref_name, '-rc') }}
+
+      - name: Notify on Failure
+        if: failure()
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.PROD_HOST }}
+          username: ${{ secrets.PROD_USER }}
+          key: ${{ secrets.PROD_SSH_KEY }}
+          port: 22
+          script: |
+            echo "DEPLOYMENT FAILED - Rolling back..."
+            cd /opt/hertz-board
+
+            # Show logs for debugging
+            docker-compose -f docker-compose.production.yml logs --tail=50
+
+            echo "Check the logs above for error details"

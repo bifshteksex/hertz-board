@@ -323,6 +323,13 @@ class CollaborationStore {
 
 	private handleOperation(operation: OperationPayload): void {
 		try {
+			// Ignore operations from self to prevent feedback loop
+			const currentUserId = authStore.user?.id;
+			if (currentUserId && operation.user_id === currentUserId) {
+				console.log('[Collaboration] Ignoring own operation:', operation.element_id);
+				return;
+			}
+
 			// Get current element
 			const currentElement = canvasStore.elements.find((el) => el.id === operation.element_id);
 

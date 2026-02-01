@@ -20,9 +20,11 @@
 	import ConnectionStatus from '$lib/components/workspace/ConnectionStatus.svelte';
 	import ActiveUsers from '$lib/components/workspace/ActiveUsers.svelte';
 	import UserSelection from '$lib/components/canvas/UserSelection.svelte';
+	import WorkspaceMembers from '$lib/components/workspace/WorkspaceMembers.svelte';
 
 	let showLayersPanel = $state(false);
 	let showShortcutsHelp = $state(false);
+	let showMembersPanel = $state(false);
 
 	// Derived state для undo/redo
 	const canUndo = $derived(historyStore.canUndo);
@@ -300,7 +302,10 @@
 				</button>
 				<button
 					class="flex items-center gap-2 rounded-lg border border-gray-300 px-3 py-2 text-sm transition hover:bg-gray-50"
-					title="Share workspace"
+					class:bg-blue-50={showMembersPanel}
+					class:border-blue-500={showMembersPanel}
+					onclick={() => (showMembersPanel = !showMembersPanel)}
+					title="Manage members"
 				>
 					<Users size={16} />
 					Share
@@ -364,6 +369,19 @@
 			<!-- Properties Panel (right side, always visible) -->
 			<PropertiesPanel />
 		</div>
+
+		<!-- Members Panel Modal -->
+		{#if showMembersPanel}
+			<!-- svelte-ignore a11y_click_events_have_key_events -->
+			<!-- svelte-ignore a11y_no_static_element_interactions -->
+			<div class="members-modal-overlay" onclick={() => (showMembersPanel = false)}>
+				<!-- svelte-ignore a11y_click_events_have_key_events -->
+				<!-- svelte-ignore a11y_no_static_element_interactions -->
+				<div class="members-modal" onclick={(e) => e.stopPropagation()}>
+					<WorkspaceMembers {workspaceId} currentUserRole={workspace.user_role || workspace.role} />
+				</div>
+			</div>
+		{/if}
 	</div>
 {/if}
 
@@ -373,5 +391,45 @@
 		inset: 0;
 		pointer-events: none;
 		z-index: 1000;
+	}
+
+	.members-modal-overlay {
+		position: fixed;
+		inset: 0;
+		background: rgba(0, 0, 0, 0.5);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		z-index: 2000;
+		padding: 20px;
+		animation: fadeIn 0.2s ease-out;
+	}
+
+	@keyframes fadeIn {
+		from {
+			opacity: 0;
+		}
+		to {
+			opacity: 1;
+		}
+	}
+
+	.members-modal {
+		max-width: 600px;
+		width: 100%;
+		max-height: 80vh;
+		overflow-y: auto;
+		animation: slideUp 0.3s ease-out;
+	}
+
+	@keyframes slideUp {
+		from {
+			opacity: 0;
+			transform: translateY(20px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
 	}
 </style>

@@ -21,12 +21,14 @@
 		return baseSize;
 	});
 
-	// Вычисляем размер точек в зависимости от zoom
+	// Вычисляем размер точек - фиксированный размер в screen space
+	// Делим на zoom чтобы точки оставались одинакового размера на экране
 	const dotSize = $derived(() => {
 		const zoom = viewport.zoom;
-		if (zoom < 0.5) return 1;
-		if (zoom > 2) return 3;
-		return 2;
+		const baseSize = 1.5; // Базовый размер в screen pixels
+
+		// Делим на zoom чтобы компенсировать масштабирование
+		return baseSize / zoom;
 	});
 
 	// ID для pattern (уникальный)

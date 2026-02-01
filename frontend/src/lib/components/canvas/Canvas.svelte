@@ -420,6 +420,7 @@
 		}
 
 		// Обновляем позиции всех выделенных элементов
+		// Используем canvasStore.updateElement (БЕЗ истории и WebSocket) для плавного перетаскивания
 		canvasStore.selectedElements.forEach((el) => {
 			const startPos = elementStartPositions.get(el.id);
 			if (startPos) {
@@ -433,7 +434,8 @@
 					newY = snapped.y;
 				}
 
-				canvas.updateElement(el.id, {
+				// Обновляем локально (без истории и WebSocket)
+				canvasStore.updateElement(el.id, {
 					pos_x: newX,
 					pos_y: newY
 				});
@@ -442,6 +444,20 @@
 	}
 
 	function endDragging() {
+		// Отправляем финальные позиции через canvas (с историей и WebSocket)
+		canvasStore.selectedElements.forEach((el) => {
+			const startPos = elementStartPositions.get(el.id);
+			if (startPos) {
+				// Отправляем только если позиция действительно изменилась
+				if (el.pos_x !== startPos.x || el.pos_y !== startPos.y) {
+					canvas.updateElement(el.id, {
+						pos_x: el.pos_x,
+						pos_y: el.pos_y
+					});
+				}
+			}
+		});
+
 		isDraggingElements = false;
 		canvasStore.setIsDragging(false);
 		dragStart = null;
@@ -450,8 +466,6 @@
 		if (canvasContainer) {
 			canvasContainer.classList.remove('cursor-grabbing');
 		}
-
-		// TODO: Отправить обновления на сервер
 	}
 
 	function startResize(e: MouseEvent, handle: string) {
