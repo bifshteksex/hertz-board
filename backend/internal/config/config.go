@@ -8,6 +8,31 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+// Default configuration values
+const (
+	DefaultAppPort                 = 8080
+	DefaultDBPort                  = 5432
+	DefaultDBMaxConnections        = 100
+	DefaultDBMaxIdleConnections    = 10
+	DefaultDBConnectionMaxLifetime = 3600
+	DefaultRedisPort               = 6379
+	DefaultRedisMaxRetries         = 3
+	DefaultRedisPoolSize           = 10
+	DefaultClickHousePort          = 8123
+	DefaultNATSMaxReconnect        = 10
+	DefaultNATSReconnectWait       = 2
+	DefaultSMTPPort                = 1025
+	DefaultWSPort                  = 8080
+	DefaultWSReadBufferSize        = 1024
+	DefaultWSWriteBufferSize       = 1024
+	DefaultWSMaxMessageSize        = 10485760 // 10MB
+	DefaultWSPingPeriod            = 54
+	DefaultWSPongWait              = 60
+	DefaultMaxUploadSize           = 10485760 // 10MB
+	DefaultRateLimitRequests       = 100
+	DefaultMetricsPort             = 9090
+)
+
 type Config struct {
 	App        AppConfig        `yaml:"app"`
 	Database   DatabaseConfig   `yaml:"database"`
@@ -197,27 +222,27 @@ func LoadFromEnv() (*Config, error) {
 		App: AppConfig{
 			Name:  getEnvOrDefault("APP_NAME", "HertzBoard"),
 			Env:   getEnvOrDefault("APP_ENV", "production"),
-			Port:  getEnvAsIntOrDefault("APP_PORT", 8080),
+			Port:  getEnvAsIntOrDefault("APP_PORT", DefaultAppPort),
 			Debug: getEnvAsBoolOrDefault("APP_DEBUG", false),
 		},
 		Database: DatabaseConfig{
 			Host:                  getEnvOrDefault("DB_HOST", "postgres"),
-			Port:                  getEnvAsIntOrDefault("DB_PORT", 5432),
+			Port:                  getEnvAsIntOrDefault("DB_PORT", DefaultDBPort),
 			Name:                  getEnvOrDefault("DB_NAME", "hertzboard"),
 			User:                  getEnvOrDefault("DB_USER", "hertzboard"),
 			Password:              os.Getenv("DB_PASSWORD"),
 			SSLMode:               getEnvOrDefault("DB_SSL_MODE", "require"),
-			MaxConnections:        getEnvAsIntOrDefault("DB_MAX_CONNECTIONS", 100),
-			MaxIdleConnections:    getEnvAsIntOrDefault("DB_MAX_IDLE_CONNECTIONS", 10),
-			ConnectionMaxLifetime: getEnvAsIntOrDefault("DB_CONNECTION_MAX_LIFETIME", 3600),
+			MaxConnections:        getEnvAsIntOrDefault("DB_MAX_CONNECTIONS", DefaultDBMaxConnections),
+			MaxIdleConnections:    getEnvAsIntOrDefault("DB_MAX_IDLE_CONNECTIONS", DefaultDBMaxIdleConnections),
+			ConnectionMaxLifetime: getEnvAsIntOrDefault("DB_CONNECTION_MAX_LIFETIME", DefaultDBConnectionMaxLifetime),
 		},
 		Redis: RedisConfig{
 			Host:       getEnvOrDefault("REDIS_HOST", "redis"),
-			Port:       getEnvAsIntOrDefault("REDIS_PORT", 6379),
+			Port:       getEnvAsIntOrDefault("REDIS_PORT", DefaultRedisPort),
 			Password:   os.Getenv("REDIS_PASSWORD"),
 			DB:         getEnvAsIntOrDefault("REDIS_DB", 0),
-			MaxRetries: getEnvAsIntOrDefault("REDIS_MAX_RETRIES", 3),
-			PoolSize:   getEnvAsIntOrDefault("REDIS_POOL_SIZE", 10),
+			MaxRetries: getEnvAsIntOrDefault("REDIS_MAX_RETRIES", DefaultRedisMaxRetries),
+			PoolSize:   getEnvAsIntOrDefault("REDIS_POOL_SIZE", DefaultRedisPoolSize),
 		},
 		MinIO: MinIOConfig{
 			Endpoint:      getEnvOrDefault("MINIO_ENDPOINT", "minio:9000"),
@@ -230,15 +255,15 @@ func LoadFromEnv() (*Config, error) {
 		},
 		ClickHouse: ClickHouseConfig{
 			Host:     getEnvOrDefault("CLICKHOUSE_HOST", "clickhouse"),
-			Port:     getEnvAsIntOrDefault("CLICKHOUSE_PORT", 8123),
+			Port:     getEnvAsIntOrDefault("CLICKHOUSE_PORT", DefaultClickHousePort),
 			Database: getEnvOrDefault("CLICKHOUSE_DATABASE", "hertzboard_analytics"),
 			User:     getEnvOrDefault("CLICKHOUSE_USER", "hertzboard"),
 			Password: os.Getenv("CLICKHOUSE_PASSWORD"),
 		},
 		NATS: NATSConfig{
 			URL:           getEnvOrDefault("NATS_URL", "nats://nats:4222"),
-			MaxReconnect:  getEnvAsIntOrDefault("NATS_MAX_RECONNECT", 10),
-			ReconnectWait: getEnvAsIntOrDefault("NATS_RECONNECT_WAIT", 2),
+			MaxReconnect:  getEnvAsIntOrDefault("NATS_MAX_RECONNECT", DefaultNATSMaxReconnect),
+			ReconnectWait: getEnvAsIntOrDefault("NATS_RECONNECT_WAIT", DefaultNATSReconnectWait),
 		},
 		JWT: JWTConfig{
 			Secret:             os.Getenv("JWT_SECRET"),
@@ -259,7 +284,7 @@ func LoadFromEnv() (*Config, error) {
 		},
 		Email: EmailConfig{
 			SMTPHost:     getEnvOrDefault("SMTP_HOST", "localhost"),
-			SMTPPort:     getEnvAsIntOrDefault("SMTP_PORT", 1025),
+			SMTPPort:     getEnvAsIntOrDefault("SMTP_PORT", DefaultSMTPPort),
 			SMTPUser:     os.Getenv("SMTP_USER"),
 			SMTPPassword: os.Getenv("SMTP_PASSWORD"),
 			From:         getEnvOrDefault("SMTP_FROM", "noreply@hertzboard.dev"),
@@ -272,21 +297,21 @@ func LoadFromEnv() (*Config, error) {
 			MaxAge:           86400,
 		},
 		WebSocket: WebSocketConfig{
-			Port:            getEnvAsIntOrDefault("WS_PORT", 8080),
-			ReadBufferSize:  getEnvAsIntOrDefault("WS_READ_BUFFER_SIZE", 1024),
-			WriteBufferSize: getEnvAsIntOrDefault("WS_WRITE_BUFFER_SIZE", 1024),
-			MaxMessageSize:  getEnvAsIntOrDefault("WS_MAX_MESSAGE_SIZE", 10485760),
-			PingPeriod:      getEnvAsIntOrDefault("WS_PING_PERIOD", 54),
-			PongWait:        getEnvAsIntOrDefault("WS_PONG_WAIT", 60),
+			Port:            getEnvAsIntOrDefault("WS_PORT", DefaultWSPort),
+			ReadBufferSize:  getEnvAsIntOrDefault("WS_READ_BUFFER_SIZE", DefaultWSReadBufferSize),
+			WriteBufferSize: getEnvAsIntOrDefault("WS_WRITE_BUFFER_SIZE", DefaultWSWriteBufferSize),
+			MaxMessageSize:  getEnvAsIntOrDefault("WS_MAX_MESSAGE_SIZE", DefaultWSMaxMessageSize),
+			PingPeriod:      getEnvAsIntOrDefault("WS_PING_PERIOD", DefaultWSPingPeriod),
+			PongWait:        getEnvAsIntOrDefault("WS_PONG_WAIT", DefaultWSPongWait),
 			WriteWait:       getEnvAsIntOrDefault("WS_WRITE_WAIT", 10),
 		},
 		Upload: UploadConfig{
-			MaxSize:      int64(getEnvAsIntOrDefault("MAX_UPLOAD_SIZE", 10485760)),
+			MaxSize:      int64(getEnvAsIntOrDefault("MAX_UPLOAD_SIZE", DefaultMaxUploadSize)),
 			AllowedTypes: []string{"image/jpeg", "image/png", "image/gif", "image/webp", "image/svg+xml"},
 		},
 		RateLimit: RateLimitConfig{
 			Enabled:  getEnvAsBoolOrDefault("RATE_LIMIT_ENABLED", true),
-			Requests: getEnvAsIntOrDefault("RATE_LIMIT_REQUESTS", 100),
+			Requests: getEnvAsIntOrDefault("RATE_LIMIT_REQUESTS", DefaultRateLimitRequests),
 			Duration: getEnvOrDefault("RATE_LIMIT_DURATION", "1m"),
 		},
 		Logging: LoggingConfig{
@@ -296,7 +321,7 @@ func LoadFromEnv() (*Config, error) {
 		},
 		Metrics: MetricsConfig{
 			Enabled: getEnvAsBoolOrDefault("METRICS_ENABLED", true),
-			Port:    getEnvAsIntOrDefault("METRICS_PORT", 9090),
+			Port:    getEnvAsIntOrDefault("METRICS_PORT", DefaultMetricsPort),
 		},
 		Tracing: TracingConfig{
 			Enabled:        getEnvAsBoolOrDefault("TRACING_ENABLED", false),

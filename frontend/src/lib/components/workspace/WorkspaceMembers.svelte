@@ -206,10 +206,22 @@
 					</div>
 
 					<!-- Role badge -->
-					<div class="role-badge" style="color: {getRoleColor(member.role)}">
-						<svelte:component this={RoleIcon} size={14} />
-						{getRoleLabel(member.role)}
-					</div>
+					{#if member.role === 'owner'}
+						<div class="role-badge" style="color: {getRoleColor(member.role)}">
+							<Crown size={14} />
+							{getRoleLabel(member.role)}
+						</div>
+					{:else if member.role === 'editor'}
+						<div class="role-badge" style="color: {getRoleColor(member.role)}">
+							<Edit3 size={14} />
+							{getRoleLabel(member.role)}
+						</div>
+					{:else}
+						<div class="role-badge" style="color: {getRoleColor(member.role)}">
+							<Eye size={14} />
+							{getRoleLabel(member.role)}
+						</div>
+					{/if}
 
 					<!-- Actions menu -->
 					{#if canManageMembers && member.role !== 'owner'}

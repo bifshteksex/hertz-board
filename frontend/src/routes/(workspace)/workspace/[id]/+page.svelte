@@ -65,7 +65,7 @@
 				console.log('[Workspace] Loading elements for workspace:', workspaceId);
 				const response = await api.listElements(workspaceId);
 				console.log('[Workspace] Loaded elements:', response);
-				const backendElements = response?.elements || [];
+				const backendElements = Array.isArray(response) ? response : [];
 
 				// Преобразуем из формата backend в формат frontend
 				const elements = backendElements.map((el: any) => {
@@ -371,14 +371,20 @@
 		</div>
 
 		<!-- Members Panel Modal -->
-		{#if showMembersPanel}
+		{#if showMembersPanel && workspaceId}
 			<!-- svelte-ignore a11y_click_events_have_key_events -->
 			<!-- svelte-ignore a11y_no_static_element_interactions -->
 			<div class="members-modal-overlay" onclick={() => (showMembersPanel = false)}>
 				<!-- svelte-ignore a11y_click_events_have_key_events -->
 				<!-- svelte-ignore a11y_no_static_element_interactions -->
 				<div class="members-modal" onclick={(e) => e.stopPropagation()}>
-					<WorkspaceMembers {workspaceId} currentUserRole={workspace.user_role || workspace.role} />
+					<WorkspaceMembers
+						{workspaceId}
+						currentUserRole={(workspace.user_role || workspace.role || 'viewer') as
+							| 'owner'
+							| 'editor'
+							| 'viewer'}
+					/>
 				</div>
 			</div>
 		{/if}
