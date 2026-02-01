@@ -189,3 +189,145 @@ func (c *JWTConfig) GetAccessTokenDuration() (time.Duration, error) {
 func (c *JWTConfig) GetRefreshTokenDuration() (time.Duration, error) {
 	return time.ParseDuration(c.RefreshTokenExpiry)
 }
+
+// LoadFromEnv loads configuration from environment variables
+// This is used in production when CONFIG_PATH is not set
+func LoadFromEnv() (*Config, error) {
+	cfg := &Config{
+		App: AppConfig{
+			Name:  getEnvOrDefault("APP_NAME", "HertzBoard"),
+			Env:   getEnvOrDefault("APP_ENV", "production"),
+			Port:  getEnvAsIntOrDefault("APP_PORT", 8080),
+			Debug: getEnvAsBoolOrDefault("APP_DEBUG", false),
+		},
+		Database: DatabaseConfig{
+			Host:                  getEnvOrDefault("DB_HOST", "postgres"),
+			Port:                  getEnvAsIntOrDefault("DB_PORT", 5432),
+			Name:                  getEnvOrDefault("DB_NAME", "hertzboard"),
+			User:                  getEnvOrDefault("DB_USER", "hertzboard"),
+			Password:              os.Getenv("DB_PASSWORD"),
+			SSLMode:               getEnvOrDefault("DB_SSL_MODE", "require"),
+			MaxConnections:        getEnvAsIntOrDefault("DB_MAX_CONNECTIONS", 100),
+			MaxIdleConnections:    getEnvAsIntOrDefault("DB_MAX_IDLE_CONNECTIONS", 10),
+			ConnectionMaxLifetime: getEnvAsIntOrDefault("DB_CONNECTION_MAX_LIFETIME", 3600),
+		},
+		Redis: RedisConfig{
+			Host:       getEnvOrDefault("REDIS_HOST", "redis"),
+			Port:       getEnvAsIntOrDefault("REDIS_PORT", 6379),
+			Password:   os.Getenv("REDIS_PASSWORD"),
+			DB:         getEnvAsIntOrDefault("REDIS_DB", 0),
+			MaxRetries: getEnvAsIntOrDefault("REDIS_MAX_RETRIES", 3),
+			PoolSize:   getEnvAsIntOrDefault("REDIS_POOL_SIZE", 10),
+		},
+		MinIO: MinIOConfig{
+			Endpoint:      getEnvOrDefault("MINIO_ENDPOINT", "minio:9000"),
+			AccessKey:     getEnvOrDefault("MINIO_ACCESS_KEY", "hertzboard"),
+			SecretKey:     os.Getenv("MINIO_SECRET_KEY"),
+			UseSSL:        getEnvAsBoolOrDefault("MINIO_USE_SSL", false),
+			BucketAssets:  getEnvOrDefault("MINIO_BUCKET_ASSETS", "hertzboard-assets"),
+			BucketExports: getEnvOrDefault("MINIO_BUCKET_EXPORTS", "hertzboard-exports"),
+			BucketBackups: getEnvOrDefault("MINIO_BUCKET_BACKUPS", "hertzboard-backups"),
+		},
+		ClickHouse: ClickHouseConfig{
+			Host:     getEnvOrDefault("CLICKHOUSE_HOST", "clickhouse"),
+			Port:     getEnvAsIntOrDefault("CLICKHOUSE_PORT", 8123),
+			Database: getEnvOrDefault("CLICKHOUSE_DATABASE", "hertzboard_analytics"),
+			User:     getEnvOrDefault("CLICKHOUSE_USER", "hertzboard"),
+			Password: os.Getenv("CLICKHOUSE_PASSWORD"),
+		},
+		NATS: NATSConfig{
+			URL:           getEnvOrDefault("NATS_URL", "nats://nats:4222"),
+			MaxReconnect:  getEnvAsIntOrDefault("NATS_MAX_RECONNECT", 10),
+			ReconnectWait: getEnvAsIntOrDefault("NATS_RECONNECT_WAIT", 2),
+		},
+		JWT: JWTConfig{
+			Secret:             os.Getenv("JWT_SECRET"),
+			AccessTokenExpiry:  getEnvOrDefault("JWT_ACCESS_TOKEN_EXPIRY", "15m"),
+			RefreshTokenExpiry: getEnvOrDefault("JWT_REFRESH_TOKEN_EXPIRY", "7d"),
+		},
+		OAuth: OAuthConfig{
+			Google: OAuthProviderConfig{
+				ClientID:     os.Getenv("GOOGLE_CLIENT_ID"),
+				ClientSecret: os.Getenv("GOOGLE_CLIENT_SECRET"),
+				RedirectURL:  getEnvOrDefault("GOOGLE_REDIRECT_URL", "http://localhost:8080/auth/google/callback"),
+			},
+			GitHub: OAuthProviderConfig{
+				ClientID:     os.Getenv("GITHUB_CLIENT_ID"),
+				ClientSecret: os.Getenv("GITHUB_CLIENT_SECRET"),
+				RedirectURL:  getEnvOrDefault("GITHUB_REDIRECT_URL", "http://localhost:8080/auth/github/callback"),
+			},
+		},
+		Email: EmailConfig{
+			SMTPHost:     getEnvOrDefault("SMTP_HOST", "localhost"),
+			SMTPPort:     getEnvAsIntOrDefault("SMTP_PORT", 1025),
+			SMTPUser:     os.Getenv("SMTP_USER"),
+			SMTPPassword: os.Getenv("SMTP_PASSWORD"),
+			From:         getEnvOrDefault("SMTP_FROM", "noreply@hertzboard.dev"),
+		},
+		CORS: CORSConfig{
+			AllowedOrigins:   []string{getEnvOrDefault("CORS_ALLOWED_ORIGINS", "http://localhost:5173")},
+			AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"},
+			AllowedHeaders:   []string{"Content-Type", "Authorization"},
+			AllowCredentials: true,
+			MaxAge:           86400,
+		},
+		WebSocket: WebSocketConfig{
+			Port:            getEnvAsIntOrDefault("WS_PORT", 8080),
+			ReadBufferSize:  getEnvAsIntOrDefault("WS_READ_BUFFER_SIZE", 1024),
+			WriteBufferSize: getEnvAsIntOrDefault("WS_WRITE_BUFFER_SIZE", 1024),
+			MaxMessageSize:  getEnvAsIntOrDefault("WS_MAX_MESSAGE_SIZE", 10485760),
+			PingPeriod:      getEnvAsIntOrDefault("WS_PING_PERIOD", 54),
+			PongWait:        getEnvAsIntOrDefault("WS_PONG_WAIT", 60),
+			WriteWait:       getEnvAsIntOrDefault("WS_WRITE_WAIT", 10),
+		},
+		Upload: UploadConfig{
+			MaxSize:      int64(getEnvAsIntOrDefault("MAX_UPLOAD_SIZE", 10485760)),
+			AllowedTypes: []string{"image/jpeg", "image/png", "image/gif", "image/webp", "image/svg+xml"},
+		},
+		RateLimit: RateLimitConfig{
+			Enabled:  getEnvAsBoolOrDefault("RATE_LIMIT_ENABLED", true),
+			Requests: getEnvAsIntOrDefault("RATE_LIMIT_REQUESTS", 100),
+			Duration: getEnvOrDefault("RATE_LIMIT_DURATION", "1m"),
+		},
+		Logging: LoggingConfig{
+			Level:  getEnvOrDefault("LOG_LEVEL", "info"),
+			Format: getEnvOrDefault("LOG_FORMAT", "json"),
+			Output: getEnvOrDefault("LOG_OUTPUT", "stdout"),
+		},
+		Metrics: MetricsConfig{
+			Enabled: getEnvAsBoolOrDefault("METRICS_ENABLED", true),
+			Port:    getEnvAsIntOrDefault("METRICS_PORT", 9090),
+		},
+		Tracing: TracingConfig{
+			Enabled:        getEnvAsBoolOrDefault("TRACING_ENABLED", false),
+			JaegerEndpoint: os.Getenv("JAEGER_ENDPOINT"),
+		},
+	}
+
+	return cfg, nil
+}
+
+// Helper functions for environment variable parsing
+func getEnvOrDefault(key, defaultValue string) string {
+	if value := os.Getenv(key); value != "" {
+		return value
+	}
+	return defaultValue
+}
+
+func getEnvAsIntOrDefault(key string, defaultValue int) int {
+	if value := os.Getenv(key); value != "" {
+		var intValue int
+		if _, err := fmt.Sscanf(value, "%d", &intValue); err == nil {
+			return intValue
+		}
+	}
+	return defaultValue
+}
+
+func getEnvAsBoolOrDefault(key string, defaultValue bool) bool {
+	if value := os.Getenv(key); value != "" {
+		return value == "true" || value == "1" || value == "yes"
+	}
+	return defaultValue
+}

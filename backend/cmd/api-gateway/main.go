@@ -31,8 +31,20 @@ func main() {
 	log.Println("Starting HertzBoard API Gateway...")
 
 	// Load configuration
-	configPath := getEnv("CONFIG_PATH", defaultConfigPath)
-	cfg, err := config.Load(configPath)
+	var cfg *config.Config
+	var err error
+
+	configPath := os.Getenv("CONFIG_PATH")
+	if configPath == "" {
+		// Load from environment variables (production)
+		log.Println("Loading configuration from environment variables...")
+		cfg, err = config.LoadFromEnv()
+	} else {
+		// Load from YAML file (development)
+		log.Printf("Loading configuration from file: %s", configPath)
+		cfg, err = config.Load(configPath)
+	}
+
 	if err != nil {
 		log.Fatalf("Failed to load config: %v", err)
 	}
