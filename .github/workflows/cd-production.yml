@@ -12,6 +12,8 @@ jobs:
   deploy-production:
     name: Deploy to Production
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     environment:
       name: production
       url: https://hertz.rshang.in
