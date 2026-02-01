@@ -30,8 +30,9 @@ jobs:
             echo "===== Starting Production Deployment ====="
             cd /opt/hertz-board
 
-            echo "1. Pulling latest code from GitHub..."
+            echo "1. Stashing local changes and pulling latest code..."
             git fetch --all --tags
+            git stash push -m "Auto-stash before deployment at $(date)"
             git checkout ${{ github.ref_name }}
             git pull origin ${{ github.ref_name }}
 
