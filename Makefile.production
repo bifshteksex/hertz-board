@@ -110,16 +110,26 @@ prod-setup: check-root
 		echo "Docker Compose already installed"; \
 	fi
 
-	@echo "4. Installing Go..."
+	@echo "4. Installing Go 1.25.6..."
 	@if ! command -v go &> /dev/null; then \
-		wget https://go.dev/dl/go1.22.0.linux-amd64.tar.gz && \
+		wget https://go.dev/dl/go1.25.6.linux-amd64.tar.gz && \
 		rm -rf /usr/local/go && \
-		tar -C /usr/local -xzf go1.22.0.linux-amd64.tar.gz && \
-		rm go1.22.0.linux-amd64.tar.gz && \
+		tar -C /usr/local -xzf go1.25.6.linux-amd64.tar.gz && \
+		rm go1.25.6.linux-amd64.tar.gz && \
 		echo 'export PATH=$$PATH:/usr/local/go/bin' >> /etc/profile && \
 		export PATH=$$PATH:/usr/local/go/bin; \
 	else \
-		echo "Go already installed"; \
+		CURRENT_GO_VERSION=$$(go version | awk '{print $$3}' | sed 's/go//'); \
+		if [ "$$CURRENT_GO_VERSION" != "1.25.6" ]; then \
+			echo "Warning: Go version $$CURRENT_GO_VERSION found, but 1.25.6 required"; \
+			echo "Updating Go to 1.25.6..."; \
+			wget https://go.dev/dl/go1.25.6.linux-amd64.tar.gz && \
+			rm -rf /usr/local/go && \
+			tar -C /usr/local -xzf go1.25.6.linux-amd64.tar.gz && \
+			rm go1.25.6.linux-amd64.tar.gz; \
+		else \
+			echo "Go 1.25.6 already installed"; \
+		fi; \
 	fi
 
 	@echo "5. Installing Node.js and pnpm..."
@@ -179,7 +189,7 @@ prod-build: prod-env-check
 	@echo "Building production Docker images..."
 	@if [ ! -f Dockerfile.backend ]; then \
 		echo "Creating backend Dockerfile..."; \
-		echo 'FROM golang:1.22-alpine AS builder' > Dockerfile.backend; \
+		echo 'FROM golang:1.25.6-alpine AS builder' > Dockerfile.backend; \
 		echo 'WORKDIR /app' >> Dockerfile.backend; \
 		echo 'COPY backend/go.mod backend/go.sum ./' >> Dockerfile.backend; \
 		echo 'RUN go mod download' >> Dockerfile.backend; \
