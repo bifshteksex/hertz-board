@@ -63,7 +63,7 @@
 				console.log('[Workspace] Loading elements for workspace:', workspaceId);
 				const response = await api.listElements(workspaceId);
 				console.log('[Workspace] Loaded elements:', response);
-				const backendElements = response || [];
+				const backendElements = response?.elements || [];
 
 				// Преобразуем из формата backend в формат frontend
 				const elements = backendElements.map((el: any) => {

@@ -179,10 +179,21 @@ prod-ssl:
 	fi
 	@echo "Setting up SSL for domain: $$DOMAIN"
 	apt-get install -y certbot
-	certbot certonly --standalone -d $$DOMAIN -d www.$$DOMAIN --non-interactive --agree-tos -m admin@$$DOMAIN
-	@echo "SSL certificates installed at /etc/letsencrypt/live/$$DOMAIN/"
-	@echo "Add certificate renewal to crontab:"
-	@echo "0 0 1 * * certbot renew --quiet"
+	@echo "Creating webroot directory for Let's Encrypt..."
+	mkdir -p /var/www/certbot
+	@echo "Obtaining SSL certificate..."
+	certbot certonly --webroot -w /var/www/certbot -d $$DOMAIN -d www.$$DOMAIN --non-interactive --agree-tos -m admin@$$DOMAIN
+	@echo "Creating SSL directory for nginx..."
+	mkdir -p nginx/ssl
+	@echo "Copying certificates to nginx directory..."
+	cp /etc/letsencrypt/live/$$DOMAIN/fullchain.pem nginx/ssl/
+	cp /etc/letsencrypt/live/$$DOMAIN/privkey.pem nginx/ssl/
+	@echo "SSL certificates installed!"
+	@echo "Next steps:"
+	@echo "1. Update nginx.conf to enable HTTPS (if not already done)"
+	@echo "2. Restart nginx: docker restart hertz-board-nginx-prod"
+	@echo "3. Add certificate renewal to crontab:"
+	@echo "   0 0 1 * * certbot renew --quiet && cp /etc/letsencrypt/live/$$DOMAIN/fullchain.pem /opt/hertz-board/nginx/ssl/ && cp /etc/letsencrypt/live/$$DOMAIN/privkey.pem /opt/hertz-board/nginx/ssl/ && docker restart hertz-board-nginx-prod"
 
 # Build production Docker images
 prod-build: prod-env-check
