@@ -37,17 +37,18 @@ var AllowedImageTypes = map[string]bool{
 }
 
 type AssetService struct {
-	assetRepo     *repository.AssetRepository
-	workspaceRepo *repository.WorkspaceRepository
-	minioClient   *minio.Client
-	bucketName    string
-	endpoint      string
+	assetRepo      *repository.AssetRepository
+	workspaceRepo  *repository.WorkspaceRepository
+	minioClient    *minio.Client
+	bucketName     string
+	endpoint       string
+	publicEndpoint string
 }
 
 func NewAssetService(
 	assetRepo *repository.AssetRepository,
 	workspaceRepo *repository.WorkspaceRepository,
-	minioEndpoint, minioAccessKey, minioSecretKey string,
+	minioEndpoint, minioPublicEndpoint, minioAccessKey, minioSecretKey string,
 	useSSL bool,
 ) (*AssetService, error) {
 	// Initialize MinIO client
@@ -91,12 +92,19 @@ func NewAssetService(
 		}
 	}
 
+	// Use public endpoint if provided, otherwise fall back to internal endpoint
+	publicEndpoint := minioPublicEndpoint
+	if publicEndpoint == "" {
+		publicEndpoint = minioEndpoint
+	}
+
 	return &AssetService{
-		assetRepo:     assetRepo,
-		workspaceRepo: workspaceRepo,
-		minioClient:   minioClient,
-		bucketName:    bucketName,
-		endpoint:      minioEndpoint,
+		assetRepo:      assetRepo,
+		workspaceRepo:  workspaceRepo,
+		minioClient:    minioClient,
+		bucketName:     bucketName,
+		endpoint:       minioEndpoint,
+		publicEndpoint: publicEndpoint,
 	}, nil
 }
 
@@ -328,8 +336,8 @@ func (s *AssetService) CleanupOrphanedAssets(ctx context.Context, workspaceID uu
 // Helper functions
 
 func (s *AssetService) getObjectURL(objectName string) string {
-	// In production, this should use a CDN URL
-	return fmt.Sprintf("http://%s/%s/%s", s.endpoint, s.bucketName, objectName)
+	// Use public endpoint for URLs that will be accessed from browsers
+	return fmt.Sprintf("http://%s/%s/%s", s.publicEndpoint, s.bucketName, objectName)
 }
 
 func (s *AssetService) extractObjectName(url string) string {

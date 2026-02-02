@@ -82,13 +82,14 @@ type RedisConfig struct {
 }
 
 type MinIOConfig struct {
-	Endpoint      string `yaml:"endpoint"`
-	AccessKey     string `yaml:"access_key"`
-	SecretKey     string `yaml:"secret_key"`
-	UseSSL        bool   `yaml:"use_ssl"`
-	BucketAssets  string `yaml:"bucket_assets"`
-	BucketExports string `yaml:"bucket_exports"`
-	BucketBackups string `yaml:"bucket_backups"`
+	Endpoint       string `yaml:"endpoint"`
+	PublicEndpoint string `yaml:"public_endpoint"`
+	AccessKey      string `yaml:"access_key"`
+	SecretKey      string `yaml:"secret_key"`
+	UseSSL         bool   `yaml:"use_ssl"`
+	BucketAssets   string `yaml:"bucket_assets"`
+	BucketExports  string `yaml:"bucket_exports"`
+	BucketBackups  string `yaml:"bucket_backups"`
 }
 
 type ClickHouseConfig struct {
@@ -246,13 +247,14 @@ func LoadFromEnv() (*Config, error) {
 			PoolSize:   getEnvAsIntOrDefault("REDIS_POOL_SIZE", DefaultRedisPoolSize),
 		},
 		MinIO: MinIOConfig{
-			Endpoint:      getEnvOrDefault("MINIO_ENDPOINT", "minio:9000"),
-			AccessKey:     getEnvOrDefault("MINIO_ACCESS_KEY", "hertzboard"),
-			SecretKey:     os.Getenv("MINIO_SECRET_KEY"),
-			UseSSL:        getEnvAsBoolOrDefault("MINIO_USE_SSL", false),
-			BucketAssets:  getEnvOrDefault("MINIO_BUCKET_ASSETS", "hertzboard-assets"),
-			BucketExports: getEnvOrDefault("MINIO_BUCKET_EXPORTS", "hertzboard-exports"),
-			BucketBackups: getEnvOrDefault("MINIO_BUCKET_BACKUPS", "hertzboard-backups"),
+			Endpoint:       getEnvOrDefault("MINIO_ENDPOINT", "minio:9000"),
+			PublicEndpoint: getEnvOrDefault("MINIO_PUBLIC_ENDPOINT", ""), // Default to endpoint if not set
+			AccessKey:      getEnvOrDefault("MINIO_ACCESS_KEY", "hertzboard"),
+			SecretKey:      os.Getenv("MINIO_SECRET_KEY"),
+			UseSSL:         getEnvAsBoolOrDefault("MINIO_USE_SSL", false),
+			BucketAssets:   getEnvOrDefault("MINIO_BUCKET_ASSETS", "hertzboard-assets"),
+			BucketExports:  getEnvOrDefault("MINIO_BUCKET_EXPORTS", "hertzboard-exports"),
+			BucketBackups:  getEnvOrDefault("MINIO_BUCKET_BACKUPS", "hertzboard-backups"),
 		},
 		ClickHouse: ClickHouseConfig{
 			Host:     getEnvOrDefault("CLICKHOUSE_HOST", "clickhouse"),

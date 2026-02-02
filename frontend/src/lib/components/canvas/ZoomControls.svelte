@@ -32,10 +32,10 @@
 </script>
 
 <div
-	class="absolute right-6 bottom-6 z-10 flex items-center gap-1 border border-gray-200 bg-white p-1 shadow-md"
+	class="absolute right-6 bottom-6 z-10 flex items-center gap-1 border border-gray-200 bg-white p-1 shadow-md dark:border-gray-700 dark:bg-gray-800"
 >
 	<button
-		class="flex size-8 items-center justify-center border-none bg-transparent text-gray-700 transition-all duration-150 hover:enabled:bg-gray-100 hover:enabled:text-gray-900 active:enabled:bg-gray-200 disabled:cursor-not-allowed disabled:opacity-40"
+		class="flex size-8 items-center justify-center border-none bg-transparent text-gray-700 transition-all duration-150 hover:enabled:bg-gray-100 hover:enabled:text-gray-900 active:enabled:bg-gray-200 disabled:cursor-not-allowed disabled:opacity-40 dark:text-gray-300 dark:hover:enabled:bg-gray-700 dark:hover:enabled:text-gray-100"
 		onclick={handleZoomOut}
 		disabled={!canZoomOut}
 		title="Zoom Out (Ctrl + -)"
@@ -45,7 +45,7 @@
 	</button>
 
 	<button
-		class="h-8 min-w-15 border-none bg-transparent px-2 text-[13px] font-medium text-gray-700 transition-all duration-150 hover:bg-gray-100 hover:text-gray-900 active:bg-gray-200"
+		class="h-8 min-w-15 border-none bg-transparent px-2 text-[13px] font-medium text-gray-700 transition-all duration-150 hover:bg-gray-100 hover:text-gray-900 active:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-gray-100"
 		onclick={handleResetZoom}
 		title="Reset Zoom (Ctrl + 0)"
 		aria-label="Reset zoom to 100%"
@@ -54,7 +54,7 @@
 	</button>
 
 	<button
-		class="flex size-8 items-center justify-center border-none bg-transparent text-gray-700 transition-all duration-150 hover:enabled:bg-gray-100 hover:enabled:text-gray-900 active:enabled:bg-gray-200 disabled:cursor-not-allowed disabled:opacity-40"
+		class="flex size-8 items-center justify-center border-none bg-transparent text-gray-700 transition-all duration-150 hover:enabled:bg-gray-100 hover:enabled:text-gray-900 active:enabled:bg-gray-200 disabled:cursor-not-allowed disabled:opacity-40 dark:text-gray-300 dark:hover:enabled:bg-gray-700 dark:hover:enabled:text-gray-100"
 		onclick={handleZoomIn}
 		disabled={!canZoomIn}
 		title="Zoom In (Ctrl + +)"
@@ -63,10 +63,10 @@
 		<IconZoomIn size={18} />
 	</button>
 
-	<div class="mx-1 h-6 w-px bg-gray-200"></div>
+	<div class="mx-1 h-6 w-px bg-gray-200 dark:bg-gray-700"></div>
 
 	<button
-		class="flex size-8 items-center justify-center border-none bg-transparent text-gray-700 transition-all duration-150 hover:bg-gray-100 hover:text-gray-900 active:bg-gray-200"
+		class="flex size-8 items-center justify-center border-none bg-transparent text-gray-700 transition-all duration-150 hover:bg-gray-100 hover:text-gray-900 active:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-gray-100"
 		onclick={handleFitToScreen}
 		title="Fit to Screen"
 		aria-label="Fit all elements to screen"

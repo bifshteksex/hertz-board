@@ -228,36 +228,27 @@
 		if (!canvasStore.workspaceId) return;
 		if (points.length < 2) return;
 
-		// Convert points to SVG path using perfect-freehand
-		const { getStroke } = await import('perfect-freehand');
-		const stroke = getStroke(points, {
-			size: 2 * 2,
-			thinning: 0.5,
-			smoothing: 0.5,
-			streamline: 0.5,
-			simulatePressure: true
-		});
+		// Используем первую точку как позицию элемента
+		const firstPoint = points[0];
 
-		if (stroke.length === 0) return;
-
-		const pathData = stroke.reduce((acc, [x0, y0], i, arr) => {
-			const [x1, y1] = arr[(i + 1) % arr.length];
-			if (i === 0) return `M ${x0},${y0} Q ${x1},${y1}`;
-			if (i === arr.length - 1) return `${acc} ${x0},${y0} Z`;
-			return `${acc} ${x0},${y0} T ${x1},${y1}`;
-		}, '');
+		// Конвертируем все точки в относительные координаты (относительно первой точки)
+		const relativePoints = points.map((p) => ({
+			x: p.x - firstPoint.x,
+			y: p.y - firstPoint.y,
+			pressure: p.pressure
+		}));
 
 		const newElement: CanvasElementType = {
 			id: crypto.randomUUID(),
 			workspace_id: canvasStore.workspaceId,
 			type: 'freehand',
-			pos_x: points[0].x,
-			pos_y: points[0].y,
+			pos_x: firstPoint.x,
+			pos_y: firstPoint.y,
 			z_index: canvasStore.elements.length,
-			path_data: pathData,
+			points: relativePoints,
 			style: {
-				strokeColor: '#000000',
-				strokeWidth: 2,
+				strokeColor: canvasStore.brushColor,
+				strokeWidth: canvasStore.brushWidth,
 				opacity: 1
 			}
 		};
@@ -706,7 +697,6 @@
 		if (e.button === 0 && canvasStore.activeTool === 'text') {
 			const point = getCanvasPoint(e);
 			createTextElement(point.x, point.y);
-			canvasStore.setTool('select');
 			return;
 		}
 
@@ -714,14 +704,12 @@
 		if (e.button === 0 && canvasStore.activeTool === 'sticky') {
 			const point = getCanvasPoint(e);
 			createStickyNote(point.x, point.y);
-			canvasStore.setTool('select');
 			return;
 		}
 
 		// Image tool - trigger file upload
 		if (e.button === 0 && canvasStore.activeTool === 'image') {
 			imageUploader?.openFileDialog();
-			canvasStore.setTool('select');
 			return;
 		}
 
@@ -729,7 +717,6 @@
 		if (e.button === 0 && canvasStore.activeTool === 'list') {
 			const point = getCanvasPoint(e);
 			createListElement(point.x, point.y, 'bullet');
-			canvasStore.setTool('select');
 			return;
 		}
 
@@ -865,7 +852,6 @@
 			isCreatingShape = false;
 			shapeCreateStart = null;
 			shapeCreateCurrent = null;
-			canvasStore.setTool('select');
 			return;
 		}
 
@@ -874,7 +860,6 @@
 			createFreehandElement(drawingPoints);
 			isDrawing = false;
 			drawingPoints = [];
-			canvasStore.setTool('select');
 			return;
 		}
 
@@ -890,7 +875,6 @@
 			isCreatingConnector = false;
 			connectorStart = null;
 			connectorCurrent = null;
-			canvasStore.setTool('select');
 			return;
 		}
 	}
@@ -1169,7 +1153,8 @@
 <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 <div
-	class="canvas-container"
+	class="relative h-full w-full overflow-hidden bg-gray-200 select-none focus:outline-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-blue-600 dark:bg-gray-800"
+	style="cursor: url('/cursors/default.svg') 0 0, auto;"
 	bind:this={canvasContainer}
 	onmousedown={handleMouseDown}
 	onmousemove={handleMouseMove}
@@ -1181,9 +1166,9 @@
 	tabindex="0"
 	aria-label="Canvas workspace"
 >
-	<svg bind:this={svgCanvas} class="canvas-svg" width="100%" height="100%">
+	<svg bind:this={svgCanvas} class="block touch-none" width="100%" height="100%">
 		<!-- Background -->
-		<rect width="100%" height="100%" fill="#f8f9fa" />
+		<rect width="100%" height="100%" class="fill-gray-50 dark:fill-gray-900" />
 
 		<!-- Main canvas group с viewport transform -->
 		<g {transform}>
@@ -1221,7 +1206,11 @@
 
 			<!-- Freehand drawing preview -->
 			{#if isDrawing && drawingPoints.length > 0}
-				<FreehandDrawing points={drawingPoints} color="#000000" width={2} />
+				<FreehandDrawing
+					points={drawingPoints}
+					color={canvasStore.brushColor}
+					width={canvasStore.brushWidth}
+				/>
 			{/if}
 
 			<!-- Connector creation preview -->
@@ -1294,29 +1283,3 @@
 		/>
 	{/if}
 </div>
-
-<style>
-	.canvas-container {
-		position: relative;
-		width: 100%;
-		height: 100%;
-		overflow: hidden;
-		background: #e5e7eb;
-		cursor: default;
-		user-select: none;
-	}
-
-	.canvas-container:focus {
-		outline: none;
-	}
-
-	.canvas-container:focus-visible {
-		outline: 2px solid #3b82f6;
-		outline-offset: -2px;
-	}
-
-	.canvas-svg {
-		display: block;
-		touch-action: none; /* Disable browser touch gestures */
-	}
-</style>

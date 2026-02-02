@@ -2,6 +2,7 @@ type Theme = 'light' | 'dark';
 
 class ThemeStore {
 	private currentTheme = $state<Theme>('light');
+	private allowedRoutes: string[] = [];
 
 	constructor() {
 		// Load saved theme from localStorage on initialization
@@ -14,7 +15,8 @@ class ThemeStore {
 				const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 				this.currentTheme = prefersDark ? 'dark' : 'light';
 			}
-			this.applyTheme();
+			// Apply theme based on current route
+			this.updateThemeForRoute();
 		}
 	}
 
@@ -30,7 +32,7 @@ class ThemeStore {
 		this.currentTheme = theme;
 		if (typeof window !== 'undefined') {
 			localStorage.setItem('theme', theme);
-			this.applyTheme();
+			this.updateThemeForRoute();
 		}
 	}
 
@@ -38,6 +40,38 @@ class ThemeStore {
 		this.setTheme(this.currentTheme === 'light' ? 'dark' : 'light');
 	}
 
+	// Check if current route should have dark mode enabled
+	private isThemeAllowedRoute(): boolean {
+		if (typeof window === 'undefined') return false;
+
+		const path = window.location.pathname;
+
+		// Exclude landing page, auth pages (login, register, forgot-password)
+		const excludedRoutes = ['/', '/auth/login', '/auth/register', '/auth/forgot-password'];
+
+		return !excludedRoutes.includes(path);
+	}
+
+	// Update theme application based on route
+	private updateThemeForRoute() {
+		if (typeof window !== 'undefined') {
+			const root = document.documentElement;
+
+			// Only apply dark theme if on allowed route and theme is dark
+			if (this.isThemeAllowedRoute() && this.currentTheme === 'dark') {
+				root.classList.add('dark');
+			} else {
+				root.classList.remove('dark');
+			}
+		}
+	}
+
+	// Call this method when route changes
+	handleRouteChange() {
+		this.updateThemeForRoute();
+	}
+
+	// Apply theme without checking route (for internal use in app pages)
 	private applyTheme() {
 		if (typeof window !== 'undefined') {
 			const root = document.documentElement;

@@ -78,6 +78,10 @@ class CanvasStore {
 	// Настройки
 	private _showGrid = $state(true);
 	private _snapToGrid = $state(false);
+
+	// Настройки кисти для freehand
+	private _brushColor = $state('#000000');
+	private _brushWidth = $state(2);
 	private _gridSize = $state(GRID_SIZE);
 
 	// Workspace ID (текущий открытый workspace)
@@ -130,6 +134,14 @@ class CanvasStore {
 
 	get gridSize() {
 		return this._gridSize;
+	}
+
+	get brushColor() {
+		return this._brushColor;
+	}
+
+	get brushWidth() {
+		return this._brushWidth;
 	}
 
 	get workspaceId() {
@@ -578,6 +590,14 @@ class CanvasStore {
 
 	setGridSize(size: number) {
 		this._gridSize = size;
+	}
+
+	setBrushColor(color: string) {
+		this._brushColor = color;
+	}
+
+	setBrushWidth(width: number) {
+		this._brushWidth = Math.max(1, Math.min(50, width)); // Ограничиваем от 1 до 50
 	}
 
 	toggleGrid() {

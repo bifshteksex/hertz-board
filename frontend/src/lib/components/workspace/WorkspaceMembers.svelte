@@ -362,6 +362,13 @@
 		overflow: hidden;
 	}
 
+	@media (prefers-color-scheme: dark) {
+		.workspace-members {
+			background: #1f2937;
+			border-color: #374151;
+		}
+	}
+
 	.header {
 		display: flex;
 		align-items: center;
@@ -370,11 +377,23 @@
 		border-bottom: 1px solid #e5e7eb;
 	}
 
+	@media (prefers-color-scheme: dark) {
+		.header {
+			border-bottom-color: #374151;
+		}
+	}
+
 	.title {
 		display: flex;
 		align-items: center;
 		gap: 8px;
 		color: #111827;
+	}
+
+	@media (prefers-color-scheme: dark) {
+		.title {
+			color: #f3f4f6;
+		}
 	}
 
 	.title h3 {
@@ -395,6 +414,13 @@
 		border-radius: 12px;
 		font-size: 13px;
 		font-weight: 600;
+	}
+
+	@media (prefers-color-scheme: dark) {
+		.count {
+			background: #374151;
+			color: #9ca3af;
+		}
 	}
 
 	.invite-button {
@@ -422,8 +448,20 @@
 		color: #6b7280;
 	}
 
+	@media (prefers-color-scheme: dark) {
+		.loading {
+			color: #9ca3af;
+		}
+	}
+
 	.error {
 		color: #dc2626;
+	}
+
+	@media (prefers-color-scheme: dark) {
+		.error {
+			color: #ef4444;
+		}
 	}
 
 	.empty-state {
@@ -433,6 +471,12 @@
 		justify-content: center;
 		padding: 48px 16px;
 		color: #9ca3af;
+	}
+
+	@media (prefers-color-scheme: dark) {
+		.empty-state {
+			color: #6b7280;
+		}
 	}
 
 	.empty-state p {
@@ -456,6 +500,12 @@
 
 	.member-item:hover {
 		background: #f9fafb;
+	}
+
+	@media (prefers-color-scheme: dark) {
+		.member-item:hover {
+			background: #374151;
+		}
 	}
 
 	.member-avatar {
@@ -493,12 +543,24 @@
 		text-overflow: ellipsis;
 	}
 
+	@media (prefers-color-scheme: dark) {
+		.member-name {
+			color: #f3f4f6;
+		}
+	}
+
 	.member-email {
 		font-size: 13px;
 		color: #6b7280;
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
+	}
+
+	@media (prefers-color-scheme: dark) {
+		.member-email {
+			color: #9ca3af;
+		}
 	}
 
 	.role-badge {
@@ -511,6 +573,12 @@
 		font-size: 13px;
 		font-weight: 500;
 		flex-shrink: 0;
+	}
+
+	@media (prefers-color-scheme: dark) {
+		.role-badge {
+			background: #374151;
+		}
 	}
 
 	.member-actions {
@@ -535,6 +603,17 @@
 		color: #111827;
 	}
 
+	@media (prefers-color-scheme: dark) {
+		.menu-button {
+			color: #9ca3af;
+		}
+
+		.menu-button:hover {
+			background: #374151;
+			color: #f3f4f6;
+		}
+	}
+
 	.actions-menu {
 		position: absolute;
 		top: calc(100% + 4px);
@@ -547,6 +626,14 @@
 		padding: 4px;
 		z-index: 100;
 		animation: slideDown 0.15s ease-out;
+	}
+
+	@media (prefers-color-scheme: dark) {
+		.actions-menu {
+			background: #1f2937;
+			border-color: #374151;
+			box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+		}
 	}
 
 	@keyframes slideDown {
@@ -575,8 +662,20 @@
 		transition: background 0.2s;
 	}
 
+	@media (prefers-color-scheme: dark) {
+		.menu-item {
+			color: #d1d5db;
+		}
+	}
+
 	.menu-item:hover:not(:disabled) {
 		background: #f3f4f6;
+	}
+
+	@media (prefers-color-scheme: dark) {
+		.menu-item:hover:not(:disabled) {
+			background: #374151;
+		}
 	}
 
 	.menu-item:disabled {
@@ -588,14 +687,32 @@
 		color: #dc2626;
 	}
 
+	@media (prefers-color-scheme: dark) {
+		.menu-item.danger {
+			color: #ef4444;
+		}
+	}
+
 	.menu-item.danger:hover {
 		background: #fee2e2;
+	}
+
+	@media (prefers-color-scheme: dark) {
+		.menu-item.danger:hover {
+			background: #7f1d1d;
+		}
 	}
 
 	.menu-divider {
 		height: 1px;
 		background: #e5e7eb;
 		margin: 4px 0;
+	}
+
+	@media (prefers-color-scheme: dark) {
+		.menu-divider {
+			background: #374151;
+		}
 	}
 
 	.menu-backdrop {
@@ -637,6 +754,13 @@
 		animation: slideUp 0.3s ease-out;
 	}
 
+	@media (prefers-color-scheme: dark) {
+		.modal {
+			background: #1f2937;
+			box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+		}
+	}
+
 	@keyframes slideUp {
 		from {
 			opacity: 0;
@@ -656,11 +780,23 @@
 		border-bottom: 1px solid #e5e7eb;
 	}
 
+	@media (prefers-color-scheme: dark) {
+		.modal-header {
+			border-bottom-color: #374151;
+		}
+	}
+
 	.modal-header h3 {
 		font-size: 18px;
 		font-weight: 600;
 		color: #111827;
 		margin: 0;
+	}
+
+	@media (prefers-color-scheme: dark) {
+		.modal-header h3 {
+			color: #f3f4f6;
+		}
 	}
 
 	.close-button {
@@ -680,6 +816,17 @@
 	.close-button:hover {
 		background: #f3f4f6;
 		color: #111827;
+	}
+
+	@media (prefers-color-scheme: dark) {
+		.close-button {
+			color: #9ca3af;
+		}
+
+		.close-button:hover {
+			background: #374151;
+			color: #f3f4f6;
+		}
 	}
 
 	.modal-body {
@@ -702,6 +849,12 @@
 		margin-bottom: 6px;
 	}
 
+	@media (prefers-color-scheme: dark) {
+		.form-group label {
+			color: #d1d5db;
+		}
+	}
+
 	.form-group input,
 	.form-group select {
 		width: 100%;
@@ -713,11 +866,28 @@
 		transition: all 0.2s;
 	}
 
+	@media (prefers-color-scheme: dark) {
+		.form-group input,
+		.form-group select {
+			background: #111827;
+			border-color: #4b5563;
+			color: #f3f4f6;
+		}
+	}
+
 	.form-group input:focus,
 	.form-group select:focus {
 		outline: none;
 		border-color: #3b82f6;
 		box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+	}
+
+	@media (prefers-color-scheme: dark) {
+		.form-group input:focus,
+		.form-group select:focus {
+			border-color: #3b82f6;
+			box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+		}
 	}
 
 	.form-group input:disabled,
@@ -726,10 +896,23 @@
 		cursor: not-allowed;
 	}
 
+	@media (prefers-color-scheme: dark) {
+		.form-group input:disabled,
+		.form-group select:disabled {
+			background: #0f172a;
+		}
+	}
+
 	.help-text {
 		margin-top: 6px;
 		font-size: 13px;
 		color: #6b7280;
+	}
+
+	@media (prefers-color-scheme: dark) {
+		.help-text {
+			color: #9ca3af;
+		}
 	}
 
 	.error-message {
@@ -740,6 +923,14 @@
 		color: #dc2626;
 		font-size: 14px;
 		margin-bottom: 16px;
+	}
+
+	@media (prefers-color-scheme: dark) {
+		.error-message {
+			background: #7f1d1d;
+			border-color: #991b1b;
+			color: #fca5a5;
+		}
 	}
 
 	.success-message {
@@ -765,10 +956,22 @@
 		margin: 0 0 8px;
 	}
 
+	@media (prefers-color-scheme: dark) {
+		.success-message h4 {
+			color: #f3f4f6;
+		}
+	}
+
 	.success-message p {
 		font-size: 14px;
 		color: #6b7280;
 		margin: 0 0 16px;
+	}
+
+	@media (prefers-color-scheme: dark) {
+		.success-message p {
+			color: #9ca3af;
+		}
 	}
 
 	.invite-link-box {
@@ -785,6 +988,14 @@
 		font-size: 13px;
 		color: #374151;
 		background: #f9fafb;
+	}
+
+	@media (prefers-color-scheme: dark) {
+		.invite-link-input {
+			background: #111827;
+			border-color: #4b5563;
+			color: #d1d5db;
+		}
 	}
 
 	.copy-button {
@@ -811,6 +1022,12 @@
 		color: #9ca3af;
 	}
 
+	@media (prefers-color-scheme: dark) {
+		.expiry-note {
+			color: #6b7280;
+		}
+	}
+
 	.modal-footer {
 		display: flex;
 		align-items: center;
@@ -818,6 +1035,12 @@
 		gap: 12px;
 		padding: 16px 24px;
 		border-top: 1px solid #e5e7eb;
+	}
+
+	@media (prefers-color-scheme: dark) {
+		.modal-footer {
+			border-top-color: #374151;
+		}
 	}
 
 	.button {
@@ -840,9 +1063,24 @@
 		border: 1px solid #d1d5db;
 	}
 
+	@media (prefers-color-scheme: dark) {
+		.button.secondary {
+			background: #111827;
+			color: #d1d5db;
+			border-color: #4b5563;
+		}
+	}
+
 	.button.secondary:hover:not(:disabled) {
 		background: #f9fafb;
 		border-color: #9ca3af;
+	}
+
+	@media (prefers-color-scheme: dark) {
+		.button.secondary:hover:not(:disabled) {
+			background: #374151;
+			border-color: #6b7280;
+		}
 	}
 
 	.button.primary {

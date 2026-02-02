@@ -160,17 +160,23 @@
 </script>
 
 {#if selectedCount === 0}
-	<div class="flex h-full w-[280px] items-center justify-center border-l border-gray-200 bg-white">
-		<div class="px-6 text-center text-sm text-gray-400">
+	<div
+		class="flex h-full w-[280px] items-center justify-center border-l border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800"
+	>
+		<div class="px-6 text-center text-sm text-gray-400 dark:text-gray-500">
 			<p>Select an element to edit properties</p>
 		</div>
 	</div>
 {:else if selectedCount === 1 && element}
-	<div class="flex h-full w-[280px] flex-col overflow-hidden border-l border-gray-200 bg-white">
-		<div class="flex items-center justify-between border-b border-gray-200 px-4 py-4">
-			<h3 class="m-0 text-sm font-semibold text-gray-900">Properties</h3>
+	<div
+		class="flex h-full w-[280px] flex-col overflow-hidden border-l border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800"
+	>
+		<div
+			class="flex items-center justify-between border-b border-gray-200 px-4 py-4 dark:border-gray-700"
+		>
+			<h3 class="m-0 text-sm font-semibold text-gray-900 dark:text-gray-100">Properties</h3>
 			<button
-				class="rounded-md border border-gray-200 bg-transparent px-1.5 py-1.5 text-gray-500 transition-all duration-150 hover:bg-gray-100 hover:text-gray-900"
+				class="rounded-md border border-gray-200 bg-transparent px-1.5 py-1.5 text-gray-500 transition-all duration-150 hover:bg-gray-100 hover:text-gray-900 dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-100"
 				onclick={toggleLock}
 				title={locked ? 'Unlock' : 'Lock'}
 			>
@@ -185,28 +191,32 @@
 		<div class="flex-1 overflow-y-auto px-4 py-4">
 			<!-- Position & Size -->
 			<div class="mb-6">
-				<div class="mb-3 text-xs font-semibold tracking-wide text-gray-500 uppercase">
+				<div
+					class="mb-3 text-xs font-semibold tracking-wide text-gray-500 uppercase dark:text-gray-400"
+				>
 					Position & Size
 				</div>
 
 				<div class="mb-2 grid grid-cols-2 gap-2">
 					<div class="flex flex-col gap-1.5">
-						<label for="pos-x" class="text-xs font-medium text-gray-700">X</label>
+						<label for="pos-x" class="text-xs font-medium text-gray-700 dark:text-gray-300">X</label
+						>
 						<input
 							id="pos-x"
 							type="number"
-							class="rounded-md border border-gray-300 bg-white px-2 py-1.5 text-[13px] text-gray-900 focus:border-blue-500 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+							class="rounded-md border border-gray-300 bg-white px-2 py-1.5 text-[13px] text-gray-900 focus:border-blue-500 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
 							bind:value={posX}
 							onchange={() => handlePositionChange('pos_x', posX)}
 							disabled={locked}
 						/>
 					</div>
 					<div class="flex flex-col gap-1.5">
-						<label for="pos-y" class="text-xs font-medium text-gray-700">Y</label>
+						<label for="pos-y" class="text-xs font-medium text-gray-700 dark:text-gray-300">Y</label
+						>
 						<input
 							id="pos-y"
 							type="number"
-							class="rounded-md border border-gray-300 bg-white px-2 py-1.5 text-[13px] text-gray-900 focus:border-blue-500 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+							class="rounded-md border border-gray-300 bg-white px-2 py-1.5 text-[13px] text-gray-900 focus:border-blue-500 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
 							bind:value={posY}
 							onchange={() => handlePositionChange('pos_y', posY)}
 							disabled={locked}
@@ -216,22 +226,25 @@
 
 				<div class="mb-2 grid grid-cols-2 gap-2">
 					<div class="flex flex-col gap-1.5">
-						<label for="width" class="text-xs font-medium text-gray-700">W</label>
+						<label for="width" class="text-xs font-medium text-gray-700 dark:text-gray-300">W</label
+						>
 						<input
 							id="width"
 							type="number"
-							class="rounded-md border border-gray-300 bg-white px-2 py-1.5 text-[13px] text-gray-900 focus:border-blue-500 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+							class="rounded-md border border-gray-300 bg-white px-2 py-1.5 text-[13px] text-gray-900 focus:border-blue-500 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
 							bind:value={width}
 							onchange={() => handleSizeChange('width', width)}
 							disabled={locked}
 						/>
 					</div>
 					<div class="flex flex-col gap-1.5">
-						<label for="height" class="text-xs font-medium text-gray-700">H</label>
+						<label for="height" class="text-xs font-medium text-gray-700 dark:text-gray-300"
+							>H</label
+						>
 						<input
 							id="height"
 							type="number"
-							class="rounded-md border border-gray-300 bg-white px-2 py-1.5 text-[13px] text-gray-900 focus:border-blue-500 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+							class="rounded-md border border-gray-300 bg-white px-2 py-1.5 text-[13px] text-gray-900 focus:border-blue-500 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
 							bind:value={height}
 							onchange={() => handleSizeChange('height', height)}
 							disabled={locked}
@@ -240,36 +253,42 @@
 				</div>
 
 				<div class="mb-2 flex flex-col gap-1.5">
-					<label for="rotation" class="text-xs font-medium text-gray-700">Rotation</label>
+					<label for="rotation" class="text-xs font-medium text-gray-700 dark:text-gray-300"
+						>Rotation</label
+					>
 					<div class="flex items-center gap-2">
 						<input
 							id="rotation"
 							type="range"
 							min="0"
 							max="360"
-							class="h-1.5 flex-1 appearance-none rounded-full bg-gray-200 outline-none [&::-moz-range-thumb]:h-3.5 [&::-moz-range-thumb]:w-3.5 [&::-moz-range-thumb]:cursor-pointer [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-blue-500 [&::-moz-range-thumb]:bg-white [&::-moz-range-thumb]:shadow-sm [&::-webkit-slider-thumb]:h-3.5 [&::-webkit-slider-thumb]:w-3.5 [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-blue-500 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:shadow-sm"
+							class="h-1.5 flex-1 appearance-none rounded-full bg-gray-200 outline-none dark:bg-gray-600 [&::-moz-range-thumb]:h-3.5 [&::-moz-range-thumb]:w-3.5 [&::-moz-range-thumb]:cursor-pointer [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-blue-500 [&::-moz-range-thumb]:bg-white [&::-moz-range-thumb]:shadow-sm [&::-webkit-slider-thumb]:h-3.5 [&::-webkit-slider-thumb]:w-3.5 [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-blue-500 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:shadow-sm"
 							bind:value={rotation}
 							oninput={() => handleRotationChange(rotation)}
 							disabled={locked}
 						/>
-						<span class="min-w-[40px] text-right font-mono text-xs text-gray-500">{rotation}°</span>
+						<span class="min-w-[40px] text-right font-mono text-xs text-gray-500 dark:text-gray-400"
+							>{rotation}°</span
+						>
 					</div>
 				</div>
 
 				<div class="mb-2 flex flex-col gap-1.5">
-					<label for="opacity" class="text-xs font-medium text-gray-700">Opacity</label>
+					<label for="opacity" class="text-xs font-medium text-gray-700 dark:text-gray-300"
+						>Opacity</label
+					>
 					<div class="flex items-center gap-2">
 						<input
 							id="opacity"
 							type="range"
 							min="0"
 							max="100"
-							class="h-1.5 flex-1 appearance-none rounded-full bg-gray-200 outline-none [&::-moz-range-thumb]:h-3.5 [&::-moz-range-thumb]:w-3.5 [&::-moz-range-thumb]:cursor-pointer [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-blue-500 [&::-moz-range-thumb]:bg-white [&::-moz-range-thumb]:shadow-sm [&::-webkit-slider-thumb]:h-3.5 [&::-webkit-slider-thumb]:w-3.5 [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-blue-500 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:shadow-sm"
+							class="h-1.5 flex-1 appearance-none rounded-full bg-gray-200 outline-none dark:bg-gray-600 [&::-moz-range-thumb]:h-3.5 [&::-moz-range-thumb]:w-3.5 [&::-moz-range-thumb]:cursor-pointer [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-blue-500 [&::-moz-range-thumb]:bg-white [&::-moz-range-thumb]:shadow-sm [&::-webkit-slider-thumb]:h-3.5 [&::-webkit-slider-thumb]:w-3.5 [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-blue-500 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:shadow-sm"
 							bind:value={opacity}
 							oninput={() => handleOpacityChange(opacity)}
 							disabled={locked}
 						/>
-						<span class="min-w-[40px] text-right font-mono text-xs text-gray-500"
+						<span class="min-w-[40px] text-right font-mono text-xs text-gray-500 dark:text-gray-400"
 							>{Math.round(opacity)}%</span
 						>
 					</div>
@@ -279,13 +298,19 @@
 			<!-- Text Properties -->
 			{#if element.type === 'text' || element.type === 'sticky' || element.type === 'list'}
 				<div class="mb-6">
-					<div class="mb-3 text-xs font-semibold tracking-wide text-gray-500 uppercase">Text</div>
+					<div
+						class="mb-3 text-xs font-semibold tracking-wide text-gray-500 uppercase dark:text-gray-400"
+					>
+						Text
+					</div>
 
 					<div class="mb-2 flex flex-col gap-1.5">
-						<label for="font-family" class="text-xs font-medium text-gray-700">Font</label>
+						<label for="font-family" class="text-xs font-medium text-gray-700 dark:text-gray-300"
+							>Font</label
+						>
 						<select
 							id="font-family"
-							class="rounded-md border border-gray-300 bg-white px-2 py-1.5 text-[13px] text-gray-900 focus:border-blue-500 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+							class="rounded-md border border-gray-300 bg-white px-2 py-1.5 text-[13px] text-gray-900 focus:border-blue-500 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
 							bind:value={fontFamily}
 							onchange={() => handleFontFamilyChange(fontFamily)}
 							disabled={locked}
@@ -298,23 +323,27 @@
 
 					<div class="mb-2 grid grid-cols-2 gap-2">
 						<div class="flex flex-col gap-1.5">
-							<label for="font-size" class="text-xs font-medium text-gray-700">Size</label>
+							<label for="font-size" class="text-xs font-medium text-gray-700 dark:text-gray-300"
+								>Size</label
+							>
 							<input
 								id="font-size"
 								type="number"
 								min="8"
 								max="128"
-								class="rounded-md border border-gray-300 bg-white px-2 py-1.5 text-[13px] text-gray-900 focus:border-blue-500 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+								class="rounded-md border border-gray-300 bg-white px-2 py-1.5 text-[13px] text-gray-900 focus:border-blue-500 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
 								bind:value={fontSize}
 								onchange={() => handleFontSizeChange(fontSize)}
 								disabled={locked}
 							/>
 						</div>
 						<div class="flex flex-col gap-1.5">
-							<label for="font-weight" class="text-xs font-medium text-gray-700">Weight</label>
+							<label for="font-weight" class="text-xs font-medium text-gray-700 dark:text-gray-300"
+								>Weight</label
+							>
 							<select
 								id="font-weight"
-								class="rounded-md border border-gray-300 bg-white px-2 py-1.5 text-[13px] text-gray-900 focus:border-blue-500 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+								class="rounded-md border border-gray-300 bg-white px-2 py-1.5 text-[13px] text-gray-900 focus:border-blue-500 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
 								bind:value={fontWeight}
 								onchange={() => handleFontWeightChange(fontWeight)}
 								disabled={locked}
@@ -327,10 +356,10 @@
 					</div>
 
 					<div class="mb-2 flex flex-col gap-1.5">
-						<div class="text-xs font-medium text-gray-700">Alignment</div>
+						<div class="text-xs font-medium text-gray-700 dark:text-gray-300">Alignment</div>
 						<div class="grid grid-cols-3 gap-1">
 							<button
-								class="flex items-center justify-center rounded-md border border-gray-200 bg-white px-2 py-2 text-gray-500 transition-all duration-150 hover:bg-gray-100 hover:text-gray-900 disabled:cursor-not-allowed disabled:opacity-50 {textAlign ===
+								class="flex items-center justify-center rounded-md border border-gray-200 bg-white px-2 py-2 text-gray-500 transition-all duration-150 hover:bg-gray-100 hover:text-gray-900 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-400 dark:hover:bg-gray-600 dark:hover:text-gray-100 {textAlign ===
 								'left'
 									? 'border-blue-500 bg-blue-50 text-blue-600'
 									: ''}"
@@ -340,7 +369,7 @@
 								<AlignLeft size={16} />
 							</button>
 							<button
-								class="flex items-center justify-center rounded-md border border-gray-200 bg-white px-2 py-2 text-gray-500 transition-all duration-150 hover:bg-gray-100 hover:text-gray-900 disabled:cursor-not-allowed disabled:opacity-50 {textAlign ===
+								class="flex items-center justify-center rounded-md border border-gray-200 bg-white px-2 py-2 text-gray-500 transition-all duration-150 hover:bg-gray-100 hover:text-gray-900 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-400 dark:hover:bg-gray-600 dark:hover:text-gray-100 {textAlign ===
 								'center'
 									? 'border-blue-500 bg-blue-50 text-blue-600'
 									: ''}"
@@ -350,7 +379,7 @@
 								<AlignCenter size={16} />
 							</button>
 							<button
-								class="flex items-center justify-center rounded-md border border-gray-200 bg-white px-2 py-2 text-gray-500 transition-all duration-150 hover:bg-gray-100 hover:text-gray-900 disabled:cursor-not-allowed disabled:opacity-50 {textAlign ===
+								class="flex items-center justify-center rounded-md border border-gray-200 bg-white px-2 py-2 text-gray-500 transition-all duration-150 hover:bg-gray-100 hover:text-gray-900 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-400 dark:hover:bg-gray-600 dark:hover:text-gray-100 {textAlign ===
 								'right'
 									? 'border-blue-500 bg-blue-50 text-blue-600'
 									: ''}"
@@ -375,7 +404,9 @@
 			<!-- Shape Properties -->
 			{#if ['rectangle', 'ellipse', 'triangle', 'line', 'arrow'].includes(element.type)}
 				<div class="mb-6">
-					<div class="mb-3 text-xs font-semibold tracking-wide text-gray-500 uppercase">
+					<div
+						class="mb-3 text-xs font-semibold tracking-wide text-gray-500 uppercase dark:text-gray-400"
+					>
 						Fill & Stroke
 					</div>
 
@@ -396,7 +427,9 @@
 					</div>
 
 					<div class="mb-2 flex flex-col gap-1.5">
-						<label for="stroke-width" class="text-xs font-medium text-gray-700">Stroke Width</label>
+						<label for="stroke-width" class="text-xs font-medium text-gray-700 dark:text-gray-300"
+							>Stroke Width</label
+						>
 						<div class="flex items-center gap-2">
 							<input
 								id="stroke-width"
@@ -404,12 +437,13 @@
 								min="0"
 								max="20"
 								step="0.5"
-								class="h-1.5 flex-1 appearance-none rounded-full bg-gray-200 outline-none [&::-moz-range-thumb]:h-3.5 [&::-moz-range-thumb]:w-3.5 [&::-moz-range-thumb]:cursor-pointer [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-blue-500 [&::-moz-range-thumb]:bg-white [&::-moz-range-thumb]:shadow-sm [&::-webkit-slider-thumb]:h-3.5 [&::-webkit-slider-thumb]:w-3.5 [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-blue-500 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:shadow-sm"
+								class="h-1.5 flex-1 appearance-none rounded-full bg-gray-200 outline-none dark:bg-gray-600 [&::-moz-range-thumb]:h-3.5 [&::-moz-range-thumb]:w-3.5 [&::-moz-range-thumb]:cursor-pointer [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-blue-500 [&::-moz-range-thumb]:bg-white [&::-moz-range-thumb]:shadow-sm [&::-webkit-slider-thumb]:h-3.5 [&::-webkit-slider-thumb]:w-3.5 [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-blue-500 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:shadow-sm"
 								bind:value={strokeWidth}
 								oninput={() => handleStrokeWidthChange(strokeWidth)}
 								disabled={locked}
 							/>
-							<span class="min-w-[40px] text-right font-mono text-xs text-gray-500"
+							<span
+								class="min-w-[40px] text-right font-mono text-xs text-gray-500 dark:text-gray-400"
 								>{strokeWidth}px</span
 							>
 						</div>
@@ -417,8 +451,9 @@
 
 					{#if element.type === 'rectangle'}
 						<div class="mb-2 flex flex-col gap-1.5">
-							<label for="border-radius" class="text-xs font-medium text-gray-700"
-								>Corner Radius</label
+							<label
+								for="border-radius"
+								class="text-xs font-medium text-gray-700 dark:text-gray-300">Corner Radius</label
 							>
 							<div class="flex items-center gap-2">
 								<input
@@ -426,12 +461,13 @@
 									type="range"
 									min="0"
 									max="50"
-									class="h-1.5 flex-1 appearance-none rounded-full bg-gray-200 outline-none [&::-moz-range-thumb]:h-3.5 [&::-moz-range-thumb]:w-3.5 [&::-moz-range-thumb]:cursor-pointer [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-blue-500 [&::-moz-range-thumb]:bg-white [&::-moz-range-thumb]:shadow-sm [&::-webkit-slider-thumb]:h-3.5 [&::-webkit-slider-thumb]:w-3.5 [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-blue-500 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:shadow-sm"
+									class="h-1.5 flex-1 appearance-none rounded-full bg-gray-200 outline-none dark:bg-gray-600 [&::-moz-range-thumb]:h-3.5 [&::-moz-range-thumb]:w-3.5 [&::-moz-range-thumb]:cursor-pointer [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-blue-500 [&::-moz-range-thumb]:bg-white [&::-moz-range-thumb]:shadow-sm [&::-webkit-slider-thumb]:h-3.5 [&::-webkit-slider-thumb]:w-3.5 [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-blue-500 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:shadow-sm"
 									bind:value={borderRadius}
 									oninput={() => handleBorderRadiusChange(borderRadius)}
 									disabled={locked}
 								/>
-								<span class="min-w-[40px] text-right font-mono text-xs text-gray-500"
+								<span
+									class="min-w-[40px] text-right font-mono text-xs text-gray-500 dark:text-gray-400"
 									>{borderRadius}px</span
 								>
 							</div>
@@ -443,7 +479,11 @@
 			<!-- Drawing Properties -->
 			{#if element.type === 'freehand'}
 				<div class="mb-6">
-					<div class="mb-3 text-xs font-semibold tracking-wide text-gray-500 uppercase">Stroke</div>
+					<div
+						class="mb-3 text-xs font-semibold tracking-wide text-gray-500 uppercase dark:text-gray-400"
+					>
+						Stroke
+					</div>
 
 					<div class="mb-3">
 						<ColorPicker
@@ -454,8 +494,9 @@
 					</div>
 
 					<div class="mb-2 flex flex-col gap-1.5">
-						<label for="stroke-width-freehand" class="text-xs font-medium text-gray-700"
-							>Stroke Width</label
+						<label
+							for="stroke-width-freehand"
+							class="text-xs font-medium text-gray-700 dark:text-gray-300">Stroke Width</label
 						>
 						<div class="flex items-center gap-2">
 							<input
@@ -464,12 +505,13 @@
 								min="1"
 								max="20"
 								step="0.5"
-								class="h-1.5 flex-1 appearance-none rounded-full bg-gray-200 outline-none [&::-moz-range-thumb]:h-3.5 [&::-moz-range-thumb]:w-3.5 [&::-moz-range-thumb]:cursor-pointer [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-blue-500 [&::-moz-range-thumb]:bg-white [&::-moz-range-thumb]:shadow-sm [&::-webkit-slider-thumb]:h-3.5 [&::-webkit-slider-thumb]:w-3.5 [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-blue-500 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:shadow-sm"
+								class="h-1.5 flex-1 appearance-none rounded-full bg-gray-200 outline-none dark:bg-gray-600 [&::-moz-range-thumb]:h-3.5 [&::-moz-range-thumb]:w-3.5 [&::-moz-range-thumb]:cursor-pointer [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-blue-500 [&::-moz-range-thumb]:bg-white [&::-moz-range-thumb]:shadow-sm [&::-webkit-slider-thumb]:h-3.5 [&::-webkit-slider-thumb]:w-3.5 [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-blue-500 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:shadow-sm"
 								bind:value={strokeWidth}
 								oninput={() => handleStrokeWidthChange(strokeWidth)}
 								disabled={locked}
 							/>
-							<span class="min-w-[40px] text-right font-mono text-xs text-gray-500"
+							<span
+								class="min-w-[40px] text-right font-mono text-xs text-gray-500 dark:text-gray-400"
 								>{strokeWidth}px</span
 							>
 						</div>
@@ -479,11 +521,15 @@
 
 			<!-- Layer Controls -->
 			<div class="mb-0">
-				<div class="mb-3 text-xs font-semibold tracking-wide text-gray-500 uppercase">Layers</div>
+				<div
+					class="mb-3 text-xs font-semibold tracking-wide text-gray-500 uppercase dark:text-gray-400"
+				>
+					Layers
+				</div>
 
 				<div class="grid grid-cols-2 gap-2">
 					<button
-						class="flex items-center gap-1.5 border border-gray-200 bg-white px-3 py-2 text-xs font-medium text-gray-700 transition-all duration-150 hover:bg-gray-100 hover:text-gray-900 disabled:cursor-not-allowed disabled:opacity-50"
+						class="flex items-center gap-1.5 border border-gray-200 bg-white px-3 py-2 text-xs font-medium text-gray-700 transition-all duration-150 hover:bg-gray-100 hover:text-gray-900 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-gray-100"
 						onclick={handleBringToFront}
 						disabled={locked}
 						title="Bring to Front"
@@ -492,7 +538,7 @@
 						<span>To Front</span>
 					</button>
 					<button
-						class="flex items-center gap-1.5 border border-gray-200 bg-white px-3 py-2 text-xs font-medium text-gray-700 transition-all duration-150 hover:bg-gray-100 hover:text-gray-900 disabled:cursor-not-allowed disabled:opacity-50"
+						class="flex items-center gap-1.5 border border-gray-200 bg-white px-3 py-2 text-xs font-medium text-gray-700 transition-all duration-150 hover:bg-gray-100 hover:text-gray-900 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-gray-100"
 						onclick={handleBringForward}
 						disabled={locked}
 						title="Bring Forward"
@@ -501,7 +547,7 @@
 						<span>Forward</span>
 					</button>
 					<button
-						class="flex items-center gap-1.5 border border-gray-200 bg-white px-3 py-2 text-xs font-medium text-gray-700 transition-all duration-150 hover:bg-gray-100 hover:text-gray-900 disabled:cursor-not-allowed disabled:opacity-50"
+						class="flex items-center gap-1.5 border border-gray-200 bg-white px-3 py-2 text-xs font-medium text-gray-700 transition-all duration-150 hover:bg-gray-100 hover:text-gray-900 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-gray-100"
 						onclick={handleSendBackward}
 						disabled={locked}
 						title="Send Backward"
@@ -510,7 +556,7 @@
 						<span>Backward</span>
 					</button>
 					<button
-						class="flex items-center gap-1.5 border border-gray-200 bg-white px-3 py-2 text-xs font-medium text-gray-700 transition-all duration-150 hover:bg-gray-100 hover:text-gray-900 disabled:cursor-not-allowed disabled:opacity-50"
+						class="flex items-center gap-1.5 border border-gray-200 bg-white px-3 py-2 text-xs font-medium text-gray-700 transition-all duration-150 hover:bg-gray-100 hover:text-gray-900 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-gray-100"
 						onclick={handleSendToBack}
 						disabled={locked}
 						title="Send to Back"
@@ -523,21 +569,31 @@
 		</div>
 	</div>
 {:else}
-	<div class="flex h-full w-[280px] flex-col overflow-hidden border-l border-gray-200 bg-white">
-		<div class="flex items-center justify-between border-b border-gray-200 px-4 py-4">
-			<h3 class="m-0 text-sm font-semibold text-gray-900">Multiple Selection</h3>
+	<div
+		class="flex h-full w-[280px] flex-col overflow-hidden border-l border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800"
+	>
+		<div
+			class="flex items-center justify-between border-b border-gray-200 px-4 py-4 dark:border-gray-700"
+		>
+			<h3 class="m-0 text-sm font-semibold text-gray-900 dark:text-gray-100">Multiple Selection</h3>
 		</div>
 		<div class="flex-1 overflow-y-auto px-4 py-4">
-			<p class="mb-4 rounded-md bg-gray-100 px-3 py-3 text-center text-[13px] text-gray-500">
+			<p
+				class="mb-4 rounded-md bg-gray-100 px-3 py-3 text-center text-[13px] text-gray-500 dark:bg-gray-700 dark:text-gray-400"
+			>
 				{selectedCount} elements selected
 			</p>
 
 			<!-- Layer Controls for multiple selection -->
 			<div class="mb-0">
-				<div class="mb-3 text-xs font-semibold tracking-wide text-gray-500 uppercase">Layers</div>
+				<div
+					class="mb-3 text-xs font-semibold tracking-wide text-gray-500 uppercase dark:text-gray-400"
+				>
+					Layers
+				</div>
 				<div class="grid grid-cols-2 gap-2">
 					<button
-						class="flex items-center gap-1.5 border border-gray-200 bg-white px-3 py-2 text-xs font-medium text-gray-700 transition-all duration-150 hover:bg-gray-100 hover:text-gray-900"
+						class="flex items-center gap-1.5 border border-gray-200 bg-white px-3 py-2 text-xs font-medium text-gray-700 transition-all duration-150 hover:bg-gray-100 hover:text-gray-900 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-gray-100"
 						onclick={handleBringToFront}
 						title="Bring to Front"
 					>
@@ -545,7 +601,7 @@
 						<span>To Front</span>
 					</button>
 					<button
-						class="flex items-center gap-1.5 border border-gray-200 bg-white px-3 py-2 text-xs font-medium text-gray-700 transition-all duration-150 hover:bg-gray-100 hover:text-gray-900"
+						class="flex items-center gap-1.5 border border-gray-200 bg-white px-3 py-2 text-xs font-medium text-gray-700 transition-all duration-150 hover:bg-gray-100 hover:text-gray-900 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-gray-100"
 						onclick={handleBringForward}
 						title="Bring Forward"
 					>
@@ -553,7 +609,7 @@
 						<span>Forward</span>
 					</button>
 					<button
-						class="flex items-center gap-1.5 border border-gray-200 bg-white px-3 py-2 text-xs font-medium text-gray-700 transition-all duration-150 hover:bg-gray-100 hover:text-gray-900"
+						class="flex items-center gap-1.5 border border-gray-200 bg-white px-3 py-2 text-xs font-medium text-gray-700 transition-all duration-150 hover:bg-gray-100 hover:text-gray-900 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-gray-100"
 						onclick={handleSendBackward}
 						title="Send Backward"
 					>
@@ -561,7 +617,7 @@
 						<span>Backward</span>
 					</button>
 					<button
-						class="flex items-center gap-1.5 border border-gray-200 bg-white px-3 py-2 text-xs font-medium text-gray-700 transition-all duration-150 hover:bg-gray-100 hover:text-gray-900"
+						class="flex items-center gap-1.5 border border-gray-200 bg-white px-3 py-2 text-xs font-medium text-gray-700 transition-all duration-150 hover:bg-gray-100 hover:text-gray-900 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-gray-100"
 						onclick={handleSendToBack}
 						title="Send to Back"
 					>

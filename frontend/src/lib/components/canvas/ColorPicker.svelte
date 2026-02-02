@@ -156,20 +156,20 @@
 	}
 </script>
 
-<div class="flex flex-col gap-3 rounded-lg bg-white p-3">
+<div class="flex flex-col gap-3 rounded-lg bg-white p-3 dark:bg-gray-800">
 	{#if label}
-		<div class="text-[13px] font-semibold text-gray-700">{label}</div>
+		<div class="text-[13px] font-semibold text-gray-700 dark:text-gray-300">{label}</div>
 	{/if}
 
 	<!-- Current color display -->
 	<div class="flex items-center gap-2">
 		<div
-			class="h-8 w-8 shrink-0 rounded-md border-2 border-gray-200"
+			class="h-8 w-8 shrink-0 rounded-md border-2 border-gray-200 dark:border-gray-700"
 			style="background-color: {value}"
 		></div>
 		<input
 			type="text"
-			class="flex-1 rounded-md border border-gray-300 px-2.5 py-1.5 font-mono text-[13px] uppercase focus:border-blue-500 focus:outline-none"
+			class="flex-1 rounded-md border border-gray-300 px-2.5 py-1.5 font-mono text-[13px] uppercase focus:border-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
 			{value}
 			onblur={handleHexInput}
 			placeholder="#000000"
@@ -178,14 +178,18 @@
 
 	<!-- Preset colors -->
 	<div class="flex flex-col gap-1.5">
-		<div class="text-[11px] font-semibold tracking-wider text-gray-500 uppercase">Presets</div>
+		<div
+			class="text-[11px] font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400"
+		>
+			Presets
+		</div>
 		<div class="grid grid-cols-6 gap-1.5">
 			{#each presetColors as color}
 				<button
-					class="h-8 w-8 rounded-md border-2 p-0 transition-all duration-150 hover:scale-110 hover:border-gray-400 {value ===
+					class="h-8 w-8 rounded-md border-2 p-0 transition-all duration-150 hover:scale-110 hover:border-gray-400 dark:hover:border-gray-500 {value ===
 					color
 						? '!border-[3px] border-blue-500 shadow-[0_0_0_2px_rgba(59,130,246,0.2)]'
-						: 'border-gray-200'}"
+						: 'border-gray-200 dark:border-gray-700'}"
 					style="background-color: {color}"
 					onclick={() => selectPresetColor(color)}
 					title={color}
@@ -198,14 +202,18 @@
 	<!-- Recent colors -->
 	{#if recentColors.length > 0}
 		<div class="flex flex-col gap-1.5">
-			<div class="text-[11px] font-semibold tracking-wider text-gray-500 uppercase">Recent</div>
+			<div
+				class="text-[11px] font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400"
+			>
+				Recent
+			</div>
 			<div class="grid grid-cols-6 gap-1.5">
 				{#each recentColors as color}
 					<button
-						class="h-8 w-8 rounded-md border-2 p-0 transition-all duration-150 hover:scale-110 hover:border-gray-400 {value ===
+						class="h-8 w-8 rounded-md border-2 p-0 transition-all duration-150 hover:scale-110 hover:border-gray-400 dark:hover:border-gray-500 {value ===
 						color
 							? '!border-[3px] border-blue-500 shadow-[0_0_0_2px_rgba(59,130,246,0.2)]'
-							: 'border-gray-200'}"
+							: 'border-gray-200 dark:border-gray-700'}"
 						style="background-color: {color}"
 						onclick={() => selectPresetColor(color)}
 						title={color}
@@ -218,17 +226,21 @@
 
 	<!-- Custom color picker toggle -->
 	<button
-		class="rounded-md border border-gray-200 bg-gray-100 px-3 py-2 text-[13px] font-medium text-gray-700 transition-all duration-150 hover:bg-gray-200"
+		class="rounded-md border border-gray-200 bg-gray-100 px-3 py-2 text-[13px] font-medium text-gray-700 transition-all duration-150 hover:bg-gray-200 dark:border-gray-700 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
 		onclick={() => (showCustomPicker = !showCustomPicker)}
 	>
 		{showCustomPicker ? 'Hide' : 'Show'} Custom Picker
 	</button>
 
 	{#if showCustomPicker}
-		<div class="flex flex-col gap-3 rounded-md border border-gray-200 bg-gray-50 p-3">
+		<div
+			class="flex flex-col gap-3 rounded-md border border-gray-200 bg-gray-50 p-3 dark:border-gray-700 dark:bg-gray-900"
+		>
 			<!-- Hue slider -->
 			<div class="grid grid-cols-[80px_1fr_auto] items-center gap-2">
-				<label for="hue-slider" class="text-xs font-medium text-gray-500">Hue</label>
+				<label for="hue-slider" class="text-xs font-medium text-gray-500 dark:text-gray-400"
+					>Hue</label
+				>
 				<input
 					id="hue-slider"
 					type="range"
@@ -239,12 +251,16 @@
 					class="h-1.5 w-full appearance-none rounded-sm outline-none [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:cursor-pointer [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-blue-500 [&::-moz-range-thumb]:bg-white [&::-moz-range-thumb]:shadow-sm [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-blue-500 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:shadow-sm"
 					style="background: linear-gradient(to right, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000);"
 				/>
-				<span class="w-10 text-right font-mono text-xs text-gray-500">{Math.round(hue)}°</span>
+				<span class="w-10 text-right font-mono text-xs text-gray-500 dark:text-gray-400"
+					>{Math.round(hue)}°</span
+				>
 			</div>
 
 			<!-- Saturation slider -->
 			<div class="grid grid-cols-[80px_1fr_auto] items-center gap-2">
-				<label for="saturation-slider" class="text-xs font-medium text-gray-500">Saturation</label>
+				<label for="saturation-slider" class="text-xs font-medium text-gray-500 dark:text-gray-400"
+					>Saturation</label
+				>
 				<input
 					id="saturation-slider"
 					type="range"
@@ -255,14 +271,16 @@
 					class="h-1.5 w-full appearance-none rounded-sm outline-none [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:cursor-pointer [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-blue-500 [&::-moz-range-thumb]:bg-white [&::-moz-range-thumb]:shadow-sm [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-blue-500 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:shadow-sm"
 					style="background: linear-gradient(to right, #d1d5db, hsl({hue}, 100%, 50%));"
 				/>
-				<span class="w-10 text-right font-mono text-xs text-gray-500"
+				<span class="w-10 text-right font-mono text-xs text-gray-500 dark:text-gray-400"
 					>{Math.round(saturation)}%</span
 				>
 			</div>
 
 			<!-- Lightness slider -->
 			<div class="grid grid-cols-[80px_1fr_auto] items-center gap-2">
-				<label for="lightness-slider" class="text-xs font-medium text-gray-500">Lightness</label>
+				<label for="lightness-slider" class="text-xs font-medium text-gray-500 dark:text-gray-400"
+					>Lightness</label
+				>
 				<input
 					id="lightness-slider"
 					type="range"
@@ -273,17 +291,22 @@
 					class="h-1.5 w-full appearance-none rounded-sm outline-none [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:cursor-pointer [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-blue-500 [&::-moz-range-thumb]:bg-white [&::-moz-range-thumb]:shadow-sm [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-blue-500 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:shadow-sm"
 					style="background: linear-gradient(to right, #000000, hsl({hue}, 100%, 50%), #ffffff);"
 				/>
-				<span class="w-10 text-right font-mono text-xs text-gray-500">{Math.round(lightness)}%</span
+				<span class="w-10 text-right font-mono text-xs text-gray-500 dark:text-gray-400"
+					>{Math.round(lightness)}%</span
 				>
 			</div>
 
 			<!-- Preview -->
-			<div class="flex items-center gap-3 rounded-md border border-gray-200 bg-white p-2">
+			<div
+				class="flex items-center gap-3 rounded-md border border-gray-200 bg-white p-2 dark:border-gray-700 dark:bg-gray-800"
+			>
 				<div
-					class="h-10 w-10 rounded-md border-2 border-gray-200"
+					class="h-10 w-10 rounded-md border-2 border-gray-200 dark:border-gray-700"
 					style="background-color: {customColor}"
 				></div>
-				<span class="font-mono text-sm font-semibold text-gray-700">{customColor}</span>
+				<span class="font-mono text-sm font-semibold text-gray-700 dark:text-gray-300"
+					>{customColor}</span
+				>
 			</div>
 		</div>
 	{/if}

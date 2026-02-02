@@ -45,6 +45,7 @@ interface ElementData {
 	shape_type?: string;
 	content?: string;
 	html_content?: string;
+	points?: Array<{ x: number; y: number; pressure?: number }>;
 }
 
 interface BatchUpdateItem {
@@ -325,7 +326,11 @@ export class AutosaveService {
 		if (shapeTypes.includes(frontendType)) {
 			return 'shape';
 		}
-		// Остальные типы совпадают: text, image, drawing, sticky, list, connector, group
+		// Frontend использует freehand, backend использует drawing
+		if (frontendType === 'freehand') {
+			return 'drawing';
+		}
+		// Остальные типы совпадают: text, image, sticky, list, connector, group
 		return frontendType;
 	}
 
@@ -364,6 +369,11 @@ export class AutosaveService {
 			}
 			if (element.html_content) {
 				elementData.html_content = element.html_content;
+			}
+
+			// Добавляем points для freehand (drawing) элементов
+			if (backendType === 'drawing' && element.points) {
+				elementData.points = element.points;
 			}
 
 			return {
@@ -444,7 +454,8 @@ export class AutosaveService {
 			change.updates.rotation !== undefined ||
 			change.updates.style !== undefined ||
 			change.updates.content !== undefined ||
-			change.updates.html_content !== undefined;
+			change.updates.html_content !== undefined ||
+			change.updates.points !== undefined;
 
 		if (hasPositionOrSize) {
 			update.element_data = {};
@@ -491,6 +502,11 @@ export class AutosaveService {
 				if (shapeTypes.includes(change.updates.type)) {
 					update.element_data.shape_type = change.updates.type;
 				}
+			}
+
+			// Points (для freehand элементов)
+			if (change.updates.points !== undefined) {
+				update.element_data.points = change.updates.points;
 			}
 		}
 
@@ -565,6 +581,11 @@ export class AutosaveService {
 				if (shapeTypes.includes(mergedElement.type)) {
 					update.element_data.shape_type = mergedElement.type;
 				}
+			}
+
+			// Points (для freehand элементов)
+			if (mergedElement.type === 'freehand' && mergedElement.points) {
+				update.element_data.points = mergedElement.points;
 			}
 
 			// Z-index

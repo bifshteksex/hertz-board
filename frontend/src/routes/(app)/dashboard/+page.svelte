@@ -205,8 +205,10 @@
 	<!-- Header -->
 	<div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
 		<div>
-			<h1 class="text-3xl font-bold text-gray-900">{i18n.t('dashboard.title')}</h1>
-			<p class="mt-1 text-gray-600">{i18n.t('dashboard.subtitle')}</p>
+			<h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">
+				{i18n.t('dashboard.title')}
+			</h1>
+			<p class="mt-1 text-gray-600 dark:text-gray-400">{i18n.t('dashboard.subtitle')}</p>
 		</div>
 		<button
 			onclick={() => (showCreateModal = true)}
@@ -219,12 +221,15 @@
 
 	<!-- Search -->
 	<div class="relative">
-		<IconSearch class="absolute top-1/2 left-3 -translate-y-1/2 text-gray-400" size={20} />
+		<IconSearch
+			class="absolute top-1/2 left-3 -translate-y-1/2 text-gray-400 dark:text-gray-600"
+			size={20}
+		/>
 		<input
 			type="text"
 			bind:value={searchQuery}
 			placeholder={i18n.t('dashboard.searchPlaceholder')}
-			class="w-full border border-gray-300 bg-white py-2 pr-4 pl-10 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+			class="w-full border border-gray-300 bg-white py-2 pr-4 pl-10 text-gray-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
 		/>
 	</div>
 
@@ -235,12 +240,12 @@
 				<div
 					class="mb-4 inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-blue-600 border-r-transparent"
 				></div>
-				<p class="text-gray-600">{i18n.t('dashboard.loading')}</p>
+				<p class="text-gray-600 dark:text-gray-400">{i18n.t('dashboard.loading')}</p>
 			</div>
 		</div>
 	{:else if workspaceStore.workspaces.length === 0}
 		<div class="flex flex-col items-center justify-center py-12">
-			<p class="mb-4 text-gray-600">{i18n.t('dashboard.noWorkspaces')}</p>
+			<p class="mb-4 text-gray-600 dark:text-gray-400">{i18n.t('dashboard.noWorkspaces')}</p>
 			<button
 				onclick={() => (showCreateModal = true)}
 				class="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-700"
@@ -253,12 +258,12 @@
 		<div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
 			{#each workspaceStore.workspaces as workspace (workspace.id)}
 				<div
-					class="group relative flex flex-col border border-gray-200 bg-white shadow-sm transition hover:shadow-md"
+					class="group relative flex flex-col border border-gray-200 bg-white shadow-sm transition hover:shadow-md dark:border-gray-700 dark:bg-gray-800 dark:shadow-gray-900/20"
 				>
 					<!-- Thumbnail -->
 					<button
 						onclick={() => goto(`/workspace/${workspace.id}`)}
-						class="aspect-video w-full overflow-hidden bg-gradient-to-br from-blue-50 to-indigo-100"
+						class="aspect-video w-full overflow-hidden bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-800 dark:to-gray-700"
 					>
 						{#if workspace.thumbnail_url}
 							<img
@@ -267,7 +272,9 @@
 								class="h-full w-full object-cover"
 							/>
 						{:else}
-							<div class="flex h-full items-center justify-center text-4xl font-bold text-gray-300">
+							<div
+								class="flex h-full items-center justify-center text-4xl font-bold text-gray-300 dark:text-gray-600"
+							>
 								{workspace.name?.charAt(0)?.toUpperCase() || 'W'}
 							</div>
 						{/if}
@@ -276,19 +283,23 @@
 					<!-- Content -->
 					<div class="flex flex-1 flex-col p-4">
 						<button onclick={() => goto(`/workspace/${workspace.id}`)} class="mb-2 text-left">
-							<h3 class="line-clamp-1 font-semibold text-gray-900">{workspace.name}</h3>
+							<h3 class="line-clamp-1 font-semibold text-gray-900 dark:text-gray-100">
+								{workspace.name}
+							</h3>
 							{#if workspace.description}
-								<p class="mt-1 line-clamp-2 text-sm text-gray-600">{workspace.description}</p>
+								<p class="mt-1 line-clamp-2 text-sm text-gray-600 dark:text-gray-400">
+									{workspace.description}
+								</p>
 							{/if}
 						</button>
 
 						<div class="mt-auto space-y-2 pt-4">
-							<div class="flex items-center gap-2 text-xs text-gray-500">
+							<div class="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-500">
 								<Calendar size={14} />
 								{formatDate(workspace.updated_at)}
 							</div>
 							{#if workspace.member_count}
-								<div class="flex items-center gap-2 text-xs text-gray-500">
+								<div class="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-500">
 									<Users size={14} />
 									{workspace.member_count}
 									{workspace.member_count === 1
@@ -296,7 +307,7 @@
 										: i18n.t('dashboard.members')}
 								</div>
 							{/if}
-							<div class="text-xs text-gray-500">
+							<div class="text-xs text-gray-500 dark:text-gray-500">
 								{i18n.t('dashboard.role')}:
 								<span class="font-medium capitalize">{getWorkspaceRole(workspace)}</span>
 							</div>
@@ -310,14 +321,14 @@
 								e.stopPropagation();
 								activeMenuId = activeMenuId === workspace.id ? null : workspace.id;
 							}}
-							class="bg-white p-1 opacity-0 shadow-sm transition group-hover:opacity-100 hover:bg-gray-50"
+							class="bg-white p-1 opacity-0 shadow-sm transition group-hover:opacity-100 hover:bg-gray-50 dark:bg-gray-800 dark:shadow-gray-900/20 dark:hover:bg-gray-700"
 						>
 							<MoreVertical size={16} />
 						</button>
 
 						{#if activeMenuId === workspace.id}
 							<div
-								class="ring-opacity-5 absolute top-8 right-0 z-10 w-56 bg-white shadow-lg ring-1 ring-black"
+								class="ring-opacity-5 absolute top-8 right-0 z-10 w-56 bg-white shadow-lg ring-1 ring-black dark:bg-gray-800 dark:shadow-gray-900/50 dark:ring-gray-700"
 							>
 								<div class="py-1">
 									<button
@@ -325,7 +336,7 @@
 											activeMenuId = null;
 											goto(`/workspace/${workspace.id}`);
 										}}
-										class="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
+										class="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
 									>
 										<ExternalLink size={16} />
 										{i18n.t('dashboard.menu.open')}
@@ -334,7 +345,7 @@
 									{#if getWorkspaceRole(workspace) === 'owner' || getWorkspaceRole(workspace) === 'editor'}
 										<button
 											onclick={() => handleRenameWorkspace(workspace)}
-											class="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
+											class="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
 										>
 											<Edit2 size={16} />
 											{i18n.t('dashboard.menu.rename')}
@@ -343,7 +354,7 @@
 
 									<button
 										onclick={() => handleCopyLink(workspace)}
-										class="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
+										class="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
 									>
 										<Copy size={16} />
 										{i18n.t('dashboard.menu.copyLink')}
@@ -352,7 +363,7 @@
 									{#if getWorkspaceRole(workspace) === 'owner' || getWorkspaceRole(workspace) === 'editor'}
 										<button
 											onclick={() => handleShareWorkspace(workspace)}
-											class="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
+											class="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
 										>
 											<Share2 size={16} />
 											{i18n.t('dashboard.menu.share')}
@@ -360,11 +371,11 @@
 									{/if}
 
 									{#if getWorkspaceRole(workspace) === 'owner'}
-										<div class="my-1 border-t border-gray-200"></div>
+										<div class="my-1 border-t border-gray-200 dark:border-gray-700"></div>
 
 										<button
 											onclick={() => handleDuplicateWorkspace(workspace)}
-											class="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
+											class="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
 										>
 											<Copy size={16} />
 											{i18n.t('dashboard.menu.duplicate')}
@@ -372,7 +383,7 @@
 
 										<button
 											onclick={() => handleDeleteWorkspace(workspace.id)}
-											class="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-red-600 hover:bg-gray-100"
+											class="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-gray-700"
 										>
 											<Trash2 size={16} />
 											{i18n.t('dashboard.menu.delete')}
@@ -408,7 +419,7 @@
 
 		<div class="space-y-4">
 			<div>
-				<label for="name" class="block text-sm font-medium text-gray-700"
+				<label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300"
 					>{i18n.t('dashboard.modal.create.name')}</label
 				>
 				<input
@@ -416,20 +427,20 @@
 					type="text"
 					required
 					bind:value={createName}
-					class="mt-1 block w-full border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+					class="mt-1 block w-full border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
 					placeholder={i18n.t('dashboard.modal.create.namePlaceholder')}
 				/>
 			</div>
 
 			<div>
-				<label for="description" class="block text-sm font-medium text-gray-700">
+				<label for="description" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
 					{i18n.t('dashboard.modal.create.description')}
 				</label>
 				<textarea
 					id="description"
 					bind:value={createDescription}
 					rows="3"
-					class="mt-1 block w-full border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+					class="mt-1 block w-full border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
 					placeholder={i18n.t('dashboard.modal.create.descriptionPlaceholder')}
 				></textarea>
 			</div>
@@ -444,7 +455,7 @@
 					createDescription = '';
 					createError = '';
 				}}
-				class="flex-1 border-2 border-gray-300 bg-white px-4 py-2 text-gray-700 transition hover:bg-gray-50"
+				class="flex-1 border-2 border-gray-300 bg-white px-4 py-2 text-gray-700 transition hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-800"
 			>
 				{i18n.t('common.cancel')}
 			</button>
@@ -480,7 +491,10 @@
 		{/if}
 
 		<div class="mb-4">
-			<label for="duplicate-name" class="block text-sm font-medium text-gray-700">
+			<label
+				for="duplicate-name"
+				class="block text-sm font-medium text-gray-700 dark:text-gray-300"
+			>
 				{i18n.t('dashboard.modal.duplicate.newName')}
 			</label>
 			<input
@@ -488,10 +502,10 @@
 				type="text"
 				required
 				bind:value={duplicateName}
-				class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+				class="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
 				placeholder="My Workspace (Copy)"
 			/>
-			<p class="mt-1 text-xs text-gray-500">
+			<p class="mt-1 text-xs text-gray-500 dark:text-gray-500">
 				{i18n.t('dashboard.modal.duplicate.copyOf', { name: duplicateWorkspace?.name || '' })}
 			</p>
 		</div>
@@ -505,7 +519,7 @@
 					duplicateName = '';
 					duplicateError = '';
 				}}
-				class="flex-1 border-2 border-gray-300 bg-white px-4 py-2 text-gray-700 transition hover:bg-gray-50"
+				class="flex-1 border-2 border-gray-300 bg-white px-4 py-2 text-gray-700 transition hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-800"
 			>
 				{i18n.t('common.cancel')}
 			</button>
@@ -543,7 +557,7 @@
 
 		<div class="space-y-4">
 			<div>
-				<label for="rename-name" class="block text-sm font-medium text-gray-700"
+				<label for="rename-name" class="block text-sm font-medium text-gray-700 dark:text-gray-300"
 					>{i18n.t('dashboard.modal.create.name')}</label
 				>
 				<input
@@ -551,20 +565,23 @@
 					type="text"
 					required
 					bind:value={renameName}
-					class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+					class="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
 					placeholder={i18n.t('dashboard.modal.create.namePlaceholder')}
 				/>
 			</div>
 
 			<div>
-				<label for="rename-description" class="block text-sm font-medium text-gray-700">
+				<label
+					for="rename-description"
+					class="block text-sm font-medium text-gray-700 dark:text-gray-300"
+				>
 					{i18n.t('dashboard.modal.create.description')}
 				</label>
 				<textarea
 					id="rename-description"
 					bind:value={renameDescription}
 					rows="3"
-					class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+					class="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
 					placeholder={i18n.t('dashboard.modal.create.descriptionPlaceholder')}
 				></textarea>
 			</div>
@@ -580,7 +597,7 @@
 					renameDescription = '';
 					renameError = '';
 				}}
-				class="flex-1 border-2 border-gray-300 bg-white px-4 py-2 text-gray-700 transition hover:bg-gray-50"
+				class="flex-1 border-2 border-gray-300 bg-white px-4 py-2 text-gray-700 transition hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-800"
 			>
 				{i18n.t('common.cancel')}
 			</button>

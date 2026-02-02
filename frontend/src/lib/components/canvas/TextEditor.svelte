@@ -183,6 +183,10 @@
 		font-size: 0.9em;
 	}
 
+	:global(.dark) .text-editor-container :global(.tiptap-editor code) {
+		background-color: #374151;
+	}
+
 	.text-editor-container :global(.tiptap-editor pre) {
 		background-color: #1f2937;
 		color: #f3f4f6;
@@ -203,5 +207,9 @@
 		padding-left: 1em;
 		margin: 0.5em 0;
 		font-style: italic;
+	}
+
+	:global(.dark) .text-editor-container :global(.tiptap-editor blockquote) {
+		border-left-color: #4b5563;
 	}
 </style>

@@ -2,6 +2,7 @@
 	import type { CanvasElement as CanvasElementType } from '$lib/types/api';
 	import { canvas } from '$lib/stores/canvasWithHistory.svelte';
 	import TextEditor from './TextEditor.svelte';
+	import FreehandDrawing from './FreehandDrawing.svelte';
 
 	interface Props {
 		element: CanvasElementType;
@@ -273,16 +274,15 @@
 		{/if}
 	{:else if element.type === 'freehand'}
 		<!-- Freehand drawing (smooth path) -->
-		{#if element.path_data}
-			<path
-				d={element.path_data}
-				fill="none"
-				stroke={element.style?.strokeColor || '#000000'}
-				stroke-width={element.style?.strokeWidth || 2}
-				stroke-linecap="round"
-				stroke-linejoin="round"
-				opacity={element.style?.opacity || 1}
-			/>
+		{#if element.points && element.points.length > 0}
+			<g transform="translate({element.pos_x}, {element.pos_y})">
+				<FreehandDrawing
+					points={element.points}
+					color={element.style?.strokeColor || '#000000'}
+					width={element.style?.strokeWidth || 2}
+					opacity={element.style?.opacity || 1}
+				/>
+			</g>
 		{/if}
 	{:else if element.type === 'list'}
 		<!-- List (bullet, numbered, checkbox) -->

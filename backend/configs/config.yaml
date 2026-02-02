@@ -25,6 +25,7 @@ redis:
 
 minio:
   endpoint: "localhost:9000"
+  public_endpoint: "localhost:9000"
   access_key: "hertzboard"
   secret_key: "hertzboard_minio_password"
   use_ssl: false

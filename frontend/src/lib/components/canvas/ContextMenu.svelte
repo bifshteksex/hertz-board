@@ -303,23 +303,23 @@
 
 <div
 	bind:this={menuElement}
-	class="fixed z-[10000] min-w-[200px] animate-[menuFadeIn_0.1s_ease-out] rounded-lg border border-gray-200 bg-white p-1 shadow-lg"
+	class="fixed z-[10000] min-w-[200px] animate-[menuFadeIn_0.1s_ease-out] rounded-lg border border-gray-200 bg-white p-1 shadow-lg dark:border-gray-700 dark:bg-gray-800 dark:shadow-gray-900/50"
 	style="left: {x}px; top: {y}px;"
 >
 	{#each menuItems as item}
 		{#if item.separator}
-			<div class="my-1 h-px bg-gray-200"></div>
+			<div class="my-1 h-px bg-gray-200 dark:bg-gray-700"></div>
 		{:else}
 			{@const Icon = item.icon}
 			<button
-				class="flex w-full items-center gap-3 rounded-md border-none bg-transparent px-3 py-2 text-left text-sm font-medium text-gray-700 transition-all duration-150 hover:bg-gray-100 hover:text-gray-900 disabled:cursor-not-allowed disabled:opacity-40"
+				class="flex w-full items-center gap-3 rounded-md border-none bg-transparent px-3 py-2 text-left text-sm font-medium text-gray-700 transition-all duration-150 hover:bg-gray-100 hover:text-gray-900 disabled:cursor-not-allowed disabled:opacity-40 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-gray-100"
 				onclick={item.action}
 				disabled={item.disabled}
 			>
 				<Icon size={16} class="flex-shrink-0" />
 				<span class="flex-1">{item.label}</span>
 				{#if item.shortcut}
-					<span class="font-mono text-xs text-gray-400">{item.shortcut}</span>
+					<span class="font-mono text-xs text-gray-400 dark:text-gray-500">{item.shortcut}</span>
 				{/if}
 			</button>
 		{/if}

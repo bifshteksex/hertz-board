@@ -22,6 +22,8 @@
 	import UserSelection from '$lib/components/canvas/UserSelection.svelte';
 	import WorkspaceMembers from '$lib/components/workspace/WorkspaceMembers.svelte';
 
+	import IconSearchUsers from '$components/icons/IconSearchUsers.svelte';
+
 	let showLayersPanel = $state(false);
 	let showShortcutsHelp = $state(false);
 	let showMembersPanel = $state(false);
@@ -237,7 +239,7 @@
 			<div
 				class="mb-4 inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-blue-600 border-r-transparent"
 			></div>
-			<p class="text-gray-600">Loading workspace...</p>
+			<p class="text-gray-600 dark:text-gray-400">Loading workspace...</p>
 		</div>
 	</div>
 {:else if error}
@@ -256,20 +258,20 @@
 	<div class="flex h-screen flex-col">
 		<!-- Workspace Header -->
 		<header
-			class="flex shrink-0 items-center justify-between border-b border-gray-200 bg-white px-6 py-3"
+			class="flex shrink-0 items-center justify-between border-b border-gray-200 bg-white px-6 py-3 dark:border-gray-700 dark:bg-gray-800"
 		>
 			<div class="flex items-center gap-4">
 				<button
 					onclick={() => goto('/dashboard')}
-					class="rounded-lg p-2 text-gray-600 transition hover:bg-gray-100"
+					class="rounded-lg p-2 text-gray-600 transition hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700"
 					title="Back to dashboard"
 				>
 					<ArrowLeft size={20} />
 				</button>
 				<div>
-					<h1 class="text-lg font-semibold text-gray-900">{workspace.name}</h1>
+					<h1 class="text-lg font-semibold text-gray-900 dark:text-gray-100">{workspace.name}</h1>
 					{#if workspace.description}
-						<p class="text-sm text-gray-600">{workspace.description}</p>
+						<p class="text-sm text-gray-600 dark:text-gray-400">{workspace.description}</p>
 					{/if}
 				</div>
 			</div>
@@ -278,20 +280,20 @@
 				<!-- Connection Status -->
 				<ConnectionStatus />
 
-				<div class="h-6 w-px bg-gray-300"></div>
+				<div class="h-6 w-px bg-gray-300 dark:bg-gray-600"></div>
 
 				<!-- Active Users -->
 				<ActiveUsers onUserClick={handleUserClick} />
 
-				<div class="h-6 w-px bg-gray-300"></div>
+				<div class="h-6 w-px bg-gray-300 dark:bg-gray-600"></div>
 
 				<!-- Save Status Indicator -->
 				<SaveStatus />
 
-				<div class="h-6 w-px bg-gray-300"></div>
+				<div class="h-6 w-px bg-gray-300 dark:bg-gray-600"></div>
 
 				<button
-					class="flex items-center gap-2 rounded-lg border border-gray-300 px-3 py-2 text-sm transition hover:bg-gray-50"
+					class="flex items-center gap-2 rounded-lg border border-gray-300 px-3 py-2 text-sm transition hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-800"
 					class:bg-blue-50={showLayersPanel}
 					class:border-blue-500={showLayersPanel}
 					onclick={() => (showLayersPanel = !showLayersPanel)}
@@ -301,13 +303,13 @@
 					Layers
 				</button>
 				<button
-					class="flex items-center gap-2 rounded-lg border border-gray-300 px-3 py-2 text-sm transition hover:bg-gray-50"
+					class="flex items-center gap-2 rounded-lg border border-gray-300 px-3 py-2 text-sm transition hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-800"
 					class:bg-blue-50={showMembersPanel}
 					class:border-blue-500={showMembersPanel}
 					onclick={() => (showMembersPanel = !showMembersPanel)}
 					title="Manage members"
 				>
-					<Users size={16} />
+					<IconSearchUsers size={20} />
 					Share
 				</button>
 			</div>

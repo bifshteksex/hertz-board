@@ -3,6 +3,8 @@
 	import type { UserPresence } from '$lib/types/websocket';
 	import { Users, User } from 'lucide-svelte';
 
+	import IconUsers from '$components/icons/IconUsers.svelte';
+
 	interface Props {
 		onUserClick?: (_user: UserPresence) => void;
 	}
@@ -51,7 +53,7 @@
 <div class="active-users">
 	<!-- Trigger button -->
 	<button class="users-button" onclick={toggleExpanded} title="Active users">
-		<Users size={20} />
+		<IconUsers size={24} />
 		{#if userCount > 0}
 			<span class="user-count">{userCount}</span>
 		{/if}
@@ -126,6 +128,19 @@
 		border-color: #d1d5db;
 	}
 
+	@media (prefers-color-scheme: dark) {
+		.users-button {
+			background: #1f2937;
+			border-color: #374151;
+			color: #d1d5db;
+		}
+
+		.users-button:hover {
+			background: #374151;
+			border-color: #4b5563;
+		}
+	}
+
 	.user-count {
 		display: flex;
 		align-items: center;
@@ -156,6 +171,14 @@
 		animation: slideDown 0.2s ease-out;
 	}
 
+	@media (prefers-color-scheme: dark) {
+		.users-dropdown {
+			background: #1f2937;
+			border-color: #374151;
+			box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+		}
+	}
+
 	@keyframes slideDown {
 		from {
 			opacity: 0;
@@ -175,10 +198,22 @@
 		border-bottom: 1px solid #e5e7eb;
 	}
 
+	@media (prefers-color-scheme: dark) {
+		.dropdown-header {
+			border-bottom-color: #374151;
+		}
+	}
+
 	.dropdown-title {
 		font-size: 14px;
 		font-weight: 600;
 		color: #111827;
+	}
+
+	@media (prefers-color-scheme: dark) {
+		.dropdown-title {
+			color: #f3f4f6;
+		}
 	}
 
 	.close-button {
@@ -200,6 +235,17 @@
 		color: #111827;
 	}
 
+	@media (prefers-color-scheme: dark) {
+		.close-button {
+			color: #9ca3af;
+		}
+
+		.close-button:hover {
+			background: #374151;
+			color: #f3f4f6;
+		}
+	}
+
 	.users-list {
 		flex: 1;
 		overflow-y: auto;
@@ -214,6 +260,12 @@
 		padding: 32px 16px;
 		color: #9ca3af;
 		text-align: center;
+	}
+
+	@media (prefers-color-scheme: dark) {
+		.empty-state {
+			color: #6b7280;
+		}
 	}
 
 	.empty-state p {
@@ -236,6 +288,12 @@
 
 	.user-item:hover {
 		background: #f9fafb;
+	}
+
+	@media (prefers-color-scheme: dark) {
+		.user-item:hover {
+			background: #374151;
+		}
 	}
 
 	.user-avatar {
@@ -265,10 +323,22 @@
 		text-overflow: ellipsis;
 	}
 
+	@media (prefers-color-scheme: dark) {
+		.user-name {
+			color: #f3f4f6;
+		}
+	}
+
 	.user-status {
 		font-size: 12px;
 		color: #6b7280;
 		margin-top: 2px;
+	}
+
+	@media (prefers-color-scheme: dark) {
+		.user-status {
+			color: #9ca3af;
+		}
 	}
 
 	.user-indicator {
@@ -301,5 +371,15 @@
 
 	.users-list::-webkit-scrollbar-thumb:hover {
 		background: #9ca3af;
+	}
+
+	@media (prefers-color-scheme: dark) {
+		.users-list::-webkit-scrollbar-thumb {
+			background: #4b5563;
+		}
+
+		.users-list::-webkit-scrollbar-thumb:hover {
+			background: #6b7280;
+		}
 	}
 </style>

@@ -26,13 +26,16 @@
 	}
 </script>
 
-<div class="connection-status" style="--status-color: {statusColor}">
+<div
+	class="flex items-center gap-2 rounded-md border border-gray-200 bg-white px-3 py-1.5 text-[13px] text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300"
+	style="--status-color: {statusColor}"
+>
 	<!-- Icon -->
-	<div class="status-icon">
+	<div class="flex items-center" style="color: var(--status-color)">
 		{#if error}
 			<AlertCircle size={16} />
 		{:else if isSyncing}
-			<Loader2 size={16} class="spinning" />
+			<Loader2 size={16} class="animate-spin" />
 		{:else if isConnected}
 			<Wifi size={16} />
 		{:else}
@@ -41,84 +44,20 @@
 	</div>
 
 	<!-- Status text -->
-	<div class="status-text">{statusText}</div>
+	<div class="font-medium text-gray-900 dark:text-gray-100">{statusText}</div>
 
 	<!-- Retry button (only on error) -->
 	{#if error}
-		<button class="retry-button" onclick={handleRetry} title="Reconnect">Retry</button>
+		<button
+			class="rounded border-none bg-red-600 px-2 py-1 text-xs font-medium text-white transition-colors hover:bg-red-700"
+			onclick={handleRetry}
+			title="Reconnect">Retry</button
+		>
 	{/if}
 
 	<!-- Status indicator dot -->
-	<div class="status-dot"></div>
+	<div
+		class="h-2 w-2 animate-pulse rounded-full"
+		style="background-color: var(--status-color)"
+	></div>
 </div>
-
-<style>
-	.connection-status {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-		padding: 6px 12px;
-		background: white;
-		border: 1px solid #e5e7eb;
-		border-radius: 6px;
-		font-size: 13px;
-		color: #374151;
-	}
-
-	.status-icon {
-		display: flex;
-		align-items: center;
-		color: var(--status-color);
-	}
-
-	.status-text {
-		font-weight: 500;
-		color: #111827;
-	}
-
-	.status-dot {
-		width: 8px;
-		height: 8px;
-		border-radius: 50%;
-		background-color: var(--status-color);
-		animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-	}
-
-	.retry-button {
-		padding: 4px 8px;
-		background: #ef4444;
-		color: white;
-		border: none;
-		border-radius: 4px;
-		font-size: 12px;
-		font-weight: 500;
-		transition: background 0.2s;
-	}
-
-	.retry-button:hover {
-		background: #dc2626;
-	}
-
-	:global(.spinning) {
-		animation: spin 1s linear infinite;
-	}
-
-	@keyframes spin {
-		from {
-			transform: rotate(0deg);
-		}
-		to {
-			transform: rotate(360deg);
-		}
-	}
-
-	@keyframes pulse {
-		0%,
-		100% {
-			opacity: 1;
-		}
-		50% {
-			opacity: 0.5;
-		}
-	}
-</style>

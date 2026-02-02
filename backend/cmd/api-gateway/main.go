@@ -116,6 +116,7 @@ func main() {
 		assetRepo,
 		workspaceRepo,
 		cfg.MinIO.Endpoint,
+		cfg.MinIO.PublicEndpoint,
 		cfg.MinIO.AccessKey,
 		cfg.MinIO.SecretKey,
 		cfg.MinIO.UseSSL,

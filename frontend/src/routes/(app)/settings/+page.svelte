@@ -94,19 +94,19 @@
 
 <div class="mx-auto max-w-4xl space-y-6">
 	<div>
-		<h1 class="text-3xl font-bold text-gray-900">{i18n.t('settings.title')}</h1>
-		<p class="mt-1 text-gray-600">{i18n.t('settings.subtitle')}</p>
+		<h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">{i18n.t('settings.title')}</h1>
+		<p class="mt-1 text-gray-600 dark:text-gray-400">{i18n.t('settings.subtitle')}</p>
 	</div>
 
 	<!-- Tabs -->
-	<div class="border-b border-gray-200">
+	<div class="border-b border-gray-200 dark:border-gray-700">
 		<nav class="-mb-px flex space-x-8">
 			<button
 				onclick={() => (activeTab = 'profile')}
 				class={`flex items-center gap-2 border-b-2 px-1 py-4 text-sm font-medium transition ${
 					activeTab === 'profile'
 						? 'border-blue-600 text-blue-600'
-						: 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
+						: 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:text-gray-500 dark:hover:border-gray-600 dark:hover:text-gray-300'
 				}`}
 			>
 				<User size={16} />
@@ -117,7 +117,7 @@
 				class={`flex items-center gap-2 border-b-2 px-1 py-4 text-sm font-medium transition ${
 					activeTab === 'password'
 						? 'border-blue-600 text-blue-600'
-						: 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
+						: 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:text-gray-500 dark:hover:border-gray-600 dark:hover:text-gray-300'
 				}`}
 			>
 				<Lock size={16} />
@@ -128,7 +128,7 @@
 				class={`flex items-center gap-2 border-b-2 px-1 py-4 text-sm font-medium transition ${
 					activeTab === 'account'
 						? 'border-blue-600 text-blue-600'
-						: 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
+						: 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:text-gray-500 dark:hover:border-gray-600 dark:hover:text-gray-300'
 				}`}
 			>
 				<Mail size={16} />
@@ -139,7 +139,7 @@
 				class={`flex items-center gap-2 border-b-2 px-1 py-4 text-sm font-medium transition ${
 					activeTab === 'preferences'
 						? 'border-blue-600 text-blue-600'
-						: 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
+						: 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:text-gray-500 dark:hover:border-gray-600 dark:hover:text-gray-300'
 				}`}
 			>
 				<SettingsIcon size={16} />
@@ -150,13 +150,15 @@
 
 	<!-- Profile Tab -->
 	{#if activeTab === 'profile'}
-		<div class="border border-gray-200 bg-white p-6">
-			<h2 class="mb-6 text-lg font-semibold text-gray-900">{i18n.t('settings.profile.title')}</h2>
+		<div class="border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+			<h2 class="mb-6 text-lg font-semibold text-gray-900 dark:text-gray-100">
+				{i18n.t('settings.profile.title')}
+			</h2>
 
 			<form onsubmit={handleUpdateProfile} class="space-y-6">
 				{#if profileError}
-					<div class="bg-red-50 p-4">
-						<p class="text-sm text-red-800">{profileError}</p>
+					<div class="bg-red-50 p-4 dark:bg-red-900/20">
+						<p class="text-sm text-red-800 dark:text-red-100">{profileError}</p>
 					</div>
 				{/if}
 
@@ -182,8 +184,10 @@
 						{/if}
 					</div>
 					<div>
-						<p class="text-sm font-medium text-gray-900">{authStore.user?.email}</p>
-						<p class="text-xs text-gray-500">
+						<p class="text-sm font-medium text-gray-900 dark:text-gray-100">
+							{authStore.user?.email}
+						</p>
+						<p class="text-xs text-gray-500 dark:text-gray-500">
 							{i18n.t('settings.profile.provider')}:
 							<span class="capitalize">{authStore.user?.provider}</span>
 						</p>
@@ -191,7 +195,7 @@
 				</div>
 
 				<div>
-					<label for="name" class="block text-sm font-medium text-gray-700"
+					<label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300"
 						>{i18n.t('settings.profile.fullName')}</label
 					>
 					<input
@@ -199,22 +203,24 @@
 						type="text"
 						required
 						bind:value={profileName}
-						class="mt-1 block w-full border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+						class="mt-1 block w-full border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-gray-600"
 					/>
 				</div>
 
 				<div>
-					<label for="avatar" class="block text-sm font-medium text-gray-700"
+					<label for="avatar" class="block text-sm font-medium text-gray-700 dark:text-gray-300"
 						>{i18n.t('settings.profile.avatarUrl')}</label
 					>
 					<input
 						id="avatar"
 						type="url"
 						bind:value={profileAvatarUrl}
-						class="mt-1 block w-full border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+						class="mt-1 block w-full border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-gray-600"
 						placeholder={i18n.t('settings.profile.avatarPlaceholder')}
 					/>
-					<p class="mt-1 text-xs text-gray-500">{i18n.t('settings.profile.avatarHint')}</p>
+					<p class="mt-1 text-xs text-gray-500 dark:text-gray-500">
+						{i18n.t('settings.profile.avatarHint')}
+					</p>
 				</div>
 
 				<div class="flex justify-end">
@@ -234,20 +240,22 @@
 
 	<!-- Password Tab -->
 	{#if activeTab === 'password'}
-		<div class="border border-gray-200 bg-white p-6">
-			<h2 class="mb-6 text-lg font-semibold text-gray-900">{i18n.t('settings.password.title')}</h2>
+		<div class="border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+			<h2 class="mb-6 text-lg font-semibold text-gray-900 dark:text-gray-100">
+				{i18n.t('settings.password.title')}
+			</h2>
 
 			{#if authStore.user?.provider !== 'email'}
-				<div class="bg-yellow-50 p-4">
-					<p class="text-sm text-yellow-800">
+				<div class="bg-yellow-50 p-4 dark:bg-yellow-900/20">
+					<p class="text-sm text-yellow-800 dark:text-yellow-100">
 						{i18n.t('settings.password.oauthWarning', { provider: authStore.user?.provider || '' })}
 					</p>
 				</div>
 			{:else}
 				<form onsubmit={handleChangePassword} class="space-y-6">
 					{#if passwordError}
-						<div class="bg-red-50 p-4">
-							<p class="text-sm text-red-800">{passwordError}</p>
+						<div class="bg-red-50 p-4 dark:bg-red-900/20">
+							<p class="text-sm text-red-800 dark:text-red-100">{passwordError}</p>
 						</div>
 					{/if}
 
@@ -258,7 +266,10 @@
 					{/if}
 
 					<div>
-						<label for="current-password" class="block text-sm font-medium text-gray-700">
+						<label
+							for="current-password"
+							class="block text-sm font-medium text-gray-700 dark:text-gray-300"
+						>
 							{i18n.t('settings.password.current')}
 						</label>
 						<input
@@ -266,12 +277,15 @@
 							type="password"
 							required
 							bind:value={currentPassword}
-							class="mt-1 block w-full border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+							class="mt-1 block w-full border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-gray-600"
 						/>
 					</div>
 
 					<div>
-						<label for="new-password" class="block text-sm font-medium text-gray-700">
+						<label
+							for="new-password"
+							class="block text-sm font-medium text-gray-700 dark:text-gray-300"
+						>
 							{i18n.t('settings.password.new')}
 						</label>
 						<input
@@ -279,13 +293,18 @@
 							type="password"
 							required
 							bind:value={newPassword}
-							class="mt-1 block w-full border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+							class="mt-1 block w-full border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-gray-600"
 						/>
-						<p class="mt-1 text-xs text-gray-500">{i18n.t('settings.password.hint')}</p>
+						<p class="mt-1 text-xs text-gray-500 dark:text-gray-500">
+							{i18n.t('settings.password.hint')}
+						</p>
 					</div>
 
 					<div>
-						<label for="confirm-password" class="block text-sm font-medium text-gray-700">
+						<label
+							for="confirm-password"
+							class="block text-sm font-medium text-gray-700 dark:text-gray-300"
+						>
 							{i18n.t('settings.password.confirm')}
 						</label>
 						<input
@@ -293,7 +312,7 @@
 							type="password"
 							required
 							bind:value={confirmPassword}
-							class="mt-1 block w-full border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+							class="mt-1 block w-full border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-gray-600"
 						/>
 					</div>
 
@@ -316,21 +335,31 @@
 	<!-- Account Tab -->
 	{#if activeTab === 'account'}
 		<div class="space-y-6">
-			<div class="border border-gray-200 bg-white p-6">
-				<h2 class="mb-4 text-lg font-semibold text-gray-900">{i18n.t('settings.account.title')}</h2>
+			<div class="border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+				<h2 class="mb-4 text-lg font-semibold text-gray-900 dark:text-gray-100">
+					{i18n.t('settings.account.title')}
+				</h2>
 				<div class="space-y-4">
 					<div class="flex justify-between">
-						<span class="text-sm text-gray-600">{i18n.t('settings.account.email')}</span>
-						<span class="text-sm font-medium text-gray-900">{authStore.user?.email}</span>
+						<span class="text-sm text-gray-600 dark:text-gray-400"
+							>{i18n.t('settings.account.email')}</span
+						>
+						<span class="text-sm font-medium text-gray-900 dark:text-gray-100"
+							>{authStore.user?.email}</span
+						>
 					</div>
 					<div class="flex justify-between">
-						<span class="text-sm text-gray-600">{i18n.t('settings.account.accountType')}</span>
-						<span class="text-sm font-medium text-gray-900 capitalize"
+						<span class="text-sm text-gray-600 dark:text-gray-400"
+							>{i18n.t('settings.account.accountType')}</span
+						>
+						<span class="text-sm font-medium text-gray-900 capitalize dark:text-gray-100"
 							>{authStore.user?.provider}</span
 						>
 					</div>
 					<div class="flex justify-between">
-						<span class="text-sm text-gray-600">{i18n.t('settings.account.emailVerified')}</span>
+						<span class="text-sm text-gray-600 dark:text-gray-400"
+							>{i18n.t('settings.account.emailVerified')}</span
+						>
 						<span
 							class={`text-sm font-medium ${authStore.user?.email_verified ? 'text-green-600' : 'text-yellow-600'}`}
 						>
@@ -340,24 +369,26 @@
 						</span>
 					</div>
 					<div class="flex justify-between">
-						<span class="text-sm text-gray-600">{i18n.t('settings.account.memberSince')}</span>
-						<span class="text-sm font-medium text-gray-900">
+						<span class="text-sm text-gray-600 dark:text-gray-400"
+							>{i18n.t('settings.account.memberSince')}</span
+						>
+						<span class="text-sm font-medium text-gray-900 dark:text-gray-100">
 							{new Date(authStore.user?.created_at || '').toLocaleDateString()}
 						</span>
 					</div>
 				</div>
 			</div>
 
-			<div class="border border-red-200 bg-red-50 p-6">
-				<h2 class="mb-2 text-lg font-semibold text-red-900">
+			<div class="border border-red-200 bg-red-50 p-6 dark:border-red-800 dark:bg-red-900/20">
+				<h2 class="mb-2 text-lg font-semibold text-red-900 dark:text-red-100">
 					{i18n.t('settings.account.dangerZone')}
 				</h2>
-				<p class="mb-4 text-sm text-red-700">
+				<p class="mb-4 text-sm text-red-700 dark:text-red-300">
 					{i18n.t('settings.account.deleteWarning')}
 				</p>
 				<button
 					onclick={() => alert('Account deletion is not yet implemented')}
-					class="border border-red-600 bg-white px-4 py-2 text-red-600 transition hover:bg-red-50"
+					class="border border-red-600 bg-white px-4 py-2 text-red-600 transition hover:bg-red-50 dark:border-red-500 dark:bg-gray-800 dark:text-red-400 dark:hover:bg-red-900/30"
 				>
 					{i18n.t('settings.account.deleteAccount')}
 				</button>
@@ -367,33 +398,38 @@
 
 	<!-- Preferences Tab -->
 	{#if activeTab === 'preferences'}
-		<div class="border border-gray-200 bg-white p-6">
-			<h2 class="mb-6 text-lg font-semibold text-gray-900">
+		<div class="border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+			<h2 class="mb-6 text-lg font-semibold text-gray-900 dark:text-gray-100">
 				{i18n.t('settings.preferences.title')}
 			</h2>
 
 			<div class="space-y-6">
 				<!-- Language Selection -->
 				<div>
-					<label for="language" class="mb-2 block text-sm font-medium text-gray-700">
+					<label
+						for="language"
+						class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
+					>
 						{i18n.t('settings.preferences.languageLabel')}
 					</label>
 					<select
 						id="language"
 						value={i18n.locale}
 						onchange={(e) => i18n.setLocale(e.currentTarget.value as 'en' | 'ru' | 'zh')}
-						class="block w-full max-w-xs border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+						class="block w-full max-w-xs border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 [&>option]:bg-white [&>option]:text-gray-900 dark:[&>option]:bg-gray-800 dark:[&>option]:text-gray-100"
 					>
 						<option value="en">{i18n.t('settings.preferences.languageEn')}</option>
 						<option value="ru">{i18n.t('settings.preferences.languageRu')}</option>
 						<option value="zh">{i18n.t('settings.preferences.languageZh')}</option>
 					</select>
-					<p class="mt-1 text-xs text-gray-500">{i18n.t('settings.preferences.languageHint')}</p>
+					<p class="mt-1 text-xs text-gray-500 dark:text-gray-500">
+						{i18n.t('settings.preferences.languageHint')}
+					</p>
 				</div>
 
 				<!-- Theme Selection -->
 				<div>
-					<div class="mb-2 block text-sm font-medium text-gray-700">
+					<div class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
 						{i18n.t('settings.preferences.themeLabel')}
 					</div>
 					<div class="flex gap-4">
@@ -401,8 +437,8 @@
 							onclick={() => themeStore.setTheme('light')}
 							class={`flex items-center gap-2 border-2 px-4 py-3 transition ${
 								themeStore.theme === 'light'
-									? 'border-blue-600 bg-blue-50 text-blue-700'
-									: 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
+									? 'border-blue-600 bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400'
+									: 'border-gray-300 bg-white text-gray-700 hover:border-gray-400 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:border-gray-500'
 							}`}
 						>
 							<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -420,8 +456,8 @@
 							onclick={() => themeStore.setTheme('dark')}
 							class={`flex items-center gap-2 border-2 px-4 py-3 transition ${
 								themeStore.theme === 'dark'
-									? 'border-blue-600 bg-blue-50 text-blue-700'
-									: 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
+									? 'border-blue-600 bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400'
+									: 'border-gray-300 bg-white text-gray-700 hover:border-gray-400 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:border-gray-500'
 							}`}
 						>
 							<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -435,7 +471,9 @@
 							{i18n.t('settings.preferences.themeDark')}
 						</button>
 					</div>
-					<p class="mt-1 text-xs text-gray-500">{i18n.t('settings.preferences.themeHint')}</p>
+					<p class="mt-1 text-xs text-gray-500 dark:text-gray-500">
+						{i18n.t('settings.preferences.themeHint')}
+					</p>
 				</div>
 			</div>
 		</div>

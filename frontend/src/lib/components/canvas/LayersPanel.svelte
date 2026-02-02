@@ -169,17 +169,23 @@
 	}
 </script>
 
-<div class="flex h-full w-[250px] flex-col overflow-hidden border-r border-gray-200 bg-white">
-	<div class="flex items-center justify-between border-b border-gray-200 px-4 py-4">
-		<h3 class="m-0 text-sm font-semibold text-gray-900">Layers</h3>
-		<div class="text-xs text-gray-400">{elements.length} elements</div>
+<div
+	class="flex h-full w-[250px] flex-col overflow-hidden border-r border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800"
+>
+	<div
+		class="flex items-center justify-between border-b border-gray-200 px-4 py-4 dark:border-gray-700"
+	>
+		<h3 class="m-0 text-sm font-semibold text-gray-900 dark:text-gray-100">Layers</h3>
+		<div class="text-xs text-gray-400 dark:text-gray-500">{elements.length} elements</div>
 	</div>
 
 	<div
 		class="flex-1 overflow-y-auto [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb:hover]:bg-gray-400 [&::-webkit-scrollbar-track]:bg-transparent"
 	>
 		{#if sortedElements.length === 0}
-			<div class="flex items-center justify-center px-6 py-12 text-center text-sm text-gray-400">
+			<div
+				class="flex items-center justify-center px-6 py-12 text-center text-sm text-gray-400 dark:text-gray-500"
+			>
 				<p>No elements yet</p>
 			</div>
 		{:else}
@@ -195,7 +201,7 @@
 					<!-- svelte-ignore a11y_click_events_have_key_events -->
 					<!-- svelte-ignore a11y_no_static_element_interactions -->
 					<div
-						class="mb-0.5 flex items-center gap-2 rounded-md px-2 py-2 transition-all duration-150 select-none hover:bg-gray-100"
+						class="mb-0.5 flex items-center gap-2 rounded-md px-2 py-2 transition-all duration-150 select-none hover:bg-gray-100 dark:hover:bg-gray-700"
 						class:bg-blue-100={isSelected}
 						class:text-blue-600={isSelected}
 						class:opacity-40={isDragging || !isVisible}
@@ -227,6 +233,7 @@
 							class="flex flex-shrink-0 items-center justify-center"
 							class:text-gray-500={!isSelected}
 							class:text-blue-600={isSelected}
+							class:dark:text-gray-400={!isSelected}
 						>
 							<Icon size={16} />
 						</div>
@@ -236,6 +243,7 @@
 							class="flex-1 overflow-hidden text-[13px] font-medium text-ellipsis whitespace-nowrap"
 							class:text-gray-700={!isSelected}
 							class:text-blue-600={isSelected}
+							class:dark:text-gray-300={!isSelected}
 							title={getElementLabel(element)}
 						>
 							{getElementLabel(element)}
@@ -247,7 +255,7 @@
 						>
 							<!-- Visibility toggle -->
 							<button
-								class="flex items-center justify-center rounded border-none bg-transparent p-1 text-gray-400 transition-all duration-150 hover:bg-white hover:text-gray-700"
+								class="flex items-center justify-center rounded border-none bg-transparent p-1 text-gray-400 transition-all duration-150 hover:bg-white hover:text-gray-700 dark:hover:bg-gray-800 dark:hover:text-gray-300"
 								class:text-red-500={!isVisible}
 								class:active={!isVisible}
 								onclick={(e) => toggleVisibility(element.id, e)}
@@ -262,7 +270,7 @@
 
 							<!-- Lock toggle -->
 							<button
-								class="flex items-center justify-center rounded border-none bg-transparent p-1 text-gray-400 transition-all duration-150 hover:bg-white hover:text-gray-700"
+								class="flex items-center justify-center rounded border-none bg-transparent p-1 text-gray-400 transition-all duration-150 hover:bg-white hover:text-gray-700 dark:hover:bg-gray-800 dark:hover:text-gray-300"
 								class:text-red-500={isLocked}
 								class:active={isLocked}
 								onclick={(e) => toggleLock(element.id, e)}

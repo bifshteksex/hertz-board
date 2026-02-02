@@ -45,6 +45,8 @@
 	const selectedCount = $derived(canvasStore.selectedIds.length);
 	const showGrid = $derived(canvasStore.showGrid);
 	const snapToGrid = $derived(canvasStore.snapToGrid);
+	const brushColor = $derived(canvasStore.brushColor);
+	const brushWidth = $derived(canvasStore.brushWidth);
 
 	// Submenu state
 	let showShapeSubmenu = $state(false);
@@ -144,14 +146,25 @@
 	function toggleSnap() {
 		canvasStore.toggleSnap();
 	}
+
+	function handleBrushColorChange(e: Event) {
+		const input = e.target as HTMLInputElement;
+		canvasStore.setBrushColor(input.value);
+	}
+
+	function handleBrushWidthChange(e: Event) {
+		const input = e.target as HTMLInputElement;
+		canvasStore.setBrushWidth(Number(input.value));
+	}
 </script>
 
-<div class="toolbar">
+<div
+	class="flex items-center gap-2 border-b border-gray-200 bg-white px-4 py-2 dark:border-gray-700 dark:bg-gray-800"
+>
 	<!-- Left section: Undo/Redo and Help -->
-	<div class="toolbar-section">
+	<div class="flex items-center gap-1">
 		<button
-			class="tool-btn"
-			class:disabled={!canUndo}
+			class="flex h-9 w-9 items-center justify-center rounded-md border-none bg-transparent text-gray-700 transition-all duration-150 hover:bg-gray-100 hover:text-gray-900 disabled:pointer-events-none disabled:opacity-40 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-gray-100"
 			disabled={!canUndo}
 			onclick={onUndo}
 			title={i18n.t('canvas.toolbar.undoShortcut')}
@@ -161,8 +174,7 @@
 		</button>
 
 		<button
-			class="tool-btn"
-			class:disabled={!canRedo}
+			class="flex h-9 w-9 items-center justify-center rounded-md border-none bg-transparent text-gray-700 transition-all duration-150 hover:bg-gray-100 hover:text-gray-900 disabled:pointer-events-none disabled:opacity-40 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-gray-100"
 			disabled={!canRedo}
 			onclick={onRedo}
 			title={i18n.t('canvas.toolbar.redoShortcut')}
@@ -171,10 +183,10 @@
 			<IconRedo size={18} />
 		</button>
 
-		<div class="separator"></div>
+		<div class="mx-1 h-6 w-px bg-gray-200 dark:bg-gray-700"></div>
 
 		<button
-			class="tool-btn"
+			class="flex h-9 w-9 items-center justify-center rounded-md border-none bg-transparent text-gray-700 transition-all duration-150 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-gray-100"
 			onclick={onShowHelp}
 			title={i18n.t('canvas.toolbar.help')}
 			aria-label={i18n.t('canvas.toolbar.helpAria')}
@@ -182,16 +194,16 @@
 			<IconQuestion size={24} />
 		</button>
 
-		<div class="separator"></div>
+		<div class="mx-1 h-6 w-px bg-gray-200 dark:bg-gray-700"></div>
 	</div>
 
 	<!-- Middle section: Drawing tools -->
-	<div class="toolbar-section">
+	<div class="flex items-center gap-1">
 		{#each basicTools as tool}
 			{@const Icon = tool.icon}
 			<button
-				class="tool-btn"
-				class:active={activeTool === tool.id}
+				class="flex h-9 w-9 items-center justify-center rounded-md border-none bg-transparent text-gray-700 transition-all duration-150 hover:bg-gray-100 hover:text-gray-900 active:bg-blue-200 data-[active=true]:bg-blue-100 data-[active=true]:text-blue-600 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-gray-100 dark:data-[active=true]:bg-blue-900/30 dark:data-[active=true]:text-blue-400"
+				data-active={activeTool === tool.id}
 				onclick={() => selectTool(tool.id)}
 				title={tool.label}
 				aria-label={tool.label}
@@ -201,10 +213,10 @@
 		{/each}
 
 		<!-- Shape tool with submenu -->
-		<div class="tool-with-submenu">
+		<div class="relative">
 			<button
-				class="tool-btn"
-				class:active={['rectangle', 'ellipse', 'triangle', 'line', 'arrow'].includes(activeTool)}
+				class="flex h-9 w-9 items-center justify-center gap-0.5 rounded-md border-none bg-transparent text-gray-700 transition-all duration-150 hover:bg-gray-100 hover:text-gray-900 data-[active=true]:bg-blue-100 data-[active=true]:text-blue-600 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-gray-100 dark:data-[active=true]:bg-blue-900/30 dark:data-[active=true]:text-blue-400"
+				data-active={['rectangle', 'ellipse', 'triangle', 'line', 'arrow'].includes(activeTool)}
 				onclick={toggleShapeSubmenu}
 				title={i18n.t('canvas.toolbar.tools.shapes')}
 				aria-label={i18n.t('canvas.toolbar.tools.shapes')}
@@ -213,7 +225,7 @@
 					{@const ShapeIcon = shapeIcons[activeShapeType]}
 					<ShapeIcon size={18} />
 				{/if}
-				<SubmenuIcon size={12} class="submenu-indicator" />
+				<SubmenuIcon size={12} class="-ml-1 opacity-50" />
 			</button>
 			{#if showShapeSubmenu}
 				<ShapeSubmenu onSelect={handleShapeSelect} />
@@ -221,10 +233,10 @@
 		</div>
 
 		<!-- List tool with submenu -->
-		<div class="tool-with-submenu">
+		<div class="relative">
 			<button
-				class="tool-btn"
-				class:active={activeTool === 'list'}
+				class="flex h-9 w-9 items-center justify-center gap-0.5 rounded-md border-none bg-transparent text-gray-700 transition-all duration-150 hover:bg-gray-100 hover:text-gray-900 data-[active=true]:bg-blue-100 data-[active=true]:text-blue-600 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-gray-100 dark:data-[active=true]:bg-blue-900/30 dark:data-[active=true]:text-blue-400"
+				data-active={activeTool === 'list'}
 				onclick={toggleListSubmenu}
 				title={i18n.t('canvas.toolbar.tools.lists')}
 				aria-label={i18n.t('canvas.toolbar.tools.lists')}
@@ -233,7 +245,7 @@
 					{@const ListIcon = listIcons[activeListType]}
 					<ListIcon size={18} />
 				{/if}
-				<SubmenuIcon size={12} class="submenu-indicator" />
+				<SubmenuIcon size={12} class="-ml-1 opacity-50" />
 			</button>
 			{#if showListSubmenu}
 				<ListSubmenu onSelect={handleListSelect} />
@@ -241,14 +253,55 @@
 		</div>
 	</div>
 
+	<!-- Brush settings (visible when freehand tool is active) -->
+	{#if activeTool === 'freehand'}
+		<div class="flex items-center gap-2">
+			<div class="mx-1 h-6 w-px bg-gray-200 dark:bg-gray-700"></div>
+
+			<!-- Color picker -->
+			<div class="flex items-center gap-1.5">
+				<label
+					class="relative flex h-9 w-9 cursor-pointer items-center justify-center overflow-hidden rounded-md border-2 border-gray-300 transition-all hover:border-gray-400 dark:border-gray-600 dark:hover:border-gray-500"
+					title="Brush color"
+				>
+					<input
+						type="color"
+						value={brushColor}
+						oninput={handleBrushColorChange}
+						class="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+					/>
+					<div
+						class="pointer-events-none h-6 w-6 rounded"
+						style="background-color: {brushColor};"
+					></div>
+				</label>
+			</div>
+
+			<!-- Width slider -->
+			<div class="flex items-center gap-2">
+				<span class="text-xs text-gray-500 dark:text-gray-400">Width:</span>
+				<input
+					type="range"
+					min="1"
+					max="50"
+					value={brushWidth}
+					oninput={handleBrushWidthChange}
+					class="h-2 w-24 cursor-pointer appearance-none rounded-lg bg-gray-200 dark:bg-gray-700"
+					title="Brush width: {brushWidth}px"
+				/>
+				<span class="min-w-[2rem] text-xs text-gray-600 dark:text-gray-300">{brushWidth}px</span>
+			</div>
+		</div>
+	{/if}
+
 	<!-- Middle section: Z-order and grouping (visible when selection exists) -->
 	{#if selectedCount > 0}
-		<div class="toolbar-section">
-			<div class="separator"></div>
+		<div class="flex items-center gap-1">
+			<div class="mx-1 h-6 w-px bg-gray-200 dark:bg-gray-700"></div>
 
 			<!-- Z-order controls -->
 			<button
-				class="tool-btn"
+				class="flex h-9 w-9 items-center justify-center rounded-md border-none bg-transparent text-gray-700 transition-all duration-150 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-gray-100"
 				onclick={handleBringToFront}
 				title={i18n.t('canvas.toolbar.zorder.bringToFront')}
 				aria-label={i18n.t('canvas.toolbar.zorder.bringToFront')}
@@ -257,7 +310,7 @@
 			</button>
 
 			<button
-				class="tool-btn"
+				class="flex h-9 w-9 items-center justify-center rounded-md border-none bg-transparent text-gray-700 transition-all duration-150 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-gray-100"
 				onclick={handleBringForward}
 				title={i18n.t('canvas.toolbar.zorder.bringForward')}
 				aria-label={i18n.t('canvas.toolbar.zorder.bringForward')}
@@ -266,7 +319,7 @@
 			</button>
 
 			<button
-				class="tool-btn"
+				class="flex h-9 w-9 items-center justify-center rounded-md border-none bg-transparent text-gray-700 transition-all duration-150 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-gray-100"
 				onclick={handleSendBackward}
 				title={i18n.t('canvas.toolbar.zorder.sendBackward')}
 				aria-label={i18n.t('canvas.toolbar.zorder.sendBackward')}
@@ -275,7 +328,7 @@
 			</button>
 
 			<button
-				class="tool-btn"
+				class="flex h-9 w-9 items-center justify-center rounded-md border-none bg-transparent text-gray-700 transition-all duration-150 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-gray-100"
 				onclick={handleSendToBack}
 				title={i18n.t('canvas.toolbar.zorder.sendToBack')}
 				aria-label={i18n.t('canvas.toolbar.zorder.sendToBack')}
@@ -283,12 +336,12 @@
 				<ChevronsDown size={18} />
 			</button>
 
-			<div class="separator"></div>
+			<div class="mx-1 h-6 w-px bg-gray-200 dark:bg-gray-700"></div>
 
 			<!-- Grouping controls -->
 			{#if selectedCount > 1}
 				<button
-					class="tool-btn"
+					class="flex h-9 w-9 items-center justify-center rounded-md border-none bg-transparent text-gray-700 transition-all duration-150 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-gray-100"
 					onclick={handleGroup}
 					title={i18n.t('canvas.toolbar.grouping.group')}
 					aria-label={i18n.t('canvas.toolbar.grouping.groupElements')}
@@ -298,7 +351,7 @@
 			{/if}
 
 			<button
-				class="tool-btn"
+				class="flex h-9 w-9 items-center justify-center rounded-md border-none bg-transparent text-gray-700 transition-all duration-150 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-gray-100"
 				onclick={handleUngroup}
 				title={i18n.t('canvas.toolbar.grouping.ungroup')}
 				aria-label={i18n.t('canvas.toolbar.grouping.ungroupElements')}
@@ -309,10 +362,10 @@
 	{/if}
 
 	<!-- Right section: View controls -->
-	<div class="toolbar-section ml-auto">
+	<div class="ml-auto flex items-center gap-1">
 		<button
-			class="tool-btn"
-			class:active={showGrid}
+			class="flex h-9 w-9 items-center justify-center rounded-md border-none bg-transparent text-gray-700 transition-all duration-150 hover:bg-gray-100 hover:text-gray-900 data-[active=true]:bg-blue-100 data-[active=true]:text-blue-600 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-gray-100 dark:data-[active=true]:bg-blue-900/30 dark:data-[active=true]:text-blue-400"
+			data-active={showGrid}
 			onclick={toggleGrid}
 			title={i18n.t('canvas.toolbar.view.toggleGrid')}
 			aria-label={i18n.t('canvas.toolbar.view.gridAria')}
@@ -321,8 +374,8 @@
 		</button>
 
 		<button
-			class="tool-btn"
-			class:active={snapToGrid}
+			class="flex h-9 w-9 items-center justify-center rounded-md border-none bg-transparent text-gray-700 transition-all duration-150 hover:bg-gray-100 hover:text-gray-900 data-[active=true]:bg-blue-100 data-[active=true]:text-blue-600 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-gray-100 dark:data-[active=true]:bg-blue-900/30 dark:data-[active=true]:text-blue-400"
+			data-active={snapToGrid}
 			onclick={toggleSnap}
 			title={i18n.t('canvas.toolbar.view.toggleSnap')}
 			aria-label={i18n.t('canvas.toolbar.view.snapAria')}
@@ -331,80 +384,3 @@
 		</button>
 	</div>
 </div>
-
-<style>
-	.toolbar {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-		padding: 8px 16px;
-		background: white;
-		border-bottom: 1px solid #e5e7eb;
-	}
-
-	.toolbar-section {
-		display: flex;
-		align-items: center;
-		gap: 4px;
-	}
-
-	.tool-btn {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: 36px;
-		height: 36px;
-		border: none;
-		background: transparent;
-		border-radius: 6px;
-		color: #374151;
-		transition: all 0.15s;
-	}
-
-	.tool-btn:hover {
-		background: #f3f4f6;
-		color: #111827;
-	}
-
-	.tool-btn.active {
-		background: #dbeafe;
-		color: #2563eb;
-	}
-
-	.tool-btn:active {
-		background: #bfdbfe;
-	}
-
-	.tool-btn:disabled,
-	.tool-btn.disabled {
-		opacity: 0.4;
-		cursor: not-allowed;
-		pointer-events: none;
-	}
-
-	.separator {
-		width: 1px;
-		height: 24px;
-		background: #e5e7eb;
-		margin: 0 4px;
-	}
-
-	.ml-auto {
-		margin-left: auto;
-	}
-
-	.tool-with-submenu {
-		position: relative;
-	}
-
-	.tool-with-submenu .tool-btn {
-		display: flex;
-		align-items: center;
-		gap: 2px;
-	}
-
-	:global(.submenu-indicator) {
-		opacity: 0.5;
-		margin-left: -4px;
-	}
-</style>

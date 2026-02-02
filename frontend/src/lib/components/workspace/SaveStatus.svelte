@@ -51,13 +51,15 @@
 	const statusColor = $derived.by(() => {
 		switch (status) {
 			case 'saving':
-				return 'text-blue-600';
+				return 'text-blue-600 dark:text-blue-400';
 			case 'saved':
-				return 'text-green-600';
+				return 'text-green-600 dark:text-green-400';
 			case 'error':
-				return 'text-red-600';
+				return 'text-red-600 dark:text-red-400';
 			default:
-				return pendingCount > 0 ? 'text-yellow-600' : 'text-gray-500';
+				return pendingCount > 0
+					? 'text-yellow-600 dark:text-yellow-400'
+					: 'text-gray-500 dark:text-gray-500';
 		}
 	});
 

@@ -45,22 +45,21 @@
 		height={gridSize()}
 		patternUnits="userSpaceOnUse"
 	>
-		<circle cx={gridSize() / 2} cy={gridSize() / 2} r={dotSize()} fill="#cbd5e1" opacity="0.5" />
+		<circle
+			cx={gridSize() / 2}
+			cy={gridSize() / 2}
+			r={dotSize()}
+			class="fill-gray-300 opacity-50 dark:fill-gray-600 dark:opacity-60"
+		/>
 	</pattern>
 </defs>
 
 <!-- Применяем pattern к большому прямоугольнику -->
 <rect
-	class="canvas-grid"
+	class="pointer-events-none"
 	x="-10000"
 	y="-10000"
 	width="20000"
 	height="20000"
 	fill="url(#{patternId})"
 />
-
-<style>
-	.canvas-grid {
-		pointer-events: none;
-	}
-</style>

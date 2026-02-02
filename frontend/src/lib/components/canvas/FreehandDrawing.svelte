@@ -29,7 +29,10 @@
 	const pathData = $derived.by(() => {
 		if (points.length < 2) return '';
 
-		const stroke = getStroke(points, {
+		// Конвертируем points в формат для getStroke: [x, y, pressure]
+		const strokePoints = points.map((p) => [p.x, p.y, p.pressure ?? 0.5]);
+
+		const stroke = getStroke(strokePoints, {
 			size: width * 2,
 			thinning: 0.5,
 			smoothing: 0.5,
@@ -39,16 +42,21 @@
 
 		if (stroke.length === 0) return '';
 
-		const d = stroke.reduce((acc, [x0, y0], i, arr) => {
-			const [x1, y1] = arr[(i + 1) % arr.length];
+		// Создаем SVG path из stroke точек
+		let d = '';
+		for (let i = 0; i < stroke.length; i++) {
+			const [x, y] = stroke[i];
 			if (i === 0) {
-				return `M ${x0},${y0} Q ${x1},${y1}`;
+				d = `M ${x},${y}`;
+			} else {
+				d += ` L ${x},${y}`;
 			}
-			if (i === arr.length - 1) {
-				return `${acc} ${x0},${y0} Z`;
-			}
-			return `${acc} ${x0},${y0} T ${x1},${y1}`;
-		}, '');
+		}
+
+		// Закрываем path
+		if (stroke.length > 0) {
+			d += ' Z';
+		}
 
 		return d;
 	});

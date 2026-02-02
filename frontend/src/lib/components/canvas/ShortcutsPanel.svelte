@@ -90,32 +90,41 @@
 >
 	<div
 		bind:this={panelElement}
-		class="animate-fade-in flex max-h-[80vh] w-full max-w-3xl flex-col bg-white shadow-2xl"
+		class="animate-fade-in flex max-h-[80vh] w-full max-w-3xl flex-col bg-white shadow-2xl dark:bg-gray-800 dark:shadow-gray-900/50"
 	>
 		<!-- Header -->
-		<div class="flex items-center justify-between border-b border-gray-200 p-6">
+		<div
+			class="flex items-center justify-between border-b border-gray-200 p-6 dark:border-gray-700"
+		>
 			<div>
-				<h2 class="text-2xl font-semibold text-gray-900">{i18n.t('canvas.shortcuts.title')}</h2>
-				<p class="mt-1 text-sm text-gray-500">{i18n.t('canvas.shortcuts.subtitle')}</p>
+				<h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100">
+					{i18n.t('canvas.shortcuts.title')}
+				</h2>
+				<p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+					{i18n.t('canvas.shortcuts.subtitle')}
+				</p>
 			</div>
 			<button
 				onclick={onClose}
-				class="rounded-lg p-2 transition-colors hover:bg-gray-100"
+				class="rounded-lg p-2 transition-colors hover:bg-gray-100 dark:hover:bg-gray-700"
 				aria-label={i18n.t('common.close')}
 			>
-				<X size={24} class="text-gray-500" />
+				<X size={24} class="text-gray-500 dark:text-gray-400" />
 			</button>
 		</div>
 
 		<!-- Search -->
-		<div class="border-b border-gray-200 p-6">
+		<div class="border-b border-gray-200 p-6 dark:border-gray-700">
 			<div class="relative">
-				<Search size={20} class="absolute top-1/2 left-3 -translate-y-1/2 text-gray-400" />
+				<Search
+					size={20}
+					class="absolute top-1/2 left-3 -translate-y-1/2 text-gray-400 dark:text-gray-500"
+				/>
 				<input
 					type="text"
 					bind:value={searchQuery}
 					placeholder={i18n.t('canvas.shortcuts.search')}
-					class="w-full rounded-lg border border-gray-300 py-2 pr-4 pl-10 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+					class="w-full rounded-lg border border-gray-300 py-2 pr-4 pl-10 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
 				/>
 			</div>
 		</div>
@@ -123,7 +132,7 @@
 		<!-- Shortcuts List -->
 		<div class="flex-1 overflow-y-auto p-6">
 			{#if groupedShortcuts().size === 0}
-				<div class="py-12 text-center text-gray-500">
+				<div class="py-12 text-center text-gray-500 dark:text-gray-400">
 					<p>{i18n.t('canvas.shortcuts.noResults', { query: searchQuery })}</p>
 				</div>
 			{:else}
@@ -131,15 +140,17 @@
 					{#each categories as category}
 						{#if groupedShortcuts().has(category)}
 							<div>
-								<h3 class="mb-3 text-sm font-semibold tracking-wider text-gray-400 uppercase">
+								<h3
+									class="mb-3 text-sm font-semibold tracking-wider text-gray-400 uppercase dark:text-gray-500"
+								>
 									{categoryNames[category]}
 								</h3>
 								<div class="space-y-2">
 									{#each groupedShortcuts().get(category) || [] as shortcut}
 										<div
-											class="flex items-center justify-between rounded-lg px-3 py-2 hover:bg-gray-50"
+											class="flex items-center justify-between rounded-lg px-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-700"
 										>
-											<span class="text-gray-700">{shortcut.description}</span>
+											<span class="text-gray-700 dark:text-gray-300">{shortcut.description}</span>
 											<kbd class="kbd">{formatShortcut(shortcut.key)}</kbd>
 										</div>
 									{/each}
@@ -152,8 +163,8 @@
 		</div>
 
 		<!-- Footer -->
-		<div class="border-t border-gray-200 bg-gray-50 p-6">
-			<p class="text-center text-sm text-gray-600">
+		<div class="border-t border-gray-200 bg-gray-50 p-6 dark:border-gray-700 dark:bg-gray-900">
+			<p class="text-center text-sm text-gray-600 dark:text-gray-400">
 				{i18n.t('canvas.shortcuts.footer')}
 				<kbd class="kbd-small">{i18n.t('canvas.shortcuts.footerKey')}</kbd>
 				{i18n.t('canvas.shortcuts.footerText')}
@@ -179,6 +190,14 @@
 		box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 	}
 
+	@media (prefers-color-scheme: dark) {
+		.kbd {
+			color: rgb(209 213 219);
+			background: rgb(55 65 81);
+			border-color: rgb(75 85 99);
+		}
+	}
+
 	.kbd-small {
 		padding: 0.125rem 0.375rem;
 		font-size: 0.625rem;
@@ -190,6 +209,14 @@
 		border: 1px solid #d1d5db;
 		border-radius: 0.25rem;
 		box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+	}
+
+	@media (prefers-color-scheme: dark) {
+		.kbd-small {
+			color: rgb(209 213 219);
+			background: rgb(55 65 81);
+			border-color: rgb(75 85 99);
+		}
 	}
 
 	.animate-fade-in {
