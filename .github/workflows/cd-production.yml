@@ -111,7 +111,7 @@ jobs:
             - Commit: ${{ github.sha }}
             - Environment: Production
           draft: false
-          prerelease: ${{ contains(github.ref_name, '-beta') || contains(github.ref_name, '-alpha') || contains(github.ref_name, '-rc') }}
+          prerelease: ${{ contains(github.ref_name, '-alpha') || contains(github.ref_name, '-rc') }}
 
       - name: Notify on Failure
         if: failure()
