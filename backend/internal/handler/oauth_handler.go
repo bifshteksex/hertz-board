@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/cloudwego/hertz/pkg/app"
+	"github.com/cloudwego/hertz/pkg/protocol"
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
 
 	"github.com/bifshteksex/hertz-board/internal/models"
@@ -86,15 +87,15 @@ func (h *OAuthHandler) handleOAuthCallback(
 		return
 	}
 
-	// Set tokens as HTTP-only cookies
 	ctx.SetCookie(
 		"access_token",
 		resp.Tokens.AccessToken,
 		int(resp.Tokens.ExpiresAt.Sub(time.Now()).Seconds()),
 		"/",
 		"",
-		true, // secure (HTTPS only in production)
-		true, // httpOnly
+		protocol.CookieSameSiteLaxMode,
+		true,
+		false,
 	)
 
 	ctx.SetCookie(
@@ -103,8 +104,9 @@ func (h *OAuthHandler) handleOAuthCallback(
 		7*24*60*60, // 7 days
 		"/",
 		"",
-		true, // secure
-		true, // httpOnly
+		protocol.CookieSameSiteLaxMode,
+		true,
+		false,
 	)
 
 	// Redirect to frontend

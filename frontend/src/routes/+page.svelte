@@ -34,10 +34,20 @@
 	}
 
 	onMount(async () => {
+		// Check for OAuth cookies and redirect immediately
+		const cookies = document.cookie.split(';');
+		const hasAccessToken = cookies.some((cookie) => cookie.trim().startsWith('access_token='));
+
+		if (hasAccessToken) {
+			// Give the API client time to process cookies
+			await new Promise((resolve) => setTimeout(resolve, 100));
+		}
+
 		// Initialize auth and redirect if already logged in
 		await authStore.initialize();
 		if (authStore.isAuthenticated) {
 			goto('/dashboard');
+			return;
 		}
 
 		// Fetch GitHub stars

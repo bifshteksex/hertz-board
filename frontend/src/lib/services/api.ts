@@ -35,10 +35,37 @@ export class ApiClient {
 	private refreshToken: string | null = null;
 
 	constructor() {
-		// Load tokens from localStorage on initialization
+		// Load tokens from cookies first (OAuth), then fallback to localStorage
 		if (typeof window !== 'undefined') {
-			this.accessToken = localStorage.getItem('access_token');
-			this.refreshToken = localStorage.getItem('refresh_token');
+			this.loadTokensFromCookies();
+			if (!this.accessToken) {
+				this.accessToken = localStorage.getItem('access_token');
+				this.refreshToken = localStorage.getItem('refresh_token');
+			}
+		}
+	}
+
+	private loadTokensFromCookies() {
+		if (typeof document === 'undefined') return;
+
+		const cookies = document.cookie.split(';');
+		let accessToken: string | null = null;
+		let refreshToken: string | null = null;
+
+		for (const cookie of cookies) {
+			const [name, value] = cookie.trim().split('=');
+			if (name === 'access_token') {
+				accessToken = value;
+			} else if (name === 'refresh_token') {
+				refreshToken = value;
+			}
+		}
+
+		if (accessToken && refreshToken) {
+			this.setTokens(accessToken, refreshToken);
+			// Clear cookies after moving to localStorage
+			document.cookie = 'access_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+			document.cookie = 'refresh_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
 		}
 	}
 
