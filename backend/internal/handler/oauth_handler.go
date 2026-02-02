@@ -87,10 +87,14 @@ func (h *OAuthHandler) handleOAuthCallback(
 		return
 	}
 
+	const (
+		refreshTokenMaxAge = 7 * 24 * 60 * 60 // 7 days in seconds
+	)
+
 	ctx.SetCookie(
 		"access_token",
 		resp.Tokens.AccessToken,
-		int(resp.Tokens.ExpiresAt.Sub(time.Now()).Seconds()),
+		int(time.Until(resp.Tokens.ExpiresAt).Seconds()),
 		"/",
 		"",
 		protocol.CookieSameSiteLaxMode,
@@ -101,7 +105,7 @@ func (h *OAuthHandler) handleOAuthCallback(
 	ctx.SetCookie(
 		"refresh_token",
 		resp.Tokens.RefreshToken,
-		7*24*60*60, // 7 days
+		refreshTokenMaxAge,
 		"/",
 		"",
 		protocol.CookieSameSiteLaxMode,

@@ -209,13 +209,11 @@ func (s *OAuthService) findOrCreateUser(
 		if createErr := s.userRepo.Create(ctx, user); createErr != nil {
 			return nil, fmt.Errorf("failed to create user: %w", createErr)
 		}
-	} else {
+	} else if avatarURL != "" && (user.AvatarURL == nil || *user.AvatarURL != avatarURL) {
 		// Update existing user's avatar if provided
-		if avatarURL != "" && (user.AvatarURL == nil || *user.AvatarURL != avatarURL) {
-			user.AvatarURL = &avatarURL
-			if updateErr := s.userRepo.Update(ctx, user); updateErr != nil {
-				return nil, fmt.Errorf("failed to update user avatar: %w", updateErr)
-			}
+		user.AvatarURL = &avatarURL
+		if updateErr := s.userRepo.Update(ctx, user); updateErr != nil {
+			return nil, fmt.Errorf("failed to update user avatar: %w", updateErr)
 		}
 	}
 
