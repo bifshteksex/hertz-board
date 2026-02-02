@@ -7,9 +7,11 @@
 	// Update HTML lang attribute when locale changes
 	$effect(() => {
 		if (browser) {
-			document.documentElement.lang = i18n.currentLocale;
+			document.documentElement.lang = i18n.locale;
 		}
 	});
+
+	let { children } = $props();
 </script>
 
-<slot />
+{@render children()}

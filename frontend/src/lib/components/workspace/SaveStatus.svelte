@@ -13,7 +13,7 @@
 
 	// Get date-fns locale based on current language
 	const dateLocale = $derived.by(() => {
-		const currentLocale = i18n.currentLocale;
+		const currentLocale = i18n.locale;
 		if (currentLocale === 'ru') return ru;
 		if (currentLocale === 'zh') return zhCN;
 		return enUS;
