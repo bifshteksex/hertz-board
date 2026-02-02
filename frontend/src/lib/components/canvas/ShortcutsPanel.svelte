@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { X, Search } from 'lucide-svelte';
-	import { keyboardManager, formatShortcut, categoryNames } from '$lib/utils/keyboard';
+	import { keyboardManager, formatShortcut } from '$lib/utils/keyboard';
+	import { i18n } from '$lib/stores/i18n.svelte';
 
 	interface Props {
 		onClose: () => void;
@@ -14,6 +15,17 @@
 	// Get all shortcuts grouped by category
 	const shortcuts = $derived(keyboardManager.getShortcuts());
 	const categories = $derived(keyboardManager.getCategories());
+
+	// Category names with i18n
+	const categoryNames = $derived({
+		tools: i18n.t('canvas.shortcuts.categories.tools'),
+		edit: i18n.t('canvas.shortcuts.categories.edit'),
+		selection: i18n.t('canvas.shortcuts.categories.selection'),
+		layers: i18n.t('canvas.shortcuts.categories.layers'),
+		grouping: i18n.t('canvas.shortcuts.categories.grouping'),
+		view: i18n.t('canvas.shortcuts.categories.view'),
+		other: i18n.t('canvas.shortcuts.categories.other')
+	});
 
 	// Filter shortcuts by search query
 	const filteredShortcuts = $derived(() => {
@@ -83,13 +95,13 @@
 		<!-- Header -->
 		<div class="flex items-center justify-between border-b border-gray-200 p-6">
 			<div>
-				<h2 class="text-2xl font-semibold text-gray-900">Keyboard Shortcuts</h2>
-				<p class="mt-1 text-sm text-gray-500">Learn all the shortcuts to work faster</p>
+				<h2 class="text-2xl font-semibold text-gray-900">{i18n.t('canvas.shortcuts.title')}</h2>
+				<p class="mt-1 text-sm text-gray-500">{i18n.t('canvas.shortcuts.subtitle')}</p>
 			</div>
 			<button
 				onclick={onClose}
 				class="rounded-lg p-2 transition-colors hover:bg-gray-100"
-				aria-label="Close"
+				aria-label={i18n.t('common.close')}
 			>
 				<X size={24} class="text-gray-500" />
 			</button>
@@ -102,7 +114,7 @@
 				<input
 					type="text"
 					bind:value={searchQuery}
-					placeholder="Search shortcuts..."
+					placeholder={i18n.t('canvas.shortcuts.search')}
 					class="w-full rounded-lg border border-gray-300 py-2 pr-4 pl-10 focus:ring-2 focus:ring-blue-500 focus:outline-none"
 				/>
 			</div>
@@ -112,7 +124,7 @@
 		<div class="flex-1 overflow-y-auto p-6">
 			{#if groupedShortcuts().size === 0}
 				<div class="py-12 text-center text-gray-500">
-					<p>No shortcuts found for "{searchQuery}"</p>
+					<p>{i18n.t('canvas.shortcuts.noResults', { query: searchQuery })}</p>
 				</div>
 			{:else}
 				<div class="space-y-8">
@@ -142,7 +154,9 @@
 		<!-- Footer -->
 		<div class="border-t border-gray-200 bg-gray-50 p-6">
 			<p class="text-center text-sm text-gray-600">
-				Press <kbd class="kbd-small">?</kbd> anytime to show this panel
+				{i18n.t('canvas.shortcuts.footer')}
+				<kbd class="kbd-small">{i18n.t('canvas.shortcuts.footerKey')}</kbd>
+				{i18n.t('canvas.shortcuts.footerText')}
 			</p>
 		</div>
 	</div>

@@ -76,7 +76,6 @@
 		font-weight: 600;
 		color: #372d2e;
 		transition: all 0.15s;
-		cursor: pointer;
 	}
 
 	.language-btn:hover {

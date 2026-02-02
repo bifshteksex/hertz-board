@@ -3,6 +3,7 @@
 	 * ImageUploader - компонент для загрузки изображений на canvas
 	 */
 	import { api } from '$lib/services/api';
+	import { i18n } from '$lib/stores/i18n.svelte';
 
 	interface Props {
 		workspaceId: string;
@@ -27,14 +28,14 @@
 	async function uploadFile(file: File) {
 		// Validate file type
 		if (!file.type.startsWith('image/')) {
-			uploadError = 'Please select an image file';
+			uploadError = i18n.t('canvas.imageUploader.errorFileType');
 			return;
 		}
 
 		// Validate file size (max 10MB)
 		const maxSize = 10 * 1024 * 1024;
 		if (file.size > maxSize) {
-			uploadError = 'Image size must be less than 10MB';
+			uploadError = i18n.t('canvas.imageUploader.errorFileSize');
 			return;
 		}
 
@@ -56,7 +57,8 @@
 			}
 		} catch (error) {
 			console.error('Failed to upload image:', error);
-			uploadError = error instanceof Error ? error.message : 'Failed to upload image';
+			uploadError =
+				error instanceof Error ? error.message : i18n.t('canvas.imageUploader.errorUploadFailed');
 		} finally {
 			isUploading = false;
 		}
@@ -113,14 +115,14 @@
 {#if isUploading}
 	<div class="upload-overlay">
 		<div class="upload-spinner"></div>
-		<p>Uploading image...</p>
+		<p>{i18n.t('canvas.imageUploader.uploading')}</p>
 	</div>
 {/if}
 
 {#if uploadError}
 	<div class="upload-error">
 		<p>{uploadError}</p>
-		<button onclick={() => (uploadError = null)}>Dismiss</button>
+		<button onclick={() => (uploadError = null)}>{i18n.t('canvas.imageUploader.dismiss')}</button>
 	</div>
 {/if}
 
@@ -176,7 +178,6 @@
 		color: white;
 		border: none;
 		border-radius: 4px;
-		cursor: pointer;
 	}
 
 	.upload-error button:hover {

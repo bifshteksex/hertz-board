@@ -6,11 +6,32 @@
 	import PixelButton from '$lib/components/PixelButton.svelte';
 	import IconHeart from '$components/icons/IconHeart.svelte';
 	import IconGitHub from '$components/icons/IconGitHub.svelte';
+	import IconStar from '$components/icons/IconStar.svelte';
 
 	import LanguageSwitcher from '$lib/components/LanguageSwitcher.svelte';
 	import tv from '$lib/tv-new.webp';
 
 	const currentYear = new Date().getFullYear();
+
+	// SEO metadata
+	const title = $derived(i18n.t('seo.pages.landing.title'));
+	const description = $derived(i18n.t('seo.pages.landing.description'));
+	const keywords = $derived(i18n.t('seo.keywords'));
+
+	// GitHub stars state
+	let starCount = $state<number | null>(null);
+
+	async function fetchGitHubStars() {
+		try {
+			const response = await fetch('https://api.github.com/repos/bifshteksex/hertz-board');
+			if (response.ok) {
+				const data = await response.json();
+				starCount = data.stargazers_count;
+			}
+		} catch (error) {
+			console.error('Failed to fetch GitHub stars:', error);
+		}
+	}
 
 	onMount(async () => {
 		// Initialize auth and redirect if already logged in
@@ -18,8 +39,31 @@
 		if (authStore.isAuthenticated) {
 			goto('/dashboard');
 		}
+
+		// Fetch GitHub stars
+		fetchGitHubStars();
 	});
 </script>
+
+<svelte:head>
+	<title>{title}</title>
+	<meta name="description" content={description} />
+	<meta name="keywords" content={keywords} />
+
+	<!-- Open Graph / Facebook -->
+	<meta property="og:type" content="website" />
+	<meta property="og:title" content={title} />
+	<meta property="og:description" content={description} />
+	<meta property="og:site_name" content={i18n.t('seo.ogSiteName')} />
+
+	<!-- Twitter -->
+	<meta name="twitter:card" content={i18n.t('seo.twitterCard')} />
+	<meta name="twitter:title" content={title} />
+	<meta name="twitter:description" content={description} />
+
+	<!-- Canonical URL -->
+	<link rel="canonical" href="https://hertz.rshang.in/" />
+</svelte:head>
 
 <div class="flex h-screen flex-col justify-between">
 	<LanguageSwitcher />
@@ -81,8 +125,19 @@
 		<a
 			target="_blank"
 			href="https://github.com/bifshteksex/hertz-board"
-			class="flex items-center gap-1 px-3"><IconGitHub /><span class="underline">GitHub</span></a
+			class="flex items-center gap-1 px-3"
 		>
+			<IconGitHub />
+			<span class="underline">GitHub</span>
+			{#if starCount !== null}
+				<span
+					class="ml-1 flex items-center gap-x-1 border border-[#372d2e] bg-gray-100 px-2 py-1 text-sm font-semibold"
+				>
+					<IconStar size={16} />
+					<p>{starCount.toLocaleString()}</p>
+				</span>
+			{/if}
+		</a>
 	</div>
 </div>
 

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { Square, Circle, Triangle, Minus, ArrowRight } from 'lucide-svelte';
+	import { i18n } from '$lib/stores/i18n.svelte';
 
 	interface Props {
 		onSelect: (_shape: 'rectangle' | 'ellipse' | 'triangle' | 'line' | 'arrow') => void;
@@ -7,13 +8,13 @@
 
 	let { onSelect }: Props = $props();
 
-	const shapes = [
-		{ id: 'rectangle' as const, icon: Square, label: 'Rectangle' },
-		{ id: 'ellipse' as const, icon: Circle, label: 'Circle' },
-		{ id: 'triangle' as const, icon: Triangle, label: 'Triangle' },
-		{ id: 'line' as const, icon: Minus, label: 'Line' },
-		{ id: 'arrow' as const, icon: ArrowRight, label: 'Arrow' }
-	];
+	const shapes = $derived([
+		{ id: 'rectangle' as const, icon: Square, label: i18n.t('canvas.toolbar.shapes.rectangle') },
+		{ id: 'ellipse' as const, icon: Circle, label: i18n.t('canvas.toolbar.shapes.ellipse') },
+		{ id: 'triangle' as const, icon: Triangle, label: i18n.t('canvas.toolbar.shapes.triangle') },
+		{ id: 'line' as const, icon: Minus, label: i18n.t('canvas.toolbar.shapes.line') },
+		{ id: 'arrow' as const, icon: ArrowRight, label: i18n.t('canvas.toolbar.shapes.arrow') }
+	]);
 
 	function handleSelect(shape: (typeof shapes)[number]['id']) {
 		onSelect(shape);
@@ -26,7 +27,7 @@
 	{#each shapes as shape}
 		{@const Icon = shape.icon}
 		<button
-			class="flex w-full cursor-pointer items-center gap-2 rounded-md border-none bg-transparent px-3 py-2 text-left text-gray-700 transition-all duration-150 hover:bg-gray-100 hover:text-gray-900 active:bg-gray-200"
+			class="flex w-full items-center gap-2 rounded-md border-none bg-transparent px-3 py-2 text-left text-gray-700 transition-all duration-150 hover:bg-gray-100 hover:text-gray-900 active:bg-gray-200"
 			onclick={() => handleSelect(shape.id)}
 			title={shape.label}
 			aria-label={shape.label}

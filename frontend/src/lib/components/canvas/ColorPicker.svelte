@@ -182,7 +182,7 @@
 		<div class="grid grid-cols-6 gap-1.5">
 			{#each presetColors as color}
 				<button
-					class="h-8 w-8 cursor-pointer rounded-md border-2 p-0 transition-all duration-150 hover:scale-110 hover:border-gray-400 {value ===
+					class="h-8 w-8 rounded-md border-2 p-0 transition-all duration-150 hover:scale-110 hover:border-gray-400 {value ===
 					color
 						? '!border-[3px] border-blue-500 shadow-[0_0_0_2px_rgba(59,130,246,0.2)]'
 						: 'border-gray-200'}"
@@ -202,7 +202,7 @@
 			<div class="grid grid-cols-6 gap-1.5">
 				{#each recentColors as color}
 					<button
-						class="h-8 w-8 cursor-pointer rounded-md border-2 p-0 transition-all duration-150 hover:scale-110 hover:border-gray-400 {value ===
+						class="h-8 w-8 rounded-md border-2 p-0 transition-all duration-150 hover:scale-110 hover:border-gray-400 {value ===
 						color
 							? '!border-[3px] border-blue-500 shadow-[0_0_0_2px_rgba(59,130,246,0.2)]'
 							: 'border-gray-200'}"
@@ -218,7 +218,7 @@
 
 	<!-- Custom color picker toggle -->
 	<button
-		class="cursor-pointer rounded-md border border-gray-200 bg-gray-100 px-3 py-2 text-[13px] font-medium text-gray-700 transition-all duration-150 hover:bg-gray-200"
+		class="rounded-md border border-gray-200 bg-gray-100 px-3 py-2 text-[13px] font-medium text-gray-700 transition-all duration-150 hover:bg-gray-200"
 		onclick={() => (showCustomPicker = !showCustomPicker)}
 	>
 		{showCustomPicker ? 'Hide' : 'Show'} Custom Picker
@@ -236,7 +236,7 @@
 					max="360"
 					bind:value={hue}
 					oninput={handleCustomColorChange}
-					class="h-1.5 w-full cursor-pointer appearance-none rounded-sm outline-none [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:cursor-pointer [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-blue-500 [&::-moz-range-thumb]:bg-white [&::-moz-range-thumb]:shadow-sm [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-blue-500 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:shadow-sm"
+					class="h-1.5 w-full appearance-none rounded-sm outline-none [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:cursor-pointer [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-blue-500 [&::-moz-range-thumb]:bg-white [&::-moz-range-thumb]:shadow-sm [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-blue-500 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:shadow-sm"
 					style="background: linear-gradient(to right, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000);"
 				/>
 				<span class="w-10 text-right font-mono text-xs text-gray-500">{Math.round(hue)}°</span>
@@ -252,7 +252,7 @@
 					max="100"
 					bind:value={saturation}
 					oninput={handleCustomColorChange}
-					class="h-1.5 w-full cursor-pointer appearance-none rounded-sm outline-none [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:cursor-pointer [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-blue-500 [&::-moz-range-thumb]:bg-white [&::-moz-range-thumb]:shadow-sm [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-blue-500 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:shadow-sm"
+					class="h-1.5 w-full appearance-none rounded-sm outline-none [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:cursor-pointer [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-blue-500 [&::-moz-range-thumb]:bg-white [&::-moz-range-thumb]:shadow-sm [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-blue-500 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:shadow-sm"
 					style="background: linear-gradient(to right, #d1d5db, hsl({hue}, 100%, 50%));"
 				/>
 				<span class="w-10 text-right font-mono text-xs text-gray-500"
@@ -270,7 +270,7 @@
 					max="100"
 					bind:value={lightness}
 					oninput={handleCustomColorChange}
-					class="h-1.5 w-full cursor-pointer appearance-none rounded-sm outline-none [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:cursor-pointer [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-blue-500 [&::-moz-range-thumb]:bg-white [&::-moz-range-thumb]:shadow-sm [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-blue-500 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:shadow-sm"
+					class="h-1.5 w-full appearance-none rounded-sm outline-none [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:cursor-pointer [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-blue-500 [&::-moz-range-thumb]:bg-white [&::-moz-range-thumb]:shadow-sm [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-blue-500 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:shadow-sm"
 					style="background: linear-gradient(to right, #000000, hsl({hue}, 100%, 50%), #ffffff);"
 				/>
 				<span class="w-10 text-right font-mono text-xs text-gray-500">{Math.round(lightness)}%</span

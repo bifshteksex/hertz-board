@@ -14,6 +14,10 @@
 		Trash2,
 		ExternalLink
 	} from 'lucide-svelte';
+
+	// SEO metadata
+	const title = $derived(i18n.t('seo.pages.dashboard.title'));
+	const description = $derived(i18n.t('seo.pages.dashboard.description'));
 	import IconSearch from '$components/icons/IconSearch.svelte';
 	import PixelModal from '$lib/components/PixelModal.svelte';
 	import type { Workspace } from '$lib/types/api';
@@ -191,6 +195,12 @@
 	});
 </script>
 
+<svelte:head>
+	<title>{title}</title>
+	<meta name="description" content={description} />
+	<meta name="robots" content="noindex, nofollow" />
+</svelte:head>
+
 <div class="space-y-6">
 	<!-- Header -->
 	<div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -200,7 +210,7 @@
 		</div>
 		<button
 			onclick={() => (showCreateModal = true)}
-			class="flex cursor-pointer items-center gap-2 bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-700"
+			class="flex items-center gap-2 bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-700"
 		>
 			<Plus size={20} />
 			{i18n.t('dashboard.newWorkspace')}

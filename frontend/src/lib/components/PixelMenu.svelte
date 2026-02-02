@@ -60,7 +60,6 @@
 		background: white;
 		border: none;
 		border-bottom: 1px solid #e5e7eb;
-		cursor: pointer;
 		transition: background 0.15s;
 		text-align: left;
 		font-size: 14px;

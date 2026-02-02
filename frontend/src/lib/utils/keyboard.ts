@@ -180,16 +180,3 @@ class KeyboardManager {
 
 // Singleton instance
 export const keyboardManager = new KeyboardManager();
-
-/**
- * Category display names
- */
-export const categoryNames: Record<ShortcutCategory, string> = {
-	tools: 'Tools',
-	edit: 'Edit',
-	selection: 'Selection',
-	layers: 'Layers',
-	grouping: 'Grouping',
-	view: 'View',
-	other: 'Other'
-};

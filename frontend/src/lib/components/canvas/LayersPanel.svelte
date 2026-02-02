@@ -195,7 +195,7 @@
 					<!-- svelte-ignore a11y_click_events_have_key_events -->
 					<!-- svelte-ignore a11y_no_static_element_interactions -->
 					<div
-						class="mb-0.5 flex cursor-pointer items-center gap-2 rounded-md px-2 py-2 transition-all duration-150 select-none hover:bg-gray-100"
+						class="mb-0.5 flex items-center gap-2 rounded-md px-2 py-2 transition-all duration-150 select-none hover:bg-gray-100"
 						class:bg-blue-100={isSelected}
 						class:text-blue-600={isSelected}
 						class:opacity-40={isDragging || !isVisible}
@@ -247,7 +247,7 @@
 						>
 							<!-- Visibility toggle -->
 							<button
-								class="flex cursor-pointer items-center justify-center rounded border-none bg-transparent p-1 text-gray-400 transition-all duration-150 hover:bg-white hover:text-gray-700"
+								class="flex items-center justify-center rounded border-none bg-transparent p-1 text-gray-400 transition-all duration-150 hover:bg-white hover:text-gray-700"
 								class:text-red-500={!isVisible}
 								class:active={!isVisible}
 								onclick={(e) => toggleVisibility(element.id, e)}
@@ -262,7 +262,7 @@
 
 							<!-- Lock toggle -->
 							<button
-								class="flex cursor-pointer items-center justify-center rounded border-none bg-transparent p-1 text-gray-400 transition-all duration-150 hover:bg-white hover:text-gray-700"
+								class="flex items-center justify-center rounded border-none bg-transparent p-1 text-gray-400 transition-all duration-150 hover:bg-white hover:text-gray-700"
 								class:text-red-500={isLocked}
 								class:active={isLocked}
 								onclick={(e) => toggleLock(element.id, e)}

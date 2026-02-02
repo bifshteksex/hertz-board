@@ -64,7 +64,14 @@
 	}
 </script>
 
-<g class="canvas-element" data-element-id={element.id} class:selected={isSelected}>
+<g
+	class="canvas-element"
+	data-element-id={element.id}
+	class:selected={isSelected}
+	transform={element.rotation
+		? `rotate(${element.rotation} ${element.pos_x + (element.width || 0) / 2} ${element.pos_y + (element.height || 0) / 2})`
+		: undefined}
+>
 	{#if element.type === 'text'}
 		<!-- Text element with rich text editing -->
 		<foreignObject
@@ -447,7 +454,6 @@
 
 <style>
 	.canvas-element {
-		cursor: pointer;
 	}
 
 	.text-content {

@@ -115,7 +115,6 @@
 		background: white;
 		border: 1px solid #e5e7eb;
 		border-radius: 6px;
-		cursor: pointer;
 		transition: all 0.2s;
 		color: #374151;
 		font-size: 14px;
@@ -191,7 +190,6 @@
 		background: transparent;
 		border: none;
 		border-radius: 4px;
-		cursor: pointer;
 		font-size: 20px;
 		color: #6b7280;
 		transition: all 0.2s;
@@ -232,7 +230,6 @@
 		background: transparent;
 		border: none;
 		border-radius: 6px;
-		cursor: pointer;
 		transition: background 0.2s;
 		text-align: left;
 	}

@@ -11,6 +11,10 @@
 	let error = $state('');
 	let isLoading = $state(false);
 
+	// SEO metadata
+	const title = $derived(i18n.t('seo.pages.login.title'));
+	const description = $derived(i18n.t('seo.pages.login.description'));
+
 	onMount(async () => {
 		// Initialize auth first
 		await authStore.initialize();
@@ -41,6 +45,12 @@
 		window.location.href = `${apiUrl}/auth/${provider}`;
 	}
 </script>
+
+<svelte:head>
+	<title>{title}</title>
+	<meta name="description" content={description} />
+	<meta name="robots" content="noindex, nofollow" />
+</svelte:head>
 
 <div class="flex min-h-screen items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
 	<LanguageSwitcher />

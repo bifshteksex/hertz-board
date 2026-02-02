@@ -408,7 +408,6 @@
 		border-radius: 6px;
 		font-size: 14px;
 		font-weight: 500;
-		cursor: pointer;
 		transition: background 0.2s;
 	}
 
@@ -528,7 +527,6 @@
 		border: none;
 		border-radius: 4px;
 		color: #6b7280;
-		cursor: pointer;
 		transition: all 0.2s;
 	}
 
@@ -573,7 +571,6 @@
 		border-radius: 4px;
 		font-size: 14px;
 		color: #374151;
-		cursor: pointer;
 		text-align: left;
 		transition: background 0.2s;
 	}
@@ -677,7 +674,6 @@
 		border-radius: 6px;
 		font-size: 24px;
 		color: #6b7280;
-		cursor: pointer;
 		transition: all 0.2s;
 	}
 
@@ -802,7 +798,6 @@
 		border-radius: 6px;
 		font-size: 14px;
 		font-weight: 500;
-		cursor: pointer;
 		transition: background 0.2s;
 		white-space: nowrap;
 	}
@@ -830,7 +825,6 @@
 		border-radius: 6px;
 		font-size: 14px;
 		font-weight: 500;
-		cursor: pointer;
 		transition: all 0.2s;
 		border: none;
 	}

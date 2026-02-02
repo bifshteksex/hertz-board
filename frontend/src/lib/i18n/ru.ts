@@ -1,4 +1,41 @@
 export default {
+	seo: {
+		defaultTitle: 'HertzBoard - Совместная работа в реальном времени',
+		defaultDescription:
+			'Создавайте, сотрудничайте и визуализируйте идеи в реальном времени с HertzBoard - мощной платформой для совместной работы на основе современных технологий.',
+		keywords:
+			'совместная доска, совместная работа, визуальное рабочее пространство, онлайн доска, командная работа, редактор canvas',
+		ogSiteName: 'HertzBoard',
+		twitterCard: 'summary_large_image',
+		pages: {
+			landing: {
+				title: 'HertzBoard - Совместная работа в реальном времени',
+				description:
+					'Создавайте, сотрудничайте и визуализируйте идеи в реальном времени с вашей командой на бесконечном холсте.'
+			},
+			login: {
+				title: 'Вход - HertzBoard',
+				description: 'Войдите в свой аккаунт HertzBoard для доступа к вашим рабочим областям.'
+			},
+			register: {
+				title: 'Регистрация - HertzBoard',
+				description:
+					'Создайте новый аккаунт HertzBoard и начните работать с вашей командой уже сегодня.'
+			},
+			dashboard: {
+				title: 'Панель - HertzBoard',
+				description: 'Управляйте вашими рабочими областями и досками.'
+			},
+			settings: {
+				title: 'Настройки - HertzBoard',
+				description: 'Управляйте настройками аккаунта и предпочтениями.'
+			},
+			workspace: {
+				title: '{name} - HertzBoard',
+				description: 'Совместная работа в рабочей области {name} в реальном времени.'
+			}
+		}
+	},
 	common: {
 		loading: 'Загрузка...',
 		save: 'Сохранить',
@@ -219,5 +256,111 @@ export default {
 		unauthorized: 'Не авторизован. Пожалуйста, войдите.',
 		notFound: 'Не найдено',
 		serverError: 'Ошибка сервера. Попробуйте позже.'
+	},
+	canvas: {
+		toolbar: {
+			undo: 'Отменить',
+			redo: 'Повторить',
+			undoShortcut: 'Отменить (Ctrl+Z)',
+			redoShortcut: 'Повторить (Ctrl+Y)',
+			help: 'Горячие клавиши (?)',
+			helpAria: 'Показать горячие клавиши',
+			tools: {
+				select: 'Выбрать (V)',
+				text: 'Текст (T)',
+				pen: 'Перо (P)',
+				sticky: 'Стикер (S)',
+				image: 'Изображение (I)',
+				connector: 'Соединитель',
+				shapes: 'Фигуры',
+				lists: 'Списки'
+			},
+			shapes: {
+				rectangle: 'Прямоугольник',
+				ellipse: 'Круг',
+				triangle: 'Треугольник',
+				line: 'Линия',
+				arrow: 'Стрелка'
+			},
+			lists: {
+				bullet: 'Маркированный список',
+				numbered: 'Нумерованный список',
+				checkbox: 'Список с чекбоксами'
+			},
+			zorder: {
+				bringToFront: 'На передний план (Ctrl+Shift+])',
+				bringForward: 'Вперед (Ctrl+])',
+				sendBackward: 'Назад (Ctrl+[)',
+				sendToBack: 'На задний план (Ctrl+Shift+[)'
+			},
+			grouping: {
+				group: 'Сгруппировать (Ctrl+G)',
+				ungroup: 'Разгруппировать (Ctrl+Shift+G)',
+				groupElements: 'Сгруппировать элементы',
+				ungroupElements: 'Разгруппировать элементы'
+			},
+			view: {
+				toggleGrid: "Переключить сетку (Ctrl+')",
+				toggleSnap: "Привязка к сетке (Ctrl+Shift+')",
+				gridAria: 'Переключить сетку',
+				snapAria: 'Переключить привязку к сетке'
+			}
+		},
+		shortcuts: {
+			title: 'Горячие клавиши',
+			subtitle: 'Изучите все сочетания клавиш для быстрой работы',
+			search: 'Поиск сочетаний клавиш...',
+			noResults: 'Не найдено сочетаний для "{query}"',
+			footer: 'Нажмите',
+			footerKey: '?',
+			footerText: 'в любое время, чтобы показать эту панель',
+			categories: {
+				tools: 'Инструменты',
+				edit: 'Редактирование',
+				selection: 'Выделение',
+				layers: 'Слои',
+				grouping: 'Группировка',
+				view: 'Вид',
+				other: 'Прочее'
+			}
+		},
+		workspace: {
+			loading: 'Загрузка рабочей области...',
+			backToDashboard: 'Назад к панели',
+			toolbar: {
+				layers: 'Слои',
+				share: 'Поделиться'
+			}
+		},
+		contextMenu: {
+			cut: 'Вырезать',
+			copy: 'Копировать',
+			paste: 'Вставить',
+			duplicate: 'Дублировать',
+			delete: 'Удалить',
+			bringToFront: 'На передний план',
+			sendToBack: 'На задний план',
+			group: 'Сгруппировать',
+			ungroup: 'Разгруппировать',
+			lock: 'Заблокировать',
+			unlock: 'Разблокировать',
+			copyLink: 'Копировать ссылку'
+		},
+		imageUploader: {
+			uploading: 'Загрузка изображения...',
+			dismiss: 'Закрыть',
+			errorFileType: 'Пожалуйста, выберите файл изображения',
+			errorFileSize: 'Размер изображения должен быть меньше 10 МБ',
+			errorUploadFailed: 'Не удалось загрузить изображение'
+		},
+		saveStatus: {
+			saving: 'Сохранение...',
+			saved: 'Сохранено',
+			savedAgo: 'Сохранено {time}',
+			saveFailed: 'Ошибка сохранения',
+			unsavedChanges: 'Несохраненных изменений: {count}',
+			allSaved: 'Все изменения сохранены',
+			details: 'Подробности'
+		}
 	}
 };

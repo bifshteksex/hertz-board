@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { List, ListOrdered, CheckSquare } from 'lucide-svelte';
+	import { i18n } from '$lib/stores/i18n.svelte';
 
 	interface Props {
 		onSelect: (_listType: 'bullet' | 'numbered' | 'checkbox') => void;
@@ -7,11 +8,11 @@
 
 	let { onSelect }: Props = $props();
 
-	const listTypes = [
-		{ id: 'bullet' as const, icon: List, label: 'Bullet List' },
-		{ id: 'numbered' as const, icon: ListOrdered, label: 'Numbered List' },
-		{ id: 'checkbox' as const, icon: CheckSquare, label: 'Checkbox List' }
-	];
+	const listTypes = $derived([
+		{ id: 'bullet' as const, icon: List, label: i18n.t('canvas.toolbar.lists.bullet') },
+		{ id: 'numbered' as const, icon: ListOrdered, label: i18n.t('canvas.toolbar.lists.numbered') },
+		{ id: 'checkbox' as const, icon: CheckSquare, label: i18n.t('canvas.toolbar.lists.checkbox') }
+	]);
 
 	function handleSelect(listType: (typeof listTypes)[number]['id']) {
 		onSelect(listType);
@@ -24,7 +25,7 @@
 	{#each listTypes as listType}
 		{@const Icon = listType.icon}
 		<button
-			class="flex w-full cursor-pointer items-center gap-2 rounded-md border-none bg-transparent px-3 py-2 text-left text-gray-700 transition-all duration-150 hover:bg-gray-100 hover:text-gray-900 active:bg-gray-200"
+			class="flex w-full items-center gap-2 rounded-md border-none bg-transparent px-3 py-2 text-left text-gray-700 transition-all duration-150 hover:bg-gray-100 hover:text-gray-900 active:bg-gray-200"
 			onclick={() => handleSelect(listType.id)}
 			title={listType.label}
 			aria-label={listType.label}

@@ -170,7 +170,7 @@
 		<div class="flex items-center justify-between border-b border-gray-200 px-4 py-4">
 			<h3 class="m-0 text-sm font-semibold text-gray-900">Properties</h3>
 			<button
-				class="cursor-pointer rounded-md border border-gray-200 bg-transparent px-1.5 py-1.5 text-gray-500 transition-all duration-150 hover:bg-gray-100 hover:text-gray-900"
+				class="rounded-md border border-gray-200 bg-transparent px-1.5 py-1.5 text-gray-500 transition-all duration-150 hover:bg-gray-100 hover:text-gray-900"
 				onclick={toggleLock}
 				title={locked ? 'Unlock' : 'Lock'}
 			>
@@ -330,7 +330,7 @@
 						<div class="text-xs font-medium text-gray-700">Alignment</div>
 						<div class="grid grid-cols-3 gap-1">
 							<button
-								class="flex cursor-pointer items-center justify-center rounded-md border border-gray-200 bg-white px-2 py-2 text-gray-500 transition-all duration-150 hover:bg-gray-100 hover:text-gray-900 disabled:cursor-not-allowed disabled:opacity-50 {textAlign ===
+								class="flex items-center justify-center rounded-md border border-gray-200 bg-white px-2 py-2 text-gray-500 transition-all duration-150 hover:bg-gray-100 hover:text-gray-900 disabled:cursor-not-allowed disabled:opacity-50 {textAlign ===
 								'left'
 									? 'border-blue-500 bg-blue-50 text-blue-600'
 									: ''}"
@@ -340,7 +340,7 @@
 								<AlignLeft size={16} />
 							</button>
 							<button
-								class="flex cursor-pointer items-center justify-center rounded-md border border-gray-200 bg-white px-2 py-2 text-gray-500 transition-all duration-150 hover:bg-gray-100 hover:text-gray-900 disabled:cursor-not-allowed disabled:opacity-50 {textAlign ===
+								class="flex items-center justify-center rounded-md border border-gray-200 bg-white px-2 py-2 text-gray-500 transition-all duration-150 hover:bg-gray-100 hover:text-gray-900 disabled:cursor-not-allowed disabled:opacity-50 {textAlign ===
 								'center'
 									? 'border-blue-500 bg-blue-50 text-blue-600'
 									: ''}"
@@ -350,7 +350,7 @@
 								<AlignCenter size={16} />
 							</button>
 							<button
-								class="flex cursor-pointer items-center justify-center rounded-md border border-gray-200 bg-white px-2 py-2 text-gray-500 transition-all duration-150 hover:bg-gray-100 hover:text-gray-900 disabled:cursor-not-allowed disabled:opacity-50 {textAlign ===
+								class="flex items-center justify-center rounded-md border border-gray-200 bg-white px-2 py-2 text-gray-500 transition-all duration-150 hover:bg-gray-100 hover:text-gray-900 disabled:cursor-not-allowed disabled:opacity-50 {textAlign ===
 								'right'
 									? 'border-blue-500 bg-blue-50 text-blue-600'
 									: ''}"
@@ -483,7 +483,7 @@
 
 				<div class="grid grid-cols-2 gap-2">
 					<button
-						class="flex cursor-pointer items-center gap-1.5 rounded-md border border-gray-200 bg-white px-3 py-2 text-xs font-medium text-gray-700 transition-all duration-150 hover:bg-gray-100 hover:text-gray-900 disabled:cursor-not-allowed disabled:opacity-50"
+						class="flex items-center gap-1.5 border border-gray-200 bg-white px-3 py-2 text-xs font-medium text-gray-700 transition-all duration-150 hover:bg-gray-100 hover:text-gray-900 disabled:cursor-not-allowed disabled:opacity-50"
 						onclick={handleBringToFront}
 						disabled={locked}
 						title="Bring to Front"
@@ -492,7 +492,7 @@
 						<span>To Front</span>
 					</button>
 					<button
-						class="flex cursor-pointer items-center gap-1.5 rounded-md border border-gray-200 bg-white px-3 py-2 text-xs font-medium text-gray-700 transition-all duration-150 hover:bg-gray-100 hover:text-gray-900 disabled:cursor-not-allowed disabled:opacity-50"
+						class="flex items-center gap-1.5 border border-gray-200 bg-white px-3 py-2 text-xs font-medium text-gray-700 transition-all duration-150 hover:bg-gray-100 hover:text-gray-900 disabled:cursor-not-allowed disabled:opacity-50"
 						onclick={handleBringForward}
 						disabled={locked}
 						title="Bring Forward"
@@ -501,7 +501,7 @@
 						<span>Forward</span>
 					</button>
 					<button
-						class="flex cursor-pointer items-center gap-1.5 rounded-md border border-gray-200 bg-white px-3 py-2 text-xs font-medium text-gray-700 transition-all duration-150 hover:bg-gray-100 hover:text-gray-900 disabled:cursor-not-allowed disabled:opacity-50"
+						class="flex items-center gap-1.5 border border-gray-200 bg-white px-3 py-2 text-xs font-medium text-gray-700 transition-all duration-150 hover:bg-gray-100 hover:text-gray-900 disabled:cursor-not-allowed disabled:opacity-50"
 						onclick={handleSendBackward}
 						disabled={locked}
 						title="Send Backward"
@@ -510,7 +510,7 @@
 						<span>Backward</span>
 					</button>
 					<button
-						class="flex cursor-pointer items-center gap-1.5 rounded-md border border-gray-200 bg-white px-3 py-2 text-xs font-medium text-gray-700 transition-all duration-150 hover:bg-gray-100 hover:text-gray-900 disabled:cursor-not-allowed disabled:opacity-50"
+						class="flex items-center gap-1.5 border border-gray-200 bg-white px-3 py-2 text-xs font-medium text-gray-700 transition-all duration-150 hover:bg-gray-100 hover:text-gray-900 disabled:cursor-not-allowed disabled:opacity-50"
 						onclick={handleSendToBack}
 						disabled={locked}
 						title="Send to Back"
@@ -537,7 +537,7 @@
 				<div class="mb-3 text-xs font-semibold tracking-wide text-gray-500 uppercase">Layers</div>
 				<div class="grid grid-cols-2 gap-2">
 					<button
-						class="flex cursor-pointer items-center gap-1.5 rounded-md border border-gray-200 bg-white px-3 py-2 text-xs font-medium text-gray-700 transition-all duration-150 hover:bg-gray-100 hover:text-gray-900"
+						class="flex items-center gap-1.5 border border-gray-200 bg-white px-3 py-2 text-xs font-medium text-gray-700 transition-all duration-150 hover:bg-gray-100 hover:text-gray-900"
 						onclick={handleBringToFront}
 						title="Bring to Front"
 					>
@@ -545,7 +545,7 @@
 						<span>To Front</span>
 					</button>
 					<button
-						class="flex cursor-pointer items-center gap-1.5 rounded-md border border-gray-200 bg-white px-3 py-2 text-xs font-medium text-gray-700 transition-all duration-150 hover:bg-gray-100 hover:text-gray-900"
+						class="flex items-center gap-1.5 border border-gray-200 bg-white px-3 py-2 text-xs font-medium text-gray-700 transition-all duration-150 hover:bg-gray-100 hover:text-gray-900"
 						onclick={handleBringForward}
 						title="Bring Forward"
 					>
@@ -553,7 +553,7 @@
 						<span>Forward</span>
 					</button>
 					<button
-						class="flex cursor-pointer items-center gap-1.5 rounded-md border border-gray-200 bg-white px-3 py-2 text-xs font-medium text-gray-700 transition-all duration-150 hover:bg-gray-100 hover:text-gray-900"
+						class="flex items-center gap-1.5 border border-gray-200 bg-white px-3 py-2 text-xs font-medium text-gray-700 transition-all duration-150 hover:bg-gray-100 hover:text-gray-900"
 						onclick={handleSendBackward}
 						title="Send Backward"
 					>
@@ -561,7 +561,7 @@
 						<span>Backward</span>
 					</button>
 					<button
-						class="flex cursor-pointer items-center gap-1.5 rounded-md border border-gray-200 bg-white px-3 py-2 text-xs font-medium text-gray-700 transition-all duration-150 hover:bg-gray-100 hover:text-gray-900"
+						class="flex items-center gap-1.5 border border-gray-200 bg-white px-3 py-2 text-xs font-medium text-gray-700 transition-all duration-150 hover:bg-gray-100 hover:text-gray-900"
 						onclick={handleSendToBack}
 						title="Send to Back"
 					>

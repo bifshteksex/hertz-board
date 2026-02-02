@@ -1,4 +1,40 @@
 export default {
+	seo: {
+		defaultTitle: 'HertzBoard - Real-time Collaborative Workspace',
+		defaultDescription:
+			'Create, collaborate, and visualize ideas in real-time with HertzBoard - a powerful collaborative whiteboard platform built with modern technologies.',
+		keywords:
+			'collaborative whiteboard, real-time collaboration, visual workspace, online whiteboard, team collaboration, canvas editor',
+		ogSiteName: 'HertzBoard',
+		twitterCard: 'summary_large_image',
+		pages: {
+			landing: {
+				title: 'HertzBoard - Real-time Collaborative Workspace',
+				description:
+					'Create, collaborate, and visualize ideas in real-time with your team on an infinite canvas.'
+			},
+			login: {
+				title: 'Sign In - HertzBoard',
+				description: 'Sign in to your HertzBoard account to access your collaborative workspaces.'
+			},
+			register: {
+				title: 'Create Account - HertzBoard',
+				description: 'Create a new HertzBoard account and start collaborating with your team today.'
+			},
+			dashboard: {
+				title: 'Dashboard - HertzBoard',
+				description: 'Manage your collaborative workspaces and boards.'
+			},
+			settings: {
+				title: 'Settings - HertzBoard',
+				description: 'Manage your account settings and preferences.'
+			},
+			workspace: {
+				title: '{name} - HertzBoard',
+				description: 'Collaborate on {name} workspace in real-time.'
+			}
+		}
+	},
 	common: {
 		loading: 'Loading...',
 		save: 'Save',
@@ -217,5 +253,111 @@ export default {
 		unauthorized: 'Unauthorized. Please log in.',
 		notFound: 'Not found',
 		serverError: 'Server error. Please try again later.'
+	},
+	canvas: {
+		toolbar: {
+			undo: 'Undo',
+			redo: 'Redo',
+			undoShortcut: 'Undo (Ctrl+Z)',
+			redoShortcut: 'Redo (Ctrl+Y)',
+			help: 'Keyboard Shortcuts (?)',
+			helpAria: 'Show keyboard shortcuts',
+			tools: {
+				select: 'Select (V)',
+				text: 'Text (T)',
+				pen: 'Pen (P)',
+				sticky: 'Sticky Note (S)',
+				image: 'Image (I)',
+				connector: 'Connector',
+				shapes: 'Shapes',
+				lists: 'Lists'
+			},
+			shapes: {
+				rectangle: 'Rectangle',
+				ellipse: 'Circle',
+				triangle: 'Triangle',
+				line: 'Line',
+				arrow: 'Arrow'
+			},
+			lists: {
+				bullet: 'Bullet List',
+				numbered: 'Numbered List',
+				checkbox: 'Checkbox List'
+			},
+			zorder: {
+				bringToFront: 'Bring to Front (Ctrl+Shift+])',
+				bringForward: 'Bring Forward (Ctrl+])',
+				sendBackward: 'Send Backward (Ctrl+[)',
+				sendToBack: 'Send to Back (Ctrl+Shift+[)'
+			},
+			grouping: {
+				group: 'Group (Ctrl+G)',
+				ungroup: 'Ungroup (Ctrl+Shift+G)',
+				groupElements: 'Group elements',
+				ungroupElements: 'Ungroup elements'
+			},
+			view: {
+				toggleGrid: "Toggle Grid (Ctrl+')",
+				toggleSnap: "Snap to Grid (Ctrl+Shift+')",
+				gridAria: 'Toggle grid',
+				snapAria: 'Toggle snap to grid'
+			}
+		},
+		shortcuts: {
+			title: 'Keyboard Shortcuts',
+			subtitle: 'Learn all the shortcuts to work faster',
+			search: 'Search shortcuts...',
+			noResults: 'No shortcuts found for "{query}"',
+			footer: 'Press',
+			footerKey: '?',
+			footerText: 'anytime to show this panel',
+			categories: {
+				tools: 'Tools',
+				edit: 'Edit',
+				selection: 'Selection',
+				layers: 'Layers',
+				grouping: 'Grouping',
+				view: 'View',
+				other: 'Other'
+			}
+		},
+		workspace: {
+			loading: 'Loading workspace...',
+			backToDashboard: 'Back to Dashboard',
+			toolbar: {
+				layers: 'Layers',
+				share: 'Share'
+			}
+		},
+		contextMenu: {
+			cut: 'Cut',
+			copy: 'Copy',
+			paste: 'Paste',
+			duplicate: 'Duplicate',
+			delete: 'Delete',
+			bringToFront: 'Bring to Front',
+			sendToBack: 'Send to Back',
+			group: 'Group',
+			ungroup: 'Ungroup',
+			lock: 'Lock',
+			unlock: 'Unlock',
+			copyLink: 'Copy Link'
+		},
+		imageUploader: {
+			uploading: 'Uploading image...',
+			dismiss: 'Dismiss',
+			errorFileType: 'Please select an image file',
+			errorFileSize: 'Image size must be less than 10MB',
+			errorUploadFailed: 'Failed to upload image'
+		},
+		saveStatus: {
+			saving: 'Saving...',
+			saved: 'Saved',
+			savedAgo: 'Saved {time}',
+			saveFailed: 'Save failed',
+			unsavedChanges: '{count} unsaved changes',
+			allSaved: 'All changes saved',
+			details: 'Details'
+		}
 	}
 };

@@ -1,8 +1,9 @@
 <script lang="ts">
 	import { autosaveStore } from '$lib/stores/autosave.svelte';
+	import { i18n } from '$lib/stores/i18n.svelte';
 	import { Check, Cloud, CloudOff, Loader2, AlertCircle } from 'lucide-svelte';
 	import { formatDistanceToNow } from 'date-fns';
-	import { ru } from 'date-fns/locale';
+	import { ru, zhCN, enUS } from 'date-fns/locale';
 
 	// Reactive state from autosave store
 	const status = $derived(autosaveStore.status);
@@ -10,18 +11,28 @@
 	const lastSaveTime = $derived(autosaveStore.lastSaveTime);
 	const lastError = $derived(autosaveStore.lastError);
 
+	// Get date-fns locale based on current language
+	const dateLocale = $derived.by(() => {
+		const currentLocale = i18n.currentLocale;
+		if (currentLocale === 'ru') return ru;
+		if (currentLocale === 'zh') return zhCN;
+		return enUS;
+	});
+
 	// Computed properties
 	const statusText = $derived.by(() => {
-		if (status === 'saving') return 'Saving...';
+		if (status === 'saving') return i18n.t('canvas.saveStatus.saving');
 		if (status === 'saved') {
 			if (lastSaveTime) {
-				return `Saved ${formatDistanceToNow(lastSaveTime, { addSuffix: true, locale: ru })}`;
+				const time = formatDistanceToNow(lastSaveTime, { addSuffix: true, locale: dateLocale });
+				return i18n.t('canvas.saveStatus.savedAgo', { time });
 			}
-			return 'Saved';
+			return i18n.t('canvas.saveStatus.saved');
 		}
-		if (status === 'error') return 'Save failed';
-		if (pendingCount > 0) return `${pendingCount} unsaved changes`;
-		return 'All changes saved';
+		if (status === 'error') return i18n.t('canvas.saveStatus.saveFailed');
+		if (pendingCount > 0)
+			return i18n.t('canvas.saveStatus.unsavedChanges', { count: pendingCount.toString() });
+		return i18n.t('canvas.saveStatus.allSaved');
 	});
 
 	const statusIcon = $derived.by(() => {
@@ -65,7 +76,7 @@
 			onclick={() => alert(lastError)}
 			title={lastError}
 		>
-			Details
+			{i18n.t('canvas.saveStatus.details')}
 		</button>
 	{/if}
 </div>

@@ -4,6 +4,10 @@
 	import { i18n } from '$lib/i18n';
 	import { User, Lock, Mail, Settings as SettingsIcon } from 'lucide-svelte';
 
+	// SEO metadata
+	const title = $derived(i18n.t('seo.pages.settings.title'));
+	const description = $derived(i18n.t('seo.pages.settings.description'));
+
 	let activeTab = $state<'profile' | 'password' | 'account' | 'preferences'>('profile');
 
 	// Profile form
@@ -81,6 +85,12 @@
 		}
 	}
 </script>
+
+<svelte:head>
+	<title>{title}</title>
+	<meta name="description" content={description} />
+	<meta name="robots" content="noindex, nofollow" />
+</svelte:head>
 
 <div class="mx-auto max-w-4xl space-y-6">
 	<div>

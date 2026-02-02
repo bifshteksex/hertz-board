@@ -1,4 +1,38 @@
 export default {
+	seo: {
+		defaultTitle: 'HertzBoard - 实时协作工作空间',
+		defaultDescription:
+			'使用HertzBoard实时创建、协作和可视化创意 - 基于现代技术构建的强大协作白板平台。',
+		keywords: '协作白板, 实时协作, 可视化工作空间, 在线白板, 团队协作, 画布编辑器',
+		ogSiteName: 'HertzBoard',
+		twitterCard: 'summary_large_image',
+		pages: {
+			landing: {
+				title: 'HertzBoard - 实时协作工作空间',
+				description: '在无限画布上与您的团队实时创建、协作和可视化创意。'
+			},
+			login: {
+				title: '登录 - HertzBoard',
+				description: '登录您的HertzBoard账户以访问您的协作工作空间。'
+			},
+			register: {
+				title: '创建账户 - HertzBoard',
+				description: '创建新的HertzBoard账户，立即开始与您的团队协作。'
+			},
+			dashboard: {
+				title: '仪表板 - HertzBoard',
+				description: '管理您的协作工作空间和看板。'
+			},
+			settings: {
+				title: '设置 - HertzBoard',
+				description: '管理您的账户设置和偏好。'
+			},
+			workspace: {
+				title: '{name} - HertzBoard',
+				description: '在{name}工作空间中实时协作。'
+			}
+		}
+	},
 	common: {
 		loading: '加载中...',
 		save: '保存',
@@ -216,5 +250,111 @@ export default {
 		unauthorized: '未授权。请登录。',
 		notFound: '未找到',
 		serverError: '服务器错误。请稍后再试。'
+	},
+	canvas: {
+		toolbar: {
+			undo: '撤销',
+			redo: '重做',
+			undoShortcut: '撤销 (Ctrl+Z)',
+			redoShortcut: '重做 (Ctrl+Y)',
+			help: '键盘快捷键 (?)',
+			helpAria: '显示键盘快捷键',
+			tools: {
+				select: '选择 (V)',
+				text: '文本 (T)',
+				pen: '画笔 (P)',
+				sticky: '便签 (S)',
+				image: '图片 (I)',
+				connector: '连接线',
+				shapes: '形状',
+				lists: '列表'
+			},
+			shapes: {
+				rectangle: '矩形',
+				ellipse: '圆形',
+				triangle: '三角形',
+				line: '直线',
+				arrow: '箭头'
+			},
+			lists: {
+				bullet: '项目符号列表',
+				numbered: '编号列表',
+				checkbox: '复选框列表'
+			},
+			zorder: {
+				bringToFront: '置于顶层 (Ctrl+Shift+])',
+				bringForward: '上移一层 (Ctrl+])',
+				sendBackward: '下移一层 (Ctrl+[)',
+				sendToBack: '置于底层 (Ctrl+Shift+[)'
+			},
+			grouping: {
+				group: '编组 (Ctrl+G)',
+				ungroup: '取消编组 (Ctrl+Shift+G)',
+				groupElements: '编组元素',
+				ungroupElements: '取消编组元素'
+			},
+			view: {
+				toggleGrid: "切换网格 (Ctrl+')",
+				toggleSnap: "吸附到网格 (Ctrl+Shift+')",
+				gridAria: '切换网格',
+				snapAria: '切换网格吸附'
+			}
+		},
+		shortcuts: {
+			title: '键盘快捷键',
+			subtitle: '学习所有快捷键以提高工作效率',
+			search: '搜索快捷键...',
+			noResults: '未找到"{query}"的快捷键',
+			footer: '按',
+			footerKey: '?',
+			footerText: '随时显示此面板',
+			categories: {
+				tools: '工具',
+				edit: '编辑',
+				selection: '选择',
+				layers: '图层',
+				grouping: '编组',
+				view: '视图',
+				other: '其他'
+			}
+		},
+		workspace: {
+			loading: '加载工作区中...',
+			backToDashboard: '返回仪表板',
+			toolbar: {
+				layers: '图层',
+				share: '分享'
+			}
+		},
+		contextMenu: {
+			cut: '剪切',
+			copy: '复制',
+			paste: '粘贴',
+			duplicate: '复制',
+			delete: '删除',
+			bringToFront: '置于顶层',
+			sendToBack: '置于底层',
+			group: '编组',
+			ungroup: '取消编组',
+			lock: '锁定',
+			unlock: '解锁',
+			copyLink: '复制链接'
+		},
+		imageUploader: {
+			uploading: '上传图片中...',
+			dismiss: '关闭',
+			errorFileType: '请选择图片文件',
+			errorFileSize: '图片大小必须小于10MB',
+			errorUploadFailed: '上传图片失败'
+		},
+		saveStatus: {
+			saving: '保存中...',
+			saved: '已保存',
+			savedAgo: '{time}前保存',
+			saveFailed: '保存失败',
+			unsavedChanges: '{count}个未保存的更改',
+			allSaved: '所有更改已保存',
+			details: '详情'
+		}
 	}
 };

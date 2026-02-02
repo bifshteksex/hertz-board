@@ -31,9 +31,11 @@
 	}
 </script>
 
-<div class="zoom-controls">
+<div
+	class="absolute right-6 bottom-6 z-10 flex items-center gap-1 border border-gray-200 bg-white p-1 shadow-md"
+>
 	<button
-		class="zoom-btn"
+		class="flex size-8 items-center justify-center border-none bg-transparent text-gray-700 transition-all duration-150 hover:enabled:bg-gray-100 hover:enabled:text-gray-900 active:enabled:bg-gray-200 disabled:cursor-not-allowed disabled:opacity-40"
 		onclick={handleZoomOut}
 		disabled={!canZoomOut}
 		title="Zoom Out (Ctrl + -)"
@@ -43,7 +45,7 @@
 	</button>
 
 	<button
-		class="zoom-percent"
+		class="h-8 min-w-15 border-none bg-transparent px-2 text-[13px] font-medium text-gray-700 transition-all duration-150 hover:bg-gray-100 hover:text-gray-900 active:bg-gray-200"
 		onclick={handleResetZoom}
 		title="Reset Zoom (Ctrl + 0)"
 		aria-label="Reset zoom to 100%"
@@ -52,7 +54,7 @@
 	</button>
 
 	<button
-		class="zoom-btn"
+		class="flex size-8 items-center justify-center border-none bg-transparent text-gray-700 transition-all duration-150 hover:enabled:bg-gray-100 hover:enabled:text-gray-900 active:enabled:bg-gray-200 disabled:cursor-not-allowed disabled:opacity-40"
 		onclick={handleZoomIn}
 		disabled={!canZoomIn}
 		title="Zoom In (Ctrl + +)"
@@ -61,10 +63,10 @@
 		<IconZoomIn size={18} />
 	</button>
 
-	<div class="separator"></div>
+	<div class="mx-1 h-6 w-px bg-gray-200"></div>
 
 	<button
-		class="zoom-btn"
+		class="flex size-8 items-center justify-center border-none bg-transparent text-gray-700 transition-all duration-150 hover:bg-gray-100 hover:text-gray-900 active:bg-gray-200"
 		onclick={handleFitToScreen}
 		title="Fit to Screen"
 		aria-label="Fit all elements to screen"
@@ -72,80 +74,3 @@
 		<Maximize2 size={18} />
 	</button>
 </div>
-
-<style>
-	.zoom-controls {
-		position: absolute;
-		bottom: 24px;
-		right: 24px;
-		display: flex;
-		align-items: center;
-		gap: 4px;
-		background: white;
-		border: 1px solid #e5e7eb;
-		border-radius: 8px;
-		padding: 4px;
-		box-shadow:
-			0 4px 6px -1px rgb(0 0 0 / 0.1),
-			0 2px 4px -2px rgb(0 0 0 / 0.1);
-		z-index: 10;
-	}
-
-	.zoom-btn {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: 32px;
-		height: 32px;
-		border: none;
-		background: transparent;
-		border-radius: 6px;
-		cursor: pointer;
-		color: #374151;
-		transition: all 0.15s;
-	}
-
-	.zoom-btn:hover:not(:disabled) {
-		background: #f3f4f6;
-		color: #111827;
-	}
-
-	.zoom-btn:active:not(:disabled) {
-		background: #e5e7eb;
-	}
-
-	.zoom-btn:disabled {
-		opacity: 0.4;
-		cursor: not-allowed;
-	}
-
-	.zoom-percent {
-		min-width: 60px;
-		height: 32px;
-		padding: 0 8px;
-		border: none;
-		background: transparent;
-		border-radius: 6px;
-		cursor: pointer;
-		font-size: 13px;
-		font-weight: 500;
-		color: #374151;
-		transition: all 0.15s;
-	}
-
-	.zoom-percent:hover {
-		background: #f3f4f6;
-		color: #111827;
-	}
-
-	.zoom-percent:active {
-		background: #e5e7eb;
-	}
-
-	.separator {
-		width: 1px;
-		height: 24px;
-		background: #e5e7eb;
-		margin: 0 4px;
-	}
-</style>

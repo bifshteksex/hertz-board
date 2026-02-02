@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { i18n } from '$lib/stores/i18n.svelte';
 	import {
 		Scissors,
 		Copy,
@@ -116,7 +117,7 @@
 		const items: MenuItem[] = [
 			{
 				id: 'cut',
-				label: 'Cut',
+				label: i18n.t('canvas.contextMenu.cut'),
 				icon: Scissors,
 				shortcut: 'Ctrl+X',
 				action: () => {
@@ -127,7 +128,7 @@
 			},
 			{
 				id: 'copy',
-				label: 'Copy',
+				label: i18n.t('canvas.contextMenu.copy'),
 				icon: Copy,
 				shortcut: 'Ctrl+C',
 				action: () => {
@@ -137,7 +138,7 @@
 			},
 			{
 				id: 'paste',
-				label: 'Paste',
+				label: i18n.t('canvas.contextMenu.paste'),
 				icon: Clipboard,
 				shortcut: 'Ctrl+V',
 				action: () => {
@@ -147,7 +148,7 @@
 			},
 			{
 				id: 'duplicate',
-				label: 'Duplicate',
+				label: i18n.t('canvas.contextMenu.duplicate'),
 				icon: Files,
 				shortcut: 'Ctrl+D',
 				action: () => {
@@ -165,7 +166,7 @@
 			},
 			{
 				id: 'delete',
-				label: 'Delete',
+				label: i18n.t('canvas.contextMenu.delete'),
 				icon: Trash2,
 				shortcut: 'Del',
 				action: () => {
@@ -189,7 +190,7 @@
 		items.push(
 			{
 				id: 'bring-to-front',
-				label: 'Bring to Front',
+				label: i18n.t('canvas.contextMenu.bringToFront'),
 				icon: ChevronsUp,
 				shortcut: 'Ctrl+]',
 				action: () => {
@@ -200,7 +201,7 @@
 			},
 			{
 				id: 'send-to-back',
-				label: 'Send to Back',
+				label: i18n.t('canvas.contextMenu.sendToBack'),
 				icon: ChevronsDown,
 				shortcut: 'Ctrl+[',
 				action: () => {
@@ -224,7 +225,7 @@
 			if (selectedCount > 1) {
 				items.push({
 					id: 'group',
-					label: 'Group',
+					label: i18n.t('canvas.contextMenu.group'),
 					icon: Group,
 					shortcut: 'Ctrl+G',
 					action: () => {
@@ -238,7 +239,7 @@
 			if (hasGroupedElements) {
 				items.push({
 					id: 'ungroup',
-					label: 'Ungroup',
+					label: i18n.t('canvas.contextMenu.ungroup'),
 					icon: Ungroup,
 					shortcut: 'Ctrl+Shift+G',
 					action: () => {
@@ -261,7 +262,7 @@
 			},
 			{
 				id: 'lock',
-				label: isLocked ? 'Unlock' : 'Lock',
+				label: isLocked ? i18n.t('canvas.contextMenu.unlock') : i18n.t('canvas.contextMenu.lock'),
 				icon: isLocked ? Unlock : Lock,
 				action: () => {
 					if (isLocked) {
@@ -286,7 +287,7 @@
 				},
 				{
 					id: 'copy-link',
-					label: 'Copy Link',
+					label: i18n.t('canvas.contextMenu.copyLink'),
 					icon: Link,
 					action: () => {
 						onCopyLink();
@@ -311,7 +312,7 @@
 		{:else}
 			{@const Icon = item.icon}
 			<button
-				class="flex w-full cursor-pointer items-center gap-3 rounded-md border-none bg-transparent px-3 py-2 text-left text-sm font-medium text-gray-700 transition-all duration-150 hover:bg-gray-100 hover:text-gray-900 disabled:cursor-not-allowed disabled:opacity-40"
+				class="flex w-full items-center gap-3 rounded-md border-none bg-transparent px-3 py-2 text-left text-sm font-medium text-gray-700 transition-all duration-150 hover:bg-gray-100 hover:text-gray-900 disabled:cursor-not-allowed disabled:opacity-40"
 				onclick={item.action}
 				disabled={item.disabled}
 			>

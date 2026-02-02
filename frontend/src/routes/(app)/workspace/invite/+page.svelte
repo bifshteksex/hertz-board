@@ -238,7 +238,6 @@
 		border-radius: 8px;
 		font-size: 16px;
 		font-weight: 500;
-		cursor: pointer;
 		transition: all 0.2s;
 		border: none;
 		flex: 1;

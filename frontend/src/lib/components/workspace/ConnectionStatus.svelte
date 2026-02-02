@@ -92,7 +92,6 @@
 		border-radius: 4px;
 		font-size: 12px;
 		font-weight: 500;
-		cursor: pointer;
 		transition: background 0.2s;
 	}
 

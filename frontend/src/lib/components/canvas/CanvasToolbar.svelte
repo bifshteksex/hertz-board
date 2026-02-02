@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { canvasStore, type Tool } from '$lib/stores/canvas.svelte';
+	import { i18n } from '$lib/stores/i18n.svelte';
 	import {
 		MousePointer2,
 		Type,
@@ -53,14 +54,18 @@
 	);
 	let activeListType = $state<'bullet' | 'numbered' | 'checkbox'>('bullet');
 
-	const basicTools: Array<{ id: Tool; icon: any; label: string }> = [
-		{ id: 'select', icon: MousePointer2, label: 'Select (V)' },
-		{ id: 'text', icon: Type, label: 'Text (T)' },
-		{ id: 'freehand', icon: Pencil, label: 'Pen (P)' },
-		{ id: 'sticky', icon: StickyNote, label: 'Sticky Note (S)' },
-		{ id: 'image', icon: ImageIcon, label: 'Image (I)' },
-		{ id: 'connector', icon: ArrowRightLeft, label: 'Connector' }
-	];
+	const basicTools = $derived([
+		{ id: 'select' as Tool, icon: MousePointer2, label: i18n.t('canvas.toolbar.tools.select') },
+		{ id: 'text' as Tool, icon: Type, label: i18n.t('canvas.toolbar.tools.text') },
+		{ id: 'freehand' as Tool, icon: Pencil, label: i18n.t('canvas.toolbar.tools.pen') },
+		{ id: 'sticky' as Tool, icon: StickyNote, label: i18n.t('canvas.toolbar.tools.sticky') },
+		{ id: 'image' as Tool, icon: ImageIcon, label: i18n.t('canvas.toolbar.tools.image') },
+		{
+			id: 'connector' as Tool,
+			icon: ArrowRightLeft,
+			label: i18n.t('canvas.toolbar.tools.connector')
+		}
+	]);
 
 	// Shape icons based on active type
 	const shapeIcons = {
@@ -149,8 +154,8 @@
 			class:disabled={!canUndo}
 			disabled={!canUndo}
 			onclick={onUndo}
-			title="Undo (Ctrl+Z)"
-			aria-label="Undo"
+			title={i18n.t('canvas.toolbar.undoShortcut')}
+			aria-label={i18n.t('canvas.toolbar.undo')}
 		>
 			<IconUndo size={18} />
 		</button>
@@ -160,8 +165,8 @@
 			class:disabled={!canRedo}
 			disabled={!canRedo}
 			onclick={onRedo}
-			title="Redo (Ctrl+Y)"
-			aria-label="Redo"
+			title={i18n.t('canvas.toolbar.redoShortcut')}
+			aria-label={i18n.t('canvas.toolbar.redo')}
 		>
 			<IconRedo size={18} />
 		</button>
@@ -171,8 +176,8 @@
 		<button
 			class="tool-btn"
 			onclick={onShowHelp}
-			title="Keyboard Shortcuts (?)"
-			aria-label="Show keyboard shortcuts"
+			title={i18n.t('canvas.toolbar.help')}
+			aria-label={i18n.t('canvas.toolbar.helpAria')}
 		>
 			<IconQuestion size={24} />
 		</button>
@@ -201,8 +206,8 @@
 				class="tool-btn"
 				class:active={['rectangle', 'ellipse', 'triangle', 'line', 'arrow'].includes(activeTool)}
 				onclick={toggleShapeSubmenu}
-				title="Shapes"
-				aria-label="Shapes"
+				title={i18n.t('canvas.toolbar.tools.shapes')}
+				aria-label={i18n.t('canvas.toolbar.tools.shapes')}
 			>
 				{#if shapeIcons[activeShapeType]}
 					{@const ShapeIcon = shapeIcons[activeShapeType]}
@@ -221,8 +226,8 @@
 				class="tool-btn"
 				class:active={activeTool === 'list'}
 				onclick={toggleListSubmenu}
-				title="Lists"
-				aria-label="Lists"
+				title={i18n.t('canvas.toolbar.tools.lists')}
+				aria-label={i18n.t('canvas.toolbar.tools.lists')}
 			>
 				{#if listIcons[activeListType]}
 					{@const ListIcon = listIcons[activeListType]}
@@ -245,8 +250,8 @@
 			<button
 				class="tool-btn"
 				onclick={handleBringToFront}
-				title="Bring to Front (Ctrl+Shift+])"
-				aria-label="Bring to front"
+				title={i18n.t('canvas.toolbar.zorder.bringToFront')}
+				aria-label={i18n.t('canvas.toolbar.zorder.bringToFront')}
 			>
 				<ChevronsUp size={18} />
 			</button>
@@ -254,8 +259,8 @@
 			<button
 				class="tool-btn"
 				onclick={handleBringForward}
-				title="Bring Forward (Ctrl+])"
-				aria-label="Bring forward"
+				title={i18n.t('canvas.toolbar.zorder.bringForward')}
+				aria-label={i18n.t('canvas.toolbar.zorder.bringForward')}
 			>
 				<ChevronUp size={18} />
 			</button>
@@ -263,8 +268,8 @@
 			<button
 				class="tool-btn"
 				onclick={handleSendBackward}
-				title="Send Backward (Ctrl+[)"
-				aria-label="Send backward"
+				title={i18n.t('canvas.toolbar.zorder.sendBackward')}
+				aria-label={i18n.t('canvas.toolbar.zorder.sendBackward')}
 			>
 				<ChevronDown size={18} />
 			</button>
@@ -272,8 +277,8 @@
 			<button
 				class="tool-btn"
 				onclick={handleSendToBack}
-				title="Send to Back (Ctrl+Shift+[)"
-				aria-label="Send to back"
+				title={i18n.t('canvas.toolbar.zorder.sendToBack')}
+				aria-label={i18n.t('canvas.toolbar.zorder.sendToBack')}
 			>
 				<ChevronsDown size={18} />
 			</button>
@@ -285,8 +290,8 @@
 				<button
 					class="tool-btn"
 					onclick={handleGroup}
-					title="Group (Ctrl+G)"
-					aria-label="Group elements"
+					title={i18n.t('canvas.toolbar.grouping.group')}
+					aria-label={i18n.t('canvas.toolbar.grouping.groupElements')}
 				>
 					<Group size={18} />
 				</button>
@@ -295,8 +300,8 @@
 			<button
 				class="tool-btn"
 				onclick={handleUngroup}
-				title="Ungroup (Ctrl+Shift+G)"
-				aria-label="Ungroup elements"
+				title={i18n.t('canvas.toolbar.grouping.ungroup')}
+				aria-label={i18n.t('canvas.toolbar.grouping.ungroupElements')}
 			>
 				<Ungroup size={18} />
 			</button>
@@ -309,8 +314,8 @@
 			class="tool-btn"
 			class:active={showGrid}
 			onclick={toggleGrid}
-			title="Toggle Grid (Ctrl+&apos;)"
-			aria-label="Toggle grid"
+			title={i18n.t('canvas.toolbar.view.toggleGrid')}
+			aria-label={i18n.t('canvas.toolbar.view.gridAria')}
 		>
 			<Grid3x3 size={18} />
 		</button>
@@ -319,8 +324,8 @@
 			class="tool-btn"
 			class:active={snapToGrid}
 			onclick={toggleSnap}
-			title="Snap to Grid (Ctrl+Shift+&apos;)"
-			aria-label="Toggle snap to grid"
+			title={i18n.t('canvas.toolbar.view.toggleSnap')}
+			aria-label={i18n.t('canvas.toolbar.view.snapAria')}
 		>
 			<Magnet size={18} />
 		</button>
