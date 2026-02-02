@@ -86,7 +86,29 @@ func (h *OAuthHandler) handleOAuthCallback(
 		return
 	}
 
-	ctx.JSON(consts.StatusOK, resp)
+	// Set tokens as HTTP-only cookies
+	ctx.SetCookie(
+		"access_token",
+		resp.Tokens.AccessToken,
+		int(resp.Tokens.ExpiresAt.Sub(time.Now()).Seconds()),
+		"/",
+		"",
+		true, // secure (HTTPS only in production)
+		true, // httpOnly
+	)
+
+	ctx.SetCookie(
+		"refresh_token",
+		resp.Tokens.RefreshToken,
+		7*24*60*60, // 7 days
+		"/",
+		"",
+		true, // secure
+		true, // httpOnly
+	)
+
+	// Redirect to frontend
+	ctx.Redirect(consts.StatusTemporaryRedirect, []byte("/"))
 }
 
 // generateState generates a random state for OAuth
