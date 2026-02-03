@@ -48,6 +48,9 @@ jobs:
             echo "4. Restarting containers with new images..."
             docker-compose -f docker-compose.production.yml --env-file .env.production up -d --force-recreate --no-deps backend frontend
 
+            echo "5. Restarting nginx to refresh upstream DNS cache..."
+            docker-compose -f docker-compose.production.yml --env-file .env.production restart nginx
+
             echo "6. Waiting for services to be healthy..."
             sleep 20
 
