@@ -9,7 +9,7 @@
 	import { collaborationStore } from '$lib/stores/collaboration.svelte';
 	import { presenceStore } from '$lib/stores/presence.svelte';
 	import type { Workspace } from '$lib/types/api';
-	import { ArrowLeft, Users, Layers as LayersIcon } from 'lucide-svelte';
+	import { ArrowLeft, Layers as LayersIcon } from 'lucide-svelte';
 	import Canvas from '$lib/components/canvas/Canvas.svelte';
 	import CanvasToolbar from '$lib/components/canvas/CanvasToolbar.svelte';
 	import PropertiesPanel from '$lib/components/canvas/PropertiesPanel.svelte';

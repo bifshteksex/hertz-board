@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { presenceStore } from '$lib/stores/presence.svelte';
 	import type { UserPresence } from '$lib/types/websocket';
-	import { Users, User } from 'lucide-svelte';
+	import { User } from 'lucide-svelte';
 
 	import IconUsers from '$components/icons/IconUsers.svelte';
 

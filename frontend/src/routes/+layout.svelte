@@ -17,7 +17,7 @@
 	$effect(() => {
 		if (browser) {
 			// Access $page.url to make this effect reactive to route changes
-			const currentPath = $page.url.pathname;
+			$page.url.pathname;
 			themeStore.handleRouteChange();
 		}
 	});
