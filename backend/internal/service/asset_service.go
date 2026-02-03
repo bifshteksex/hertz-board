@@ -44,6 +44,7 @@ type AssetService struct {
 	endpoint       string
 	publicEndpoint string
 	useSSL         bool
+	publicUseSSL   bool
 }
 
 func NewAssetService(
@@ -51,6 +52,7 @@ func NewAssetService(
 	workspaceRepo *repository.WorkspaceRepository,
 	minioEndpoint, minioPublicEndpoint, minioAccessKey, minioSecretKey string,
 	useSSL bool,
+	publicUseSSL bool,
 ) (*AssetService, error) {
 	// Initialize MinIO client
 	minioClient, err := minio.New(minioEndpoint, &minio.Options{
@@ -107,6 +109,7 @@ func NewAssetService(
 		endpoint:       minioEndpoint,
 		publicEndpoint: publicEndpoint,
 		useSSL:         useSSL,
+		publicUseSSL:   publicUseSSL,
 	}, nil
 }
 
@@ -340,7 +343,7 @@ func (s *AssetService) CleanupOrphanedAssets(ctx context.Context, workspaceID uu
 func (s *AssetService) getObjectURL(objectName string) string {
 	// Use public endpoint for URLs that will be accessed from browsers
 	scheme := "http"
-	if s.useSSL {
+	if s.publicUseSSL {
 		scheme = "https"
 	}
 	return fmt.Sprintf("%s://%s/%s/%s", scheme, s.publicEndpoint, s.bucketName, objectName)

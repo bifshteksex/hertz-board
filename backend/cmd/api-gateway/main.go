@@ -120,6 +120,7 @@ func main() {
 		cfg.MinIO.AccessKey,
 		cfg.MinIO.SecretKey,
 		cfg.MinIO.UseSSL,
+		cfg.MinIO.PublicUseSSL,
 	)
 	if err != nil {
 		log.Fatalf("Failed to create asset service: %v", err)

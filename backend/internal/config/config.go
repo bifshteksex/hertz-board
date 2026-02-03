@@ -87,6 +87,7 @@ type MinIOConfig struct {
 	AccessKey      string `yaml:"access_key"`
 	SecretKey      string `yaml:"secret_key"`
 	UseSSL         bool   `yaml:"use_ssl"`
+	PublicUseSSL   bool   `yaml:"public_use_ssl"`
 	BucketAssets   string `yaml:"bucket_assets"`
 	BucketExports  string `yaml:"bucket_exports"`
 	BucketBackups  string `yaml:"bucket_backups"`
@@ -252,6 +253,7 @@ func LoadFromEnv() (*Config, error) {
 			AccessKey:      getEnvOrDefault("MINIO_ACCESS_KEY", "hertzboard"),
 			SecretKey:      os.Getenv("MINIO_SECRET_KEY"),
 			UseSSL:         getEnvAsBoolOrDefault("MINIO_USE_SSL", false),
+			PublicUseSSL:   getEnvAsBoolOrDefault("MINIO_PUBLIC_USE_SSL", false),
 			BucketAssets:   getEnvOrDefault("MINIO_BUCKET_ASSETS", "hertzboard-assets"),
 			BucketExports:  getEnvOrDefault("MINIO_BUCKET_EXPORTS", "hertzboard-exports"),
 			BucketBackups:  getEnvOrDefault("MINIO_BUCKET_BACKUPS", "hertzboard-backups"),
