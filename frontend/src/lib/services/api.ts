@@ -63,7 +63,6 @@ export class ApiClient {
 
 		if (accessToken && refreshToken) {
 			this.setTokens(accessToken, refreshToken);
-			// Clear cookies after moving to localStorage
 			document.cookie = 'access_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
 			document.cookie = 'refresh_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
 		}
@@ -127,7 +126,6 @@ export class ApiClient {
 				}
 			}
 
-			// Handle other error status codes
 			if (!response.ok) {
 				const error: ApiError = await response.json().catch(() => ({
 					error: 'Unknown error occurred'
@@ -135,7 +133,6 @@ export class ApiClient {
 				throw new Error(error.error || `HTTP ${response.status}: ${response.statusText}`);
 			}
 
-			// Handle 204 No Content
 			if (response.status === 204) {
 				return {} as T;
 			}
@@ -363,9 +360,11 @@ export class ApiClient {
 		});
 	}
 
-	// Canvas elements
 	async listElements(workspaceId: string): Promise<CanvasElement[]> {
-		return this.request<CanvasElement[]>(`/workspaces/${workspaceId}/elements`);
+		const response = await this.request<{ elements: CanvasElement[]; total: number }>(
+			`/workspaces/${workspaceId}/elements`
+		);
+		return response.elements;
 	}
 
 	async getElement(workspaceId: string, elementId: string): Promise<CanvasElement> {
@@ -400,10 +399,14 @@ export class ApiClient {
 		workspaceId: string,
 		elements: CreateElementRequest[]
 	): Promise<CanvasElement[]> {
-		return this.request<CanvasElement[]>(`/workspaces/${workspaceId}/elements/batch`, {
-			method: 'POST',
-			body: JSON.stringify({ elements })
-		});
+		const response = await this.request<{ elements: CanvasElement[]; total: number }>(
+			`/workspaces/${workspaceId}/elements/batch`,
+			{
+				method: 'POST',
+				body: JSON.stringify({ elements })
+			}
+		);
+		return response.elements;
 	}
 
 	// Assets

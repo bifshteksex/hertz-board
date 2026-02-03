@@ -602,9 +602,19 @@ class CanvasWithHistory {
 			// Обновляем ID в canvas store
 			const element = canvasStore.elements.find((el) => el.id === frontendId);
 			if (element) {
+				// Сохраняем состояние выделения
+				const wasSelected = canvasStore.isSelected(frontendId);
+
 				// Удаляем элемент со старым ID и добавляем с новым
 				canvasStore.deleteElement(frontendId);
 				canvasStore.addElement({ ...element, id: backendId });
+
+				// Восстанавливаем выделение, если элемент был выделен
+				if (wasSelected) {
+					canvasStore.select(backendId, true);
+					console.log(`[CanvasWithHistory] ✅ Restored selection for element ${backendId}`);
+				}
+
 				console.log(`[CanvasWithHistory] ✅ Updated element ID in canvas store`);
 			} else {
 				console.warn(`[CanvasWithHistory] ⚠️ Element ${frontendId} not found in canvas store`);

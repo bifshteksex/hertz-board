@@ -697,6 +697,7 @@
 		if (e.button === 0 && canvasStore.activeTool === 'text') {
 			const point = getCanvasPoint(e);
 			createTextElement(point.x, point.y);
+			canvasStore.setTool('select');
 			return;
 		}
 
@@ -704,12 +705,14 @@
 		if (e.button === 0 && canvasStore.activeTool === 'sticky') {
 			const point = getCanvasPoint(e);
 			createStickyNote(point.x, point.y);
+			canvasStore.setTool('select');
 			return;
 		}
 
 		// Image tool - trigger file upload
 		if (e.button === 0 && canvasStore.activeTool === 'image') {
 			imageUploader?.openFileDialog();
+			canvasStore.setTool('select');
 			return;
 		}
 
@@ -717,6 +720,7 @@
 		if (e.button === 0 && canvasStore.activeTool === 'list') {
 			const point = getCanvasPoint(e);
 			createListElement(point.x, point.y, 'bullet');
+			canvasStore.setTool('select');
 			return;
 		}
 
@@ -852,6 +856,7 @@
 			isCreatingShape = false;
 			shapeCreateStart = null;
 			shapeCreateCurrent = null;
+			canvasStore.setTool('select');
 			return;
 		}
 

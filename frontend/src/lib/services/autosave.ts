@@ -46,6 +46,7 @@ interface ElementData {
 	content?: string;
 	html_content?: string;
 	points?: Array<{ x: number; y: number; pressure?: number }>;
+	url?: string;
 }
 
 interface BatchUpdateItem {
@@ -320,17 +321,10 @@ export class AutosaveService {
 	 * Преобразовать frontend element type в backend element type
 	 */
 	private mapElementType(frontendType: string): string {
-		// Frontend использует специфичные типы: rectangle, ellipse, triangle, arrow
-		// Backend использует обобщенный тип: shape
 		const shapeTypes = ['rectangle', 'ellipse', 'triangle', 'arrow', 'line'];
 		if (shapeTypes.includes(frontendType)) {
 			return 'shape';
 		}
-		// Frontend использует freehand, backend использует drawing
-		if (frontendType === 'freehand') {
-			return 'drawing';
-		}
-		// Остальные типы совпадают: text, image, sticky, list, connector, group
 		return frontendType;
 	}
 
@@ -371,9 +365,12 @@ export class AutosaveService {
 				elementData.html_content = element.html_content;
 			}
 
-			// Добавляем points для freehand (drawing) элементов
-			if (backendType === 'drawing' && element.points) {
+			if (backendType === 'freehand' && element.points) {
 				elementData.points = element.points;
+			}
+
+			if (backendType === 'image' && element.image_url) {
+				elementData.url = element.image_url;
 			}
 
 			return {
@@ -446,7 +443,7 @@ export class AutosaveService {
 		};
 
 		// Если есть изменения позиции или размера, создаем element_data
-		const hasPositionOrSize =
+		const hasElementData =
 			change.updates.pos_x !== undefined ||
 			change.updates.pos_y !== undefined ||
 			change.updates.width !== undefined ||
@@ -455,9 +452,10 @@ export class AutosaveService {
 			change.updates.style !== undefined ||
 			change.updates.content !== undefined ||
 			change.updates.html_content !== undefined ||
-			change.updates.points !== undefined;
+			change.updates.points !== undefined ||
+			change.updates.image_url !== undefined;
 
-		if (hasPositionOrSize) {
+		if (hasElementData) {
 			update.element_data = {};
 
 			// Позиция
@@ -504,9 +502,12 @@ export class AutosaveService {
 				}
 			}
 
-			// Points (для freehand элементов)
 			if (change.updates.points !== undefined) {
 				update.element_data.points = change.updates.points;
+			}
+
+			if (change.updates.image_url !== undefined) {
+				update.element_data.url = change.updates.image_url;
 			}
 		}
 

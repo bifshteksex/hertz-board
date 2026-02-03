@@ -95,6 +95,8 @@
 						content: elementData.content,
 						html_content: elementData.html_content,
 						style: elementData.style || {},
+						points: elementData.points,
+						image_url: elementData.url,
 						parent_id: el.parent_id,
 						created_at: el.created_at,
 						updated_at: el.updated_at,

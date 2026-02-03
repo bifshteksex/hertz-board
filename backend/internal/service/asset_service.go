@@ -43,6 +43,7 @@ type AssetService struct {
 	bucketName     string
 	endpoint       string
 	publicEndpoint string
+	useSSL         bool
 }
 
 func NewAssetService(
@@ -105,6 +106,7 @@ func NewAssetService(
 		bucketName:     bucketName,
 		endpoint:       minioEndpoint,
 		publicEndpoint: publicEndpoint,
+		useSSL:         useSSL,
 	}, nil
 }
 
@@ -337,7 +339,11 @@ func (s *AssetService) CleanupOrphanedAssets(ctx context.Context, workspaceID uu
 
 func (s *AssetService) getObjectURL(objectName string) string {
 	// Use public endpoint for URLs that will be accessed from browsers
-	return fmt.Sprintf("http://%s/%s/%s", s.publicEndpoint, s.bucketName, objectName)
+	scheme := "http"
+	if s.useSSL {
+		scheme = "https"
+	}
+	return fmt.Sprintf("%s://%s/%s/%s", scheme, s.publicEndpoint, s.bucketName, objectName)
 }
 
 func (s *AssetService) extractObjectName(url string) string {

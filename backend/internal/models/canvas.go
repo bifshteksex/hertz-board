@@ -16,7 +16,7 @@ const (
 	ElementTypeText      ElementType = "text"
 	ElementTypeShape     ElementType = "shape"
 	ElementTypeImage     ElementType = "image"
-	ElementTypeDrawing   ElementType = "drawing"
+	ElementTypeFreehand  ElementType = "freehand"
 	ElementTypeSticky    ElementType = "sticky"
 	ElementTypeList      ElementType = "list"
 	ElementTypeConnector ElementType = "connector"
@@ -26,7 +26,7 @@ const (
 // Valid returns true if the element type is valid
 func (t ElementType) Valid() bool {
 	switch t {
-	case ElementTypeText, ElementTypeShape, ElementTypeImage, ElementTypeDrawing,
+	case ElementTypeText, ElementTypeShape, ElementTypeImage, ElementTypeFreehand,
 		ElementTypeSticky, ElementTypeList, ElementTypeConnector, ElementTypeGroup:
 		return true
 	}
@@ -128,8 +128,8 @@ type ImageElementData struct {
 	AssetID uuid.UUID `json:"asset_id"`
 }
 
-// DrawingElementData represents freehand drawing
-type DrawingElementData struct {
+// FreehandElementData represents freehand drawing
+type FreehandElementData struct {
 	Points []Point `json:"points"`
 	BaseElementData
 	Smooth bool `json:"smooth"`

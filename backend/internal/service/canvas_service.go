@@ -126,7 +126,8 @@ func (s *CanvasService) UpdateElement(
 
 	// Apply partial updates
 	if req.ElementData != nil {
-		element.ElementData = *req.ElementData
+		// Merge element_data instead of replacing it
+		s.mergeElementData(&element.ElementData, *req.ElementData)
 	}
 	if req.ZIndex != nil {
 		element.ZIndex = *req.ZIndex
@@ -278,7 +279,8 @@ func (s *CanvasService) BatchUpdateElements(
 
 		// Apply partial updates
 		if update.ElementData != nil {
-			element.ElementData = *update.ElementData
+			// Merge element_data instead of replacing it
+			s.mergeElementData(&element.ElementData, *update.ElementData)
 		}
 		if update.ZIndex != nil {
 			element.ZIndex = *update.ZIndex
@@ -405,7 +407,7 @@ func (s *CanvasService) validateElementTypeSpecific(elementType models.ElementTy
 		return s.validateImageElement(data)
 	case models.ElementTypeConnector:
 		return s.validateConnectorElement(data)
-	case models.ElementTypeShape, models.ElementTypeDrawing, models.ElementTypeSticky, models.ElementTypeList, models.ElementTypeGroup:
+	case models.ElementTypeShape, models.ElementTypeFreehand, models.ElementTypeSticky, models.ElementTypeList, models.ElementTypeGroup:
 		return nil
 	default:
 		return nil
@@ -438,4 +440,17 @@ func (s *CanvasService) validateConnectorElement(data models.ElementData) error 
 		}
 	}
 	return nil
+}
+
+// mergeElementData merges updates into existing element_data map
+// This preserves fields that are not being updated (e.g., 'url' field for images)
+func (s *CanvasService) mergeElementData(existing *models.ElementData, updates models.ElementData) {
+	if *existing == nil {
+		*existing = make(models.ElementData)
+	}
+
+	// Merge all fields from updates into existing
+	for key, value := range updates {
+		(*existing)[key] = value
+	}
 }
