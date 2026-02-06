@@ -254,11 +254,13 @@ export class AutosaveService {
 				}
 			}
 
-			// Обновляем существующие элементы (UPDATE)
-			if (updatedElements.length > 0) {
-				const batches = this.createBatches(updatedElements);
+			const regularUpdates = updatedElements.filter((c) => !c.updates.deleted_at);
+			const deletions = updatedElements.filter((c) => c.updates.deleted_at);
+
+			if (regularUpdates.length > 0) {
+				const batches = this.createBatches(regularUpdates);
 				console.log(
-					`[Autosave] Updating ${updatedElements.length} elements in ${batches.length} batch(es)`
+					`[Autosave] Updating ${regularUpdates.length} elements in ${batches.length} batch(es)`
 				);
 
 				for (let i = 0; i < batches.length; i++) {
@@ -267,16 +269,31 @@ export class AutosaveService {
 						`[Autosave] Updating batch ${i + 1}/${batches.length} (${batch.length} items)`
 					);
 					await this.saveBatchUpdate(workspaceId, batch);
-					console.log(`[Autosave] ✅ Update batch ${i + 1}/${batches.length} saved successfully`);
+					console.log(`[Autosave] Update batch ${i + 1}/${batches.length} saved successfully`);
 				}
 			}
 
-			// Clear saved changes
+			if (deletions.length > 0) {
+				const batches = this.createBatches(deletions);
+				console.log(
+					`[Autosave] Deleting ${deletions.length} elements in ${batches.length} batch(es)`
+				);
+
+				for (let i = 0; i < batches.length; i++) {
+					const batch = batches[i];
+					console.log(
+						`[Autosave] Deleting batch ${i + 1}/${batches.length} (${batch.length} items)`
+					);
+					await this.saveBatchDelete(workspaceId, batch);
+					console.log(`[Autosave] Delete batch ${i + 1}/${batches.length} saved successfully`);
+				}
+			}
+
 			changesToSave.forEach((change) => {
 				this.pendingChanges.delete(change.elementId);
 			});
 
-			console.log(`[Autosave] ✅ Successfully saved ${changesToSave.length} changes`);
+			console.log(`[Autosave] Successfully saved ${changesToSave.length} changes`);
 			this.log(`Successfully saved ${changesToSave.length} changes`);
 			this.setStatus('saved');
 			this.onSaveComplete(changesToSave.length);
@@ -296,7 +313,7 @@ export class AutosaveService {
 			// Retry after a delay
 			setTimeout(() => {
 				if (this.pendingChanges.size > 0) {
-					console.log('[Autosave] 🔄 Retrying failed save in 5 seconds...');
+					console.log('[Autosave] Retrying failed save in 5 seconds...');
 					this.log('Retrying failed save');
 					this.scheduleSave();
 				}
@@ -522,6 +539,47 @@ export class AutosaveService {
 		}
 
 		return update;
+	}
+
+	/**
+	 * Save a single batch of deleted elements (DELETE)
+	 */
+	private async saveBatchDelete(workspaceId: string, batch: PendingChange[]): Promise<void> {
+		// Извлекаем ID элементов для удаления
+		const ids = batch.map((change) => change.elementId);
+
+		const requestBody = {
+			ids
+		};
+
+		const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080/api/v1';
+		const url = `${apiUrl}/workspaces/${workspaceId}/elements/batch`;
+		const token = api.getAccessToken();
+
+		console.log(`[Autosave] 🗑️ DELETE request to: ${url}`);
+		console.log('[Autosave] Request body:', JSON.stringify(requestBody, null, 2));
+		console.log(`[Autosave] Auth token present: ${!!token}`);
+
+		// Call API
+		const response = await fetch(url, {
+			method: 'DELETE',
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${token}`
+			},
+			body: JSON.stringify(requestBody)
+		});
+
+		console.log(`[Autosave] Response status: ${response.status} ${response.statusText}`);
+
+		if (!response.ok) {
+			const errorText = await response.text().catch(() => 'Unknown error');
+			console.error(`[Autosave] Response error body: ${errorText}`);
+			throw new Error(`Delete failed: ${response.status} ${errorText}`);
+		}
+
+		const responseData = await response.json().catch(() => null);
+		console.log('[Autosave] Response data:', responseData);
 	}
 
 	private async saveBatchUpdate(workspaceId: string, batch: PendingChange[]): Promise<void> {
