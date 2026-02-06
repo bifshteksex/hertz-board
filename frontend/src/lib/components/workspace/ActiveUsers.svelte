@@ -163,7 +163,6 @@
 		max-height: 400px;
 		background: white;
 		border: 1px solid #e5e7eb;
-		border-radius: 8px;
 		box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
 		z-index: 1000;
 		display: flex;

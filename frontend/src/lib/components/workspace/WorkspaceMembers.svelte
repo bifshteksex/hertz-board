@@ -358,7 +358,6 @@
 	.workspace-members {
 		background: white;
 		border: 1px solid #e5e7eb;
-		border-radius: 8px;
 		overflow: hidden;
 	}
 
@@ -411,7 +410,6 @@
 		padding: 0 8px;
 		background: #f3f4f6;
 		color: #6b7280;
-		border-radius: 12px;
 		font-size: 13px;
 		font-weight: 600;
 	}
@@ -569,7 +567,6 @@
 		gap: 4px;
 		padding: 4px 12px;
 		background: #f9fafb;
-		border-radius: 12px;
 		font-size: 13px;
 		font-weight: 500;
 		flex-shrink: 0;
@@ -745,7 +742,6 @@
 
 	.modal {
 		background: white;
-		border-radius: 12px;
 		width: 100%;
 		max-width: 500px;
 		max-height: 90vh;

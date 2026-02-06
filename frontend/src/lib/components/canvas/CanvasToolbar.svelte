@@ -225,7 +225,7 @@
 					{@const ShapeIcon = shapeIcons[activeShapeType]}
 					<ShapeIcon size={18} />
 				{/if}
-				<SubmenuIcon size={12} class="-ml-1 opacity-50" />
+				<SubmenuIcon size={12} class="opacity-50" />
 			</button>
 			{#if showShapeSubmenu}
 				<ShapeSubmenu onSelect={handleShapeSelect} />
@@ -245,7 +245,7 @@
 					{@const ListIcon = listIcons[activeListType]}
 					<ListIcon size={18} />
 				{/if}
-				<SubmenuIcon size={12} class="-ml-1 opacity-50" />
+				<SubmenuIcon size={12} class="opacity-50" />
 			</button>
 			{#if showListSubmenu}
 				<ListSubmenu onSelect={handleListSelect} />
@@ -289,7 +289,7 @@
 					class="h-2 w-24 cursor-pointer appearance-none rounded-lg bg-gray-200 dark:bg-gray-700"
 					title="Brush width: {brushWidth}px"
 				/>
-				<span class="min-w-[2rem] text-xs text-gray-600 dark:text-gray-300">{brushWidth}px</span>
+				<span class="min-w-8 text-xs text-gray-600 dark:text-gray-300">{brushWidth}px</span>
 			</div>
 		</div>
 	{/if}

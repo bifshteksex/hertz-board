@@ -254,6 +254,7 @@ export class AutosaveService {
 				}
 			}
 
+			// Разделяем на обычные обновления и удаления
 			const regularUpdates = updatedElements.filter((c) => !c.updates.deleted_at);
 			const deletions = updatedElements.filter((c) => c.updates.deleted_at);
 

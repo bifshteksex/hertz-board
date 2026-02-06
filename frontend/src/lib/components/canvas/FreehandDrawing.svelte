@@ -63,9 +63,5 @@
 </script>
 
 {#if pathData}
-	<path d={pathData} fill={color} {opacity} pointer-events="none" />
+	<path d={pathData} fill={color} {opacity} />
 {/if}
-
-<style>
-	/* Styles are inline for this component */
-</style>

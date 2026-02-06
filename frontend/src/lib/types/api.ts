@@ -137,6 +137,7 @@ export interface CanvasElement {
 	created_by?: string;
 	created_at?: string;
 	updated_at?: string;
+	deleted_at?: string; // For soft deletion tracking
 	version?: number;
 }
 

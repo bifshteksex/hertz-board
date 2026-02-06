@@ -14,6 +14,7 @@
 	import ConnectorCreator from './ConnectorCreator.svelte';
 	import ContextMenu from './ContextMenu.svelte';
 	import UserCursor from './UserCursor.svelte';
+	import BrushCursor from './BrushCursor.svelte';
 	import { presenceStore } from '$lib/stores/presence.svelte';
 	import { collaborationStore } from '$lib/stores/collaboration.svelte';
 	import { authStore } from '$lib/stores/auth.svelte';
@@ -48,6 +49,8 @@
 	// Freehand drawing state
 	let isDrawing = $state(false);
 	let drawingPoints = $state<{ x: number; y: number; pressure?: number }[]>([]);
+	let isAltPressed = $state(false); // Eyedropper mode
+	let isEyedropperActive = $state(false); // Alt + freehand tool = eyedropper
 
 	// Connector creation state
 	let isCreatingConnector = $state(false);
@@ -67,6 +70,11 @@
 	let contextMenuY = $state(0);
 	let contextMenuTargetId = $state<string | null>(null);
 
+	// Brush cursor state
+	let brushCursorX = $state(0);
+	let brushCursorY = $state(0);
+	let showBrushCursor = $state(false);
+
 	onMount(() => {
 		// Fit to screen при загрузке
 		if (canvasContainer) {
@@ -82,6 +90,21 @@
 			// Shift для сохранения пропорций
 			if (e.code === 'ShiftLeft' || e.code === 'ShiftRight') {
 				isShiftPressed = true;
+			}
+
+			// Alt для пипетки (eyedropper) в режиме freehand
+			if ((e.code === 'AltLeft' || e.code === 'AltRight') && !isAltPressed) {
+				isAltPressed = true;
+				console.log('[Eyedropper] Alt pressed, current tool:', canvasStore.activeTool);
+				if (canvasStore.activeTool === 'freehand') {
+					isEyedropperActive = true;
+					console.log('[Eyedropper] Eyedropper mode activated');
+					// Prevent drawing while eyedropper is active
+					if (isDrawing) {
+						isDrawing = false;
+						drawingPoints = [];
+					}
+				}
 			}
 
 			// Space для panning
@@ -126,6 +149,11 @@
 			}
 			if (e.code === 'ShiftLeft' || e.code === 'ShiftRight') {
 				isShiftPressed = false;
+			}
+			if (e.code === 'AltLeft' || e.code === 'AltRight') {
+				isAltPressed = false;
+				isEyedropperActive = false;
+				console.log('[Eyedropper] Alt released, eyedropper deactivated');
 			}
 		};
 
@@ -254,6 +282,53 @@
 		};
 
 		canvas.addElement(newElement);
+	}
+
+	// Eyedropper - pick color from element under cursor
+	function pickColorFromElement(e: MouseEvent): string | null {
+		const target = e.target as SVGElement;
+
+		console.log('[Eyedropper] Clicked target:', target);
+
+		// Try to find element
+		const elementId = target.closest('[data-element-id]')?.getAttribute('data-element-id');
+		console.log('[Eyedropper] Element ID:', elementId);
+
+		if (!elementId) {
+			console.log('[Eyedropper] No element ID found');
+			return null;
+		}
+
+		const element = canvasStore.getElement(elementId);
+		console.log('[Eyedropper] Element:', element);
+
+		if (!element) {
+			console.log('[Eyedropper] Element not found in store');
+			return null;
+		}
+
+		// Get color based on element type
+		let color: string | null = null;
+
+		if (element.type === 'freehand') {
+			color = element.style?.strokeColor || null;
+		} else if (
+			element.type === 'line' ||
+			element.type === 'arrow' ||
+			element.type === 'connector'
+		) {
+			color = element.style?.strokeColor || null;
+		} else {
+			// For shapes, text, sticky notes - try backgroundColor first, then strokeColor
+			color =
+				element.style?.backgroundColor ||
+				element.style?.strokeColor ||
+				element.style?.color ||
+				null;
+		}
+
+		console.log('[Eyedropper] Picked color:', color, 'from element type:', element.type);
+		return color;
 	}
 
 	function createTextElement(x: number, y: number) {
@@ -687,6 +762,22 @@
 
 		// Freehand drawing tool
 		if (e.button === 0 && canvasStore.activeTool === 'freehand') {
+			// Eyedropper mode (Alt pressed)
+			if (isEyedropperActive) {
+				console.log('[Eyedropper] Eyedropper mode active, picking color...');
+				const pickedColor = pickColorFromElement(e);
+				console.log('[Eyedropper] Picked color:', pickedColor);
+				if (pickedColor) {
+					console.log('[Eyedropper] Setting brush color to:', pickedColor);
+					canvasStore.setBrushColor(pickedColor);
+					console.log('[Eyedropper] New brush color:', canvasStore.brushColor);
+				} else {
+					console.log('[Eyedropper] No color picked, clicked on empty space or unstyled element');
+				}
+				return;
+			}
+
+			// Normal drawing mode
 			const point = getCanvasPoint(e);
 			isDrawing = true;
 			drawingPoints = [point];
@@ -738,6 +829,12 @@
 	let pendingMouseEvent: MouseEvent | null = null;
 
 	function handleMouseMove(e: MouseEvent) {
+		// Обновляем позицию brush cursor (вне RAF для плавности)
+		brushCursorX = e.clientX;
+		brushCursorY = e.clientY;
+		// Show brush cursor only in freehand mode and NOT in eyedropper mode
+		showBrushCursor = canvasStore.activeTool === 'freehand' && !isEyedropperActive;
+
 		// Используем requestAnimationFrame для throttling
 		pendingMouseEvent = e;
 
@@ -1159,19 +1256,32 @@
 <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 <div
 	class="relative h-full w-full overflow-hidden bg-gray-200 select-none focus:outline-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-blue-600 dark:bg-gray-800"
-	style="cursor: url('/cursors/default.svg') 0 0, auto;"
+	class:cursor-none={canvasStore.activeTool === 'freehand' && !isEyedropperActive}
+	class:cursor-eyedropper={isEyedropperActive}
 	bind:this={canvasContainer}
 	onmousedown={handleMouseDown}
 	onmousemove={handleMouseMove}
 	onmouseup={handleMouseUp}
-	onmouseleave={handleMouseUp}
+	onmouseleave={(e) => {
+		handleMouseUp(e);
+		showBrushCursor = false;
+	}}
+	onmouseenter={() => {
+		showBrushCursor = canvasStore.activeTool === 'freehand' && !isEyedropperActive;
+	}}
 	oncontextmenu={handleContextMenu}
 	onwheel={handleWheel}
 	role="application"
 	tabindex="0"
 	aria-label="Canvas workspace"
 >
-	<svg bind:this={svgCanvas} class="block touch-none" width="100%" height="100%">
+	<svg
+		bind:this={svgCanvas}
+		class="block touch-none"
+		class:cursor-none={canvasStore.activeTool === 'freehand'}
+		width="100%"
+		height="100%"
+	>
 		<!-- Background -->
 		<rect width="100%" height="100%" class="fill-gray-50 dark:fill-gray-900" />
 
@@ -1287,4 +1397,24 @@
 			onClose={() => (showContextMenu = false)}
 		/>
 	{/if}
+
+	<!-- Brush Cursor (для режима freehand) -->
+	<BrushCursor
+		x={brushCursorX}
+		y={brushCursorY}
+		size={canvasStore.brushWidth * 2 * canvasStore.viewport.zoom}
+		visible={showBrushCursor}
+	/>
 </div>
+
+<style>
+	.cursor-none,
+	.cursor-none * {
+		cursor: none !important;
+	}
+
+	.cursor-eyedropper,
+	.cursor-eyedropper * {
+		cursor: crosshair !important;
+	}
+</style>

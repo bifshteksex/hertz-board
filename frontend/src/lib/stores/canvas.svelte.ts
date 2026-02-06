@@ -516,6 +516,7 @@ class CanvasStore {
 
 		intersecting.forEach((el) => this._selectedIds.add(el.id));
 
+		this._selectedIds = new Set(this._selectedIds);
 		this._selectionBox = null;
 		this._isSelecting = false;
 	}
