@@ -263,6 +263,7 @@ export default {
 				select: '选择 (V)',
 				text: '文本 (T)',
 				pen: '画笔 (P)',
+				eraser: '橡皮擦 (E)',
 				sticky: '便签 (S)',
 				image: '图片 (I)',
 				connector: '连接线',
@@ -375,6 +376,46 @@ export default {
 			error: '连接错误',
 			retry: '重试',
 			reconnect: '重新连接'
+		}
+	},
+	workspaceMembers: {
+		title: '工作区成员',
+		inviteMember: '邀请成员',
+		loading: '加载成员中...',
+		noMembers: '还没有成员',
+		owner: '所有者',
+		editor: '编辑者',
+		viewer: '查看者',
+		menu: {
+			makeViewer: '设为查看者',
+			makeEditor: '设为编辑者',
+			removeMember: '移除成员'
+		},
+		modal: {
+			invite: {
+				title: '邀请成员',
+				emailLabel: '邮箱地址',
+				emailPlaceholder: 'colleague@example.com',
+				roleLabel: '角色',
+				roleEditor: '编辑者 - 可以编辑内容',
+				roleViewer: '查看者 - 只能查看',
+				roleEditorDesc: '编辑者可以创建、编辑和删除内容。',
+				roleViewerDesc: '查看者只能查看内容，不能编辑。',
+				cancel: '取消',
+				send: '发送邀请',
+				sending: '发送中...'
+			},
+			success: {
+				title: '邀请已发送！',
+				description: '与用户分享此链接：',
+				copy: '复制',
+				copied: '已复制！',
+				expiresIn: '链接将在7天后过期',
+				done: '完成'
+			}
+		},
+		alerts: {
+			removeConfirm: '您确定要移除此成员吗？'
 		}
 	}
 };

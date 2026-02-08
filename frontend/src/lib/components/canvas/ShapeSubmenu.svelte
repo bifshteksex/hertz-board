@@ -22,7 +22,7 @@
 </script>
 
 <div
-	class="absolute top-[calc(100%+4px)] left-0 z-[1000] flex min-w-[140px] flex-col gap-0.5 rounded-lg border border-gray-200 bg-white p-1 shadow-md"
+	class="absolute top-[calc(100%+4px)] left-0 z-[1000] flex min-w-[140px] flex-col gap-0.5 border border-gray-200 bg-white p-1 shadow-md"
 >
 	{#each shapes as shape}
 		{@const Icon = shape.icon}

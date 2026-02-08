@@ -3,13 +3,17 @@
 	import { authStore } from '$lib/stores/auth.svelte';
 	import { i18n } from '$lib/stores/i18n.svelte';
 	import { onMount } from 'svelte';
-	import PixelButton from '$lib/components/PixelButton.svelte';
 	import LanguageSwitcher from '$lib/components/LanguageSwitcher.svelte';
+	import EyeIcon from '$lib/components/icons/EyeIcon.svelte';
+	import EyeClosedIcon from '$lib/components/icons/EyeClosedIcon.svelte';
 
 	let email = $state('');
 	let password = $state('');
 	let error = $state('');
 	let isLoading = $state(false);
+	let eyePosition = $state<'center' | 'email' | 'password'>('center');
+	let showPassword = $state(false);
+	let faceClicked = $state(false);
 
 	// SEO metadata
 	const title = $derived(i18n.t('seo.pages.login.title'));
@@ -70,7 +74,114 @@
 				</div>
 			{/if}
 
-			<div class="space-y-4 rounded-md shadow-sm">
+			<div class="relative space-y-4 rounded-md shadow-sm">
+				<!-- Animated Face -->
+				<button
+					type="button"
+					onclick={() => (faceClicked = !faceClicked)}
+					class="absolute top-1/2 left-0 flex h-24 w-24 -translate-x-32 -translate-y-1/2 items-center justify-center border-2 shadow-md transition-all duration-500 hover:scale-105 active:scale-95"
+					class:bg-white={!error}
+					class:border-gray-300={!error}
+					class:bg-red-50={error}
+					class:border-red-200={error}
+				>
+					<div class="flex flex-col items-center gap-3">
+						<!-- Eyes -->
+						<div class="flex gap-4">
+							<!-- Left Eye -->
+							<div class="relative h-6 w-6 bg-gray-100">
+								{#if faceClicked}
+									<!-- X mark -->
+									<svg
+										class="absolute top-1/2 left-1/2 h-4 w-4 -translate-x-1/2 -translate-y-1/2 transition-all duration-300"
+										viewBox="0 0 24 24"
+										fill="none"
+										stroke="currentColor"
+										stroke-width="3"
+									>
+										<path d="M6 6L18 18M18 6L6 18" />
+									</svg>
+								{:else}
+									<!-- Eye pupil that morphs into a line -->
+									<div
+										class="absolute bg-black transition-all duration-300 ease-out"
+										style:left={eyePosition === 'email'
+											? '60%'
+											: eyePosition === 'password'
+												? '60%'
+												: '50%'}
+										style:top="50%"
+										style:width={showPassword ? '1rem' : '0.75rem'}
+										style:height={showPassword ? '0.125rem' : '0.75rem'}
+										style:transform={showPassword
+											? 'translate(-50%, -50%)'
+											: eyePosition === 'email'
+												? 'translate(-50%, -80%)'
+												: eyePosition === 'password'
+													? 'translate(-50%, -30%)'
+													: 'translate(-50%, -50%)'}
+									></div>
+								{/if}
+							</div>
+							<!-- Right Eye -->
+							<div class="relative h-6 w-6 bg-gray-100">
+								{#if faceClicked}
+									<!-- X mark -->
+									<svg
+										class="absolute top-1/2 left-1/2 h-4 w-4 -translate-x-1/2 -translate-y-1/2 transition-all duration-300"
+										viewBox="0 0 24 24"
+										fill="none"
+										stroke="currentColor"
+										stroke-width="3"
+									>
+										<path d="M6 6L18 18M18 6L6 18" />
+									</svg>
+								{:else}
+									<!-- Eye pupil that morphs into a line -->
+									<div
+										class="absolute bg-black transition-all duration-300 ease-out"
+										style:left={eyePosition === 'email'
+											? '60%'
+											: eyePosition === 'password'
+												? '60%'
+												: '50%'}
+										style:top="50%"
+										style:width={showPassword ? '1rem' : '0.75rem'}
+										style:height={showPassword ? '0.125rem' : '0.75rem'}
+										style:transform={showPassword
+											? 'translate(-50%, -50%)'
+											: eyePosition === 'email'
+												? 'translate(-50%, -80%)'
+												: eyePosition === 'password'
+													? 'translate(-50%, -30%)'
+													: 'translate(-50%, -50%)'}
+									></div>
+								{/if}
+							</div>
+						</div>
+						<!-- Mouth -->
+						{#if error}
+							<!-- Wavy/sad mouth when error -->
+							<svg
+								class="h-3 w-12 transition-all duration-300"
+								viewBox="0 0 48 12"
+								fill="none"
+								xmlns="http://www.w3.org/2000/svg"
+							>
+								<path
+									d="M0 6 Q 8 0, 16 6 T 32 6 T 48 6"
+									stroke="black"
+									stroke-width="3"
+									fill="none"
+								/>
+							</svg>
+						{:else}
+							<!-- Normal straight mouth -->
+							<div class="h-1 w-12 bg-black transition-all duration-300"></div>
+						{/if}
+					</div>
+				</button>
+
 				<div>
 					<label for="email" class="sr-only">{i18n.t('auth.emailPlaceholder')}</label>
 					<input
@@ -80,22 +191,37 @@
 						autocomplete="email"
 						required
 						bind:value={email}
+						onfocus={() => (eyePosition = 'email')}
+						onblur={() => (eyePosition = 'center')}
 						class="relative block w-full border bg-white px-3 py-2 text-gray-900 ring-1 ring-gray-300 ring-inset placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-blue-600 focus:ring-inset sm:text-sm sm:leading-6"
 						placeholder={i18n.t('auth.emailPlaceholder')}
 					/>
 				</div>
-				<div>
+				<div class="relative">
 					<label for="password" class="sr-only">{i18n.t('auth.passwordPlaceholder')}</label>
 					<input
 						id="password"
 						name="password"
-						type="password"
+						type={showPassword ? 'text' : 'password'}
 						autocomplete="current-password"
 						required
 						bind:value={password}
-						class="relative block w-full border bg-white px-3 py-2 text-gray-900 ring-1 ring-gray-300 ring-inset placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-blue-600 focus:ring-inset sm:text-sm sm:leading-6"
+						onfocus={() => (eyePosition = 'password')}
+						onblur={() => (eyePosition = 'center')}
+						class="relative block w-full border bg-white px-3 py-2 pr-10 text-gray-900 ring-1 ring-gray-300 ring-inset placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-blue-600 focus:ring-inset sm:text-sm sm:leading-6"
 						placeholder={i18n.t('auth.passwordPlaceholder')}
 					/>
+					<button
+						type="button"
+						onclick={() => (showPassword = !showPassword)}
+						class="absolute top-0 right-0 z-10 flex h-full items-center px-3 text-gray-400 hover:text-gray-600"
+					>
+						{#if showPassword}
+							<EyeClosedIcon />
+						{:else}
+							<EyeIcon />
+						{/if}
+					</button>
 				</div>
 			</div>
 
@@ -108,9 +234,13 @@
 			</div>
 
 			<div>
-				<PixelButton variant="main" type="submit" disabled={isLoading}
-					>{isLoading ? i18n.t('auth.signingIn') : i18n.t('auth.signIn')}</PixelButton
+				<button
+					type="submit"
+					disabled={isLoading}
+					class="flex w-full items-center justify-center border-2 border-[#372d2e] bg-[#fcbd80] px-3 py-2 text-sm font-semibold text-[#372d2e] transition-all duration-150 hover:-translate-y-0.5 hover:bg-[#dda877] hover:shadow-[0_4px_0_#372d2e] active:translate-y-0 active:shadow-none disabled:cursor-not-allowed disabled:opacity-50"
 				>
+					{isLoading ? i18n.t('auth.signingIn') : i18n.t('auth.signIn')}
+				</button>
 			</div>
 
 			<div class="relative">

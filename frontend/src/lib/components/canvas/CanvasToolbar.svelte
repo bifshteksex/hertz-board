@@ -10,6 +10,7 @@
 		Minus,
 		ArrowRight,
 		Pencil,
+		Eraser,
 		StickyNote,
 		Image as ImageIcon,
 		List,
@@ -60,6 +61,7 @@
 		{ id: 'select' as Tool, icon: MousePointer2, label: i18n.t('canvas.toolbar.tools.select') },
 		{ id: 'text' as Tool, icon: Type, label: i18n.t('canvas.toolbar.tools.text') },
 		{ id: 'freehand' as Tool, icon: Pencil, label: i18n.t('canvas.toolbar.tools.pen') },
+		{ id: 'eraser' as Tool, icon: Eraser, label: i18n.t('canvas.toolbar.tools.eraser') },
 		{ id: 'sticky' as Tool, icon: StickyNote, label: i18n.t('canvas.toolbar.tools.sticky') },
 		{ id: 'image' as Tool, icon: ImageIcon, label: i18n.t('canvas.toolbar.tools.image') },
 		{

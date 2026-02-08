@@ -52,6 +52,9 @@
 	let isAltPressed = $state(false); // Eyedropper mode
 	let isEyedropperActive = $state(false); // Alt + freehand tool = eyedropper
 
+	// Eraser state
+	let isErasing = $state(false);
+
 	// Connector creation state
 	let isCreatingConnector = $state(false);
 	let connectorStart = $state<{ x: number; y: number } | null>(null);
@@ -92,10 +95,11 @@
 				isShiftPressed = true;
 			}
 
-			// Alt для пипетки (eyedropper) в режиме freehand
-			if ((e.code === 'AltLeft' || e.code === 'AltRight') && !isAltPressed) {
+			// Alt/Option для пипетки (eyedropper) в режиме freehand
+			// Поддержка Windows/Linux (Alt) и Mac (Option)
+			if ((e.code === 'AltLeft' || e.code === 'AltRight' || e.altKey) && !isAltPressed) {
 				isAltPressed = true;
-				console.log('[Eyedropper] Alt pressed, current tool:', canvasStore.activeTool);
+				console.log('[Eyedropper] Alt/Option pressed, current tool:', canvasStore.activeTool);
 				if (canvasStore.activeTool === 'freehand') {
 					isEyedropperActive = true;
 					console.log('[Eyedropper] Eyedropper mode activated');
@@ -150,10 +154,10 @@
 			if (e.code === 'ShiftLeft' || e.code === 'ShiftRight') {
 				isShiftPressed = false;
 			}
-			if (e.code === 'AltLeft' || e.code === 'AltRight') {
+			if (e.code === 'AltLeft' || e.code === 'AltRight' || (!e.altKey && isAltPressed)) {
 				isAltPressed = false;
 				isEyedropperActive = false;
-				console.log('[Eyedropper] Alt released, eyedropper deactivated');
+				console.log('[Eyedropper] Alt/Option released, eyedropper deactivated');
 			}
 		};
 
@@ -282,6 +286,52 @@
 		};
 
 		canvas.addElement(newElement);
+	}
+
+	// Eraser - check if point intersects with freehand element
+	function checkFreehandIntersection(
+		x: number,
+		y: number,
+		element: CanvasElementType,
+		eraserSize: number
+	): boolean {
+		if (element.type !== 'freehand' || !element.points) return false;
+
+		const eraserRadius = eraserSize / 2;
+
+		// Check each line segment in the freehand path
+		for (let i = 0; i < element.points.length; i++) {
+			const point = element.points[i];
+			const absX = element.pos_x + point.x;
+			const absY = element.pos_y + point.y;
+
+			// Distance from eraser center to point
+			const dx = x - absX;
+			const dy = y - absY;
+			const distance = Math.sqrt(dx * dx + dy * dy);
+
+			if (distance <= eraserRadius + (element.style?.strokeWidth || 2) / 2) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	// Eraser - erase freehand elements under cursor
+	function eraseFreehandAtPoint(x: number, y: number) {
+		const eraserSize = canvasStore.brushWidth * 2;
+		const elementsToDelete: string[] = [];
+
+		canvasStore.elements.forEach((element) => {
+			if (checkFreehandIntersection(x, y, element, eraserSize)) {
+				elementsToDelete.push(element.id);
+			}
+		});
+
+		if (elementsToDelete.length > 0) {
+			canvas.deleteElements(elementsToDelete);
+		}
 	}
 
 	// Eyedropper - pick color from element under cursor
@@ -784,6 +834,14 @@
 			return;
 		}
 
+		// Eraser tool
+		if (e.button === 0 && canvasStore.activeTool === 'eraser') {
+			const point = getCanvasPoint(e);
+			isErasing = true;
+			eraseFreehandAtPoint(point.x, point.y);
+			return;
+		}
+
 		// Text tool - single click creates text
 		if (e.button === 0 && canvasStore.activeTool === 'text') {
 			const point = getCanvasPoint(e);
@@ -832,8 +890,10 @@
 		// Обновляем позицию brush cursor (вне RAF для плавности)
 		brushCursorX = e.clientX;
 		brushCursorY = e.clientY;
-		// Show brush cursor only in freehand mode and NOT in eyedropper mode
-		showBrushCursor = canvasStore.activeTool === 'freehand' && !isEyedropperActive;
+		// Show brush cursor in freehand mode (not eyedropper) or eraser mode
+		showBrushCursor =
+			(canvasStore.activeTool === 'freehand' && !isEyedropperActive) ||
+			canvasStore.activeTool === 'eraser';
 
 		// Используем requestAnimationFrame для throttling
 		pendingMouseEvent = e;
@@ -885,6 +945,13 @@
 				if (isDrawing) {
 					const point = getCanvasPoint(event);
 					drawingPoints = [...drawingPoints, point];
+					return;
+				}
+
+				// Erasing
+				if (isErasing) {
+					const point = getCanvasPoint(event);
+					eraseFreehandAtPoint(point.x, point.y);
 					return;
 				}
 
@@ -962,6 +1029,12 @@
 			createFreehandElement(drawingPoints);
 			isDrawing = false;
 			drawingPoints = [];
+			return;
+		}
+
+		// End erasing
+		if (isErasing) {
+			isErasing = false;
 			return;
 		}
 
@@ -1256,7 +1329,8 @@
 <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 <div
 	class="relative h-full w-full overflow-hidden bg-gray-200 select-none focus:outline-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-blue-600 dark:bg-gray-800"
-	class:cursor-none={canvasStore.activeTool === 'freehand' && !isEyedropperActive}
+	class:cursor-none={(canvasStore.activeTool === 'freehand' && !isEyedropperActive) ||
+		canvasStore.activeTool === 'eraser'}
 	class:cursor-eyedropper={isEyedropperActive}
 	bind:this={canvasContainer}
 	onmousedown={handleMouseDown}
@@ -1267,7 +1341,9 @@
 		showBrushCursor = false;
 	}}
 	onmouseenter={() => {
-		showBrushCursor = canvasStore.activeTool === 'freehand' && !isEyedropperActive;
+		showBrushCursor =
+			(canvasStore.activeTool === 'freehand' && !isEyedropperActive) ||
+			canvasStore.activeTool === 'eraser';
 	}}
 	oncontextmenu={handleContextMenu}
 	onwheel={handleWheel}
@@ -1278,7 +1354,8 @@
 	<svg
 		bind:this={svgCanvas}
 		class="block touch-none"
-		class:cursor-none={canvasStore.activeTool === 'freehand'}
+		class:cursor-none={(canvasStore.activeTool === 'freehand' && !isEyedropperActive) ||
+			canvasStore.activeTool === 'eraser'}
 		width="100%"
 		height="100%"
 	>
@@ -1404,17 +1481,23 @@
 		y={brushCursorY}
 		size={canvasStore.brushWidth * 2 * canvasStore.viewport.zoom}
 		visible={showBrushCursor}
+		isEraser={canvasStore.activeTool === 'eraser'}
 	/>
 </div>
 
 <style>
-	.cursor-none,
-	.cursor-none * {
+	:global(.cursor-none),
+	:global(.cursor-none) *,
+	:global(.cursor-none) svg,
+	:global(.cursor-none) svg *,
+	:global(.cursor-none) g,
+	:global(.cursor-none) :global(.canvas-element),
+	:global(.cursor-none) :global(.canvas-element) * {
 		cursor: none !important;
 	}
 
-	.cursor-eyedropper,
-	.cursor-eyedropper * {
+	:global(.cursor-eyedropper),
+	:global(.cursor-eyedropper) * {
 		cursor: crosshair !important;
 	}
 </style>

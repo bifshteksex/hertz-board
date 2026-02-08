@@ -212,7 +212,7 @@
 		</div>
 		<button
 			onclick={() => (showCreateModal = true)}
-			class="flex items-center gap-2 bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-700"
+			class="flex items-center gap-2 border-2 border-[#372d2e] bg-[#fcbd80] px-4 py-2 text-[#372d2e] transition-all duration-150 hover:-translate-y-0.5 hover:bg-[#dda877] hover:shadow-[0_4px_0_#372d2e] active:translate-y-0 active:shadow-none"
 		>
 			<Plus size={20} />
 			{i18n.t('dashboard.newWorkspace')}
@@ -263,7 +263,7 @@
 					<!-- Thumbnail -->
 					<button
 						onclick={() => goto(`/workspace/${workspace.id}`)}
-						class="aspect-video w-full overflow-hidden bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-800 dark:to-gray-700"
+						class="aspect-video w-full overflow-hidden bg-linear-to-br from-blue-50 to-indigo-100 dark:from-gray-800 dark:to-gray-700"
 					>
 						{#if workspace.thumbnail_url}
 							<img
@@ -455,14 +455,14 @@
 					createDescription = '';
 					createError = '';
 				}}
-				class="flex-1 border-2 border-gray-300 bg-white px-4 py-2 text-gray-700 transition hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-800"
+				class="flex-1 border-2 border-[#372d2e] bg-white px-4 py-2 text-[#372d2e] transition-all duration-150 hover:-translate-y-0.5 hover:bg-gray-50 hover:shadow-[0_4px_0_#372d2e] active:translate-y-0 active:shadow-none dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
 			>
 				{i18n.t('common.cancel')}
 			</button>
 			<button
 				type="submit"
 				disabled={isCreating}
-				class="flex-1 border-2 border-blue-600 bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+				class="flex-1 border-2 border-[#372d2e] bg-[#fcbd80] px-4 py-2 text-[#372d2e] transition-all duration-150 hover:-translate-y-0.5 hover:bg-[#dda877] hover:shadow-[0_4px_0_#372d2e] active:translate-y-0 active:shadow-none disabled:cursor-not-allowed disabled:opacity-50"
 			>
 				{isCreating
 					? i18n.t('dashboard.modal.create.creating')

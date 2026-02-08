@@ -24,7 +24,7 @@
 	}
 </script>
 
-<div class="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12 sm:px-6 lg:px-8">
+<div class="flex min-h-screen items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
 	<LanguageSwitcher />
 
 	<div class="w-full max-w-md space-y-8">
@@ -66,7 +66,7 @@
 						autocomplete="email"
 						required
 						bind:value={email}
-						class="relative block w-full rounded-md border-0 px-3 py-2 text-gray-900 ring-1 ring-gray-300 ring-inset placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-blue-600 focus:ring-inset sm:text-sm sm:leading-6"
+						class="relative block w-full border bg-white px-3 py-2 text-gray-900 ring-1 ring-gray-300 ring-inset placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-blue-600 focus:ring-inset sm:text-sm sm:leading-6"
 						placeholder={i18n.t('auth.emailPlaceholder')}
 					/>
 				</div>
@@ -75,7 +75,7 @@
 					<button
 						type="submit"
 						disabled={isLoading}
-						class="group relative flex w-full justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:cursor-not-allowed disabled:opacity-50"
+						class="flex w-full items-center justify-center border-2 border-[#372d2e] bg-white px-3 py-2 text-sm font-semibold text-[#372d2e] transition-all duration-150 hover:-translate-y-0.5 hover:bg-gray-100 hover:shadow-[0_4px_0_#372d2e] active:translate-y-0 active:shadow-none disabled:cursor-not-allowed disabled:opacity-50"
 					>
 						{isLoading ? i18n.t('auth.sending') : i18n.t('auth.sendResetLink')}
 					</button>

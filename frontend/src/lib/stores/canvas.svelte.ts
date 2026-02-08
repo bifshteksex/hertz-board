@@ -22,6 +22,7 @@ export type Tool =
 	| 'line'
 	| 'arrow'
 	| 'freehand'
+	| 'eraser'
 	| 'sticky'
 	| 'list'
 	| 'image'

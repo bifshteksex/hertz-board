@@ -303,7 +303,7 @@
 
 <div
 	bind:this={menuElement}
-	class="fixed z-[10000] min-w-[200px] animate-[menuFadeIn_0.1s_ease-out] rounded-lg border border-gray-200 bg-white p-1 shadow-lg dark:border-gray-700 dark:bg-gray-800 dark:shadow-gray-900/50"
+	class="fixed z-[10000] min-w-[200px] animate-[menuFadeIn_0.1s_ease-out] border border-gray-200 bg-white p-1 shadow-lg dark:border-gray-700 dark:bg-gray-800 dark:shadow-gray-900/50"
 	style="left: {x}px; top: {y}px;"
 >
 	{#each menuItems as item}

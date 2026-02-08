@@ -123,6 +123,54 @@ a.disabled,
 		not-allowed;
 }
 
+/* Hide cursor when using freehand drawing tool or eraser */
+.cursor-none,
+.cursor-none *,
+.cursor-none svg,
+.cursor-none svg *,
+.cursor-none g,
+.cursor-none g *,
+.cursor-none rect,
+.cursor-none ellipse,
+.cursor-none circle,
+.cursor-none path,
+.cursor-none line,
+.cursor-none polygon,
+.cursor-none polyline,
+.cursor-none text,
+.cursor-none foreignObject,
+.cursor-none foreignObject *,
+.cursor-none button,
+.cursor-none button *,
+.cursor-none a,
+.cursor-none a * {
+	cursor: none !important;
+}
+
+/* Eyedropper cursor (Alt + freehand) */
+.cursor-eyedropper,
+.cursor-eyedropper *,
+.cursor-eyedropper svg,
+.cursor-eyedropper svg *,
+.cursor-eyedropper g,
+.cursor-eyedropper g *,
+.cursor-eyedropper rect,
+.cursor-eyedropper ellipse,
+.cursor-eyedropper circle,
+.cursor-eyedropper path,
+.cursor-eyedropper line,
+.cursor-eyedropper polygon,
+.cursor-eyedropper polyline,
+.cursor-eyedropper text,
+.cursor-eyedropper foreignObject,
+.cursor-eyedropper foreignObject *,
+.cursor-eyedropper button,
+.cursor-eyedropper button *,
+.cursor-eyedropper a,
+.cursor-eyedropper a * {
+	cursor: crosshair !important;
+}
+
 /* Dark mode configuration */
 :root {
 	color-scheme: light;

@@ -2,6 +2,7 @@
 	import { api } from '$lib/services/api';
 	import type { WorkspaceMember, WorkspaceRole } from '$lib/types/api';
 	import { Users, Mail, MoreVertical, UserX, Eye, Edit3, Crown, Copy, Check } from 'lucide-svelte';
+	import { i18n } from '$lib/stores/i18n.svelte';
 
 	interface Props {
 		workspaceId: string;
@@ -90,7 +91,7 @@
 	}
 
 	async function handleRemoveMember(memberId: string) {
-		if (!confirm('Are you sure you want to remove this member?')) {
+		if (!confirm(i18n.t('workspaceMembers.alerts.removeConfirm'))) {
 			return;
 		}
 
@@ -115,7 +116,7 @@
 	}
 
 	function getRoleLabel(role: WorkspaceRole) {
-		return role.charAt(0).toUpperCase() + role.slice(1);
+		return i18n.t(`workspaceMembers.${role}`);
 	}
 
 	function getInitials(name?: string, email?: string): string {
@@ -154,7 +155,7 @@
 	<div class="flex items-center justify-between border-b border-gray-200 p-4 dark:border-gray-700">
 		<div class="flex items-center gap-2 text-gray-900 dark:text-gray-50">
 			<Users size={20} />
-			<h3 class="m-0 text-base font-semibold">Workspace Members</h3>
+			<h3 class="m-0 text-base font-semibold">{i18n.t('workspaceMembers.title')}</h3>
 			<span
 				class="flex h-6 min-w-6 items-center justify-center bg-gray-100 px-2 text-[13px] font-semibold text-gray-500 dark:bg-gray-700 dark:text-gray-400"
 				>{members.length}</span
@@ -163,17 +164,19 @@
 
 		{#if canInvite}
 			<button
-				class="flex items-center gap-1.5 border-none bg-blue-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-600"
+				class="flex items-center gap-1.5 border-2 border-[#372d2e] bg-[#fcbd80] px-4 py-2 text-sm font-medium text-[#372d2e] transition-all duration-150 hover:-translate-y-0.5 hover:bg-[#dda877] hover:shadow-[0_4px_0_#372d2e] active:translate-y-0 active:shadow-none"
 				onclick={() => (showInviteModal = true)}
 			>
 				<Mail size={16} />
-				Invite Member
+				{i18n.t('workspaceMembers.inviteMember')}
 			</button>
 		{/if}
 	</div>
 
 	{#if isLoading}
-		<div class="p-8 text-center text-gray-500 dark:text-gray-400">Loading members...</div>
+		<div class="p-8 text-center text-gray-500 dark:text-gray-400">
+			{i18n.t('workspaceMembers.loading')}
+		</div>
 	{:else if error}
 		<div class="p-8 text-center text-red-600 dark:text-red-500">{error}</div>
 	{:else if members.length === 0}
@@ -181,7 +184,7 @@
 			class="flex flex-col items-center justify-center p-12 px-4 text-gray-400 dark:text-gray-600"
 		>
 			<Users size={48} strokeWidth={1} />
-			<p class="mt-3 text-sm">No members yet</p>
+			<p class="mt-3 text-sm">{i18n.t('workspaceMembers.noMembers')}</p>
 		</div>
 	{:else}
 		<div class="p-2">
@@ -266,7 +269,7 @@
 											disabled={member.role === 'viewer'}
 										>
 											<Eye size={14} />
-											Make Viewer
+											{i18n.t('workspaceMembers.menu.makeViewer')}
 										</button>
 										<button
 											class="flex w-full items-center gap-2 rounded border-none bg-transparent px-3 py-2 text-left text-sm text-gray-700 transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50 dark:text-gray-300 dark:hover:bg-gray-700"
@@ -274,7 +277,7 @@
 											disabled={member.role === 'editor'}
 										>
 											<Edit3 size={14} />
-											Make Editor
+											{i18n.t('workspaceMembers.menu.makeEditor')}
 										</button>
 										<div class="my-1 h-px bg-gray-200 dark:bg-gray-700"></div>
 									{/if}
@@ -283,7 +286,7 @@
 										onclick={() => handleRemoveMember(member.id)}
 									>
 										<UserX size={14} />
-										Remove Member
+										{i18n.t('workspaceMembers.menu.removeMember')}
 									</button>
 								</div>
 
@@ -316,7 +319,9 @@
 			<div
 				class="flex items-center justify-between border-b border-gray-200 p-5 px-6 dark:border-gray-700"
 			>
-				<h3 class="m-0 text-lg font-semibold text-gray-900 dark:text-gray-50">Invite Member</h3>
+				<h3 class="m-0 text-lg font-semibold text-gray-900 dark:text-gray-50">
+					{i18n.t('workspaceMembers.modal.invite.title')}
+				</h3>
 				<button
 					class="flex h-8 w-8 items-center justify-center rounded-md border-none bg-transparent text-2xl text-gray-500 transition-all hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-50"
 					onclick={closeInviteModal}>&times;</button
@@ -332,10 +337,10 @@
 							<Mail size={32} />
 						</div>
 						<h4 class="m-0 mb-2 text-lg font-semibold text-gray-900 dark:text-gray-50">
-							Invitation Sent!
+							{i18n.t('workspaceMembers.modal.success.title')}
 						</h4>
 						<p class="m-0 mb-4 text-sm text-gray-500 dark:text-gray-400">
-							Share this link with the user:
+							{i18n.t('workspaceMembers.modal.success.description')}
 						</p>
 
 						<div class="mb-3 flex gap-2">
@@ -343,31 +348,33 @@
 								type="text"
 								readonly
 								value={inviteUrl}
-								class="flex-1 rounded-md border border-gray-300 bg-gray-50 px-3 py-2.5 text-[13px] text-gray-700 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300"
+								class="flex-1 border border-gray-300 bg-gray-50 px-3 py-2.5 text-[13px] text-gray-700 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300"
 							/>
 							<button
-								class="flex items-center gap-1.5 rounded-md border-none bg-blue-500 px-4 py-2.5 text-sm font-medium whitespace-nowrap text-white transition-colors hover:bg-blue-600"
+								class="flex items-center gap-1.5 border-2 border-[#372d2e] bg-[#fcbd80] px-4 py-2.5 text-sm font-medium whitespace-nowrap text-[#372d2e] transition-all duration-150 hover:-translate-y-0.5 hover:bg-[#dda877] hover:shadow-[0_4px_0_#372d2e] active:translate-y-0 active:shadow-none"
 								onclick={copyInviteLink}
 							>
 								{#if copiedLink}
 									<Check size={16} />
-									Copied!
+									{i18n.t('workspaceMembers.modal.success.copied')}
 								{:else}
 									<Copy size={16} />
-									Copy
+									{i18n.t('workspaceMembers.modal.success.copy')}
 								{/if}
 							</button>
 						</div>
 
-						<p class="text-[13px] text-gray-400 dark:text-gray-600">Link expires in 7 days</p>
+						<p class="text-[13px] text-gray-400 dark:text-gray-600">
+							{i18n.t('workspaceMembers.modal.success.expiresIn')}
+						</p>
 					</div>
 				</div>
 				<div
 					class="flex items-center justify-end gap-3 border-t border-gray-200 p-4 px-6 dark:border-gray-700"
 				>
 					<button
-						class="rounded-md border border-none border-gray-300 bg-white px-5 py-2.5 text-sm font-medium text-gray-700 transition-all hover:border-gray-400 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-gray-500 dark:hover:bg-gray-700"
-						onclick={closeInviteModal}>Done</button
+						class="border-2 border-[#372d2e] bg-white px-5 py-2.5 text-sm font-medium text-[#372d2e] transition-all duration-150 hover:-translate-y-0.5 hover:bg-gray-50 hover:shadow-[0_4px_0_#372d2e] active:translate-y-0 active:shadow-none dark:bg-gray-900 dark:text-gray-300 dark:hover:bg-gray-700"
+						onclick={closeInviteModal}>{i18n.t('workspaceMembers.modal.success.done')}</button
 					>
 				</div>
 			{:else}
@@ -375,7 +382,7 @@
 					<div class="p-6">
 						{#if inviteError}
 							<div
-								class="mb-4 rounded-md border border-red-200 bg-red-50 px-3 py-3 text-sm text-red-600 dark:border-red-900 dark:bg-red-950 dark:text-red-400"
+								class="mb-4 border border-red-200 bg-red-50 px-3 py-3 text-sm text-red-600 dark:border-red-900 dark:bg-red-950 dark:text-red-400"
 							>
 								{inviteError}
 							</div>
@@ -385,16 +392,16 @@
 							<label
 								for="invite-email"
 								class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300"
-								>Email Address</label
+								>{i18n.t('workspaceMembers.modal.invite.emailLabel')}</label
 							>
 							<input
 								id="invite-email"
 								type="email"
 								bind:value={inviteEmail}
-								placeholder="colleague@example.com"
+								placeholder={i18n.t('workspaceMembers.modal.invite.emailPlaceholder')}
 								required
 								disabled={isInviting}
-								class="w-full rounded-md border border-gray-300 px-3 py-2.5 text-sm text-gray-900 transition-all focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 focus:outline-none disabled:cursor-not-allowed disabled:bg-gray-50 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-50 dark:focus:ring-blue-500/20 dark:disabled:bg-slate-950"
+								class="w-full border border-gray-300 px-3 py-2.5 text-sm text-gray-900 transition-all focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 focus:outline-none disabled:cursor-not-allowed disabled:bg-gray-50 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-50 dark:focus:ring-blue-500/20 dark:disabled:bg-slate-950"
 							/>
 						</div>
 
@@ -402,22 +409,22 @@
 							<label
 								for="invite-role"
 								class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300"
-								>Role</label
+								>{i18n.t('workspaceMembers.modal.invite.roleLabel')}</label
 							>
 							<select
 								id="invite-role"
 								bind:value={inviteRole}
 								disabled={isInviting}
-								class="w-full rounded-md border border-gray-300 px-3 py-2.5 text-sm text-gray-900 transition-all focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 focus:outline-none disabled:cursor-not-allowed disabled:bg-gray-50 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-50 dark:focus:ring-blue-500/20 dark:disabled:bg-slate-950"
+								class="w-full border border-gray-300 px-3 py-2.5 text-sm text-gray-900 transition-all focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 focus:outline-none disabled:cursor-not-allowed disabled:bg-gray-50 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-50 dark:focus:ring-blue-500/20 dark:disabled:bg-slate-950"
 							>
-								<option value="editor">Editor - Can edit content</option>
-								<option value="viewer">Viewer - Can only view</option>
+								<option value="editor">{i18n.t('workspaceMembers.modal.invite.roleEditor')}</option>
+								<option value="viewer">{i18n.t('workspaceMembers.modal.invite.roleViewer')}</option>
 							</select>
 							<p class="mt-1.5 text-[13px] text-gray-500 dark:text-gray-400">
 								{#if inviteRole === 'editor'}
-									Editors can create, edit, and delete content.
+									{i18n.t('workspaceMembers.modal.invite.roleEditorDesc')}
 								{:else}
-									Viewers can only view content, not edit.
+									{i18n.t('workspaceMembers.modal.invite.roleViewerDesc')}
 								{/if}
 							</p>
 						</div>
@@ -428,18 +435,20 @@
 					>
 						<button
 							type="button"
-							class="rounded-md border border-none border-gray-300 bg-white px-5 py-2.5 text-sm font-medium text-gray-700 transition-all hover:border-gray-400 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-gray-500 dark:hover:bg-gray-700"
+							class="border-2 border-[#372d2e] bg-white px-5 py-2.5 text-sm font-medium text-[#372d2e] transition-all duration-150 hover:-translate-y-0.5 hover:bg-gray-50 hover:shadow-[0_4px_0_#372d2e] active:translate-y-0 active:shadow-none disabled:cursor-not-allowed disabled:opacity-50 dark:bg-gray-900 dark:text-gray-300 dark:hover:bg-gray-700"
 							onclick={closeInviteModal}
 							disabled={isInviting}
 						>
-							Cancel
+							{i18n.t('workspaceMembers.modal.invite.cancel')}
 						</button>
 						<button
 							type="submit"
-							class="rounded-md border-none bg-blue-500 px-5 py-2.5 text-sm font-medium text-white transition-all hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-50"
+							class="border-2 border-[#372d2e] bg-[#fcbd80] px-5 py-2.5 text-sm font-medium text-[#372d2e] transition-all duration-150 hover:-translate-y-0.5 hover:bg-[#dda877] hover:shadow-[0_4px_0_#372d2e] active:translate-y-0 active:shadow-none disabled:cursor-not-allowed disabled:opacity-50"
 							disabled={isInviting}
 						>
-							{isInviting ? 'Sending...' : 'Send Invitation'}
+							{isInviting
+								? i18n.t('workspaceMembers.modal.invite.sending')
+								: i18n.t('workspaceMembers.modal.invite.send')}
 						</button>
 					</div>
 				</form>

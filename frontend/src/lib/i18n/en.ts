@@ -266,6 +266,7 @@ export default {
 				select: 'Select (V)',
 				text: 'Text (T)',
 				pen: 'Pen (P)',
+				eraser: 'Eraser (E)',
 				sticky: 'Sticky Note (S)',
 				image: 'Image (I)',
 				connector: 'Connector',
@@ -378,6 +379,46 @@ export default {
 			error: 'Connection Error',
 			retry: 'Retry',
 			reconnect: 'Reconnect'
+		}
+	},
+	workspaceMembers: {
+		title: 'Workspace Members',
+		inviteMember: 'Invite Member',
+		loading: 'Loading members...',
+		noMembers: 'No members yet',
+		owner: 'Owner',
+		editor: 'Editor',
+		viewer: 'Viewer',
+		menu: {
+			makeViewer: 'Make Viewer',
+			makeEditor: 'Make Editor',
+			removeMember: 'Remove Member'
+		},
+		modal: {
+			invite: {
+				title: 'Invite Member',
+				emailLabel: 'Email Address',
+				emailPlaceholder: 'colleague@example.com',
+				roleLabel: 'Role',
+				roleEditor: 'Editor - Can edit content',
+				roleViewer: 'Viewer - Can only view',
+				roleEditorDesc: 'Editors can create, edit, and delete content.',
+				roleViewerDesc: 'Viewers can only view content, not edit.',
+				cancel: 'Cancel',
+				send: 'Send Invitation',
+				sending: 'Sending...'
+			},
+			success: {
+				title: 'Invitation Sent!',
+				description: 'Share this link with the user:',
+				copy: 'Copy',
+				copied: 'Copied!',
+				expiresIn: 'Link expires in 7 days',
+				done: 'Done'
+			}
+		},
+		alerts: {
+			removeConfirm: 'Are you sure you want to remove this member?'
 		}
 	}
 };

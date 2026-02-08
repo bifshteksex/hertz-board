@@ -28,10 +28,15 @@
 	}
 </script>
 
-<div class="language-switcher" class:fixed={position === 'top-right'}>
+<div
+	class="z-50"
+	class:fixed={position === 'top-right'}
+	class:top-6={position === 'top-right'}
+	class:right-6={position === 'top-right'}
+>
 	<button
 		onclick={toggleMenu}
-		class="language-btn"
+		class="flex h-12 w-12 items-center justify-center border-2 border-[#372d2e] bg-white text-sm font-semibold text-[#372d2e] transition-all duration-150 hover:-translate-y-0.5 hover:bg-gray-100 hover:shadow-[0_4px_0_#372d2e] active:translate-y-0 active:shadow-none"
 		title="Change language"
 		aria-label="Change language"
 	>
@@ -45,61 +50,11 @@
 				class="pixel-menu-item"
 				class:active={currentLocale === lang.code}
 			>
-				<span class="lang-code">{lang.label}</span>
-				<span class="lang-name">{lang.name}</span>
+				<span class="text-sm font-semibold" class:text-blue-600={currentLocale === lang.code}>
+					{lang.label}
+				</span>
+				<span class="text-xs text-gray-500">{lang.name}</span>
 			</button>
 		{/each}
 	</PixelMenu>
 </div>
-
-<style>
-	.language-switcher {
-		position: relative;
-		z-index: 50;
-	}
-
-	.language-switcher.fixed {
-		position: fixed;
-		top: 1.5rem;
-		right: 1.5rem;
-	}
-
-	.language-btn {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: 48px;
-		height: 48px;
-		background: white;
-		border: 2px solid #372d2e;
-		font-size: 14px;
-		font-weight: 600;
-		color: #372d2e;
-		transition: all 0.15s;
-	}
-
-	.language-btn:hover {
-		background: #f3f4f6;
-		transform: translateY(-2px);
-		box-shadow: 0 4px 0 #372d2e;
-	}
-
-	.language-btn:active {
-		transform: translateY(0);
-		box-shadow: none;
-	}
-
-	.lang-code {
-		font-size: 14px;
-		font-weight: 600;
-	}
-
-	.lang-name {
-		font-size: 12px;
-		color: #6b7280;
-	}
-
-	:global(.pixel-menu-item.active .lang-code) {
-		color: #2563eb;
-	}
-</style>
