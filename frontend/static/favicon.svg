@@ -1,4 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-  <rect width="100" height="100" fill="#2563eb"/>
-  <text x="50" y="70" font-size="60" text-anchor="middle" fill="white" font-family="monospace" font-weight="bold">H</text>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="109" height="109"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="109" height="109"><svg width="109" height="109" viewBox="0 0 109 109" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect x="4.5" y="4.5" width="91" height="91" fill="white" stroke="#372D2E" stroke-width="9"></rect>
+<rect x="13.4169" y="13.4306" width="91" height="91" stroke="#372D2E" stroke-opacity="0.2" stroke-width="9"></rect>
+<path d="M30.0245 17.8911H38.0245V41.8911H62.0245V17.8911H70.0245V81.8911H62.0245V49.8911H38.0245V81.8911H30.0245V17.8911Z" fill="#372D2E"></path>
+</svg></svg><style>@media (prefers-color-scheme: light) { :root { filter: none; } }
+@media (prefers-color-scheme: dark) { :root { filter: none; } }
+</style></svg>
