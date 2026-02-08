@@ -1,8 +1,11 @@
 type Locale = 'en' | 'ru' | 'zh';
 
-interface Translations {
-	[key: string]: string | Translations;
-}
+type DeepRecord = {
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	[key: string]: string | DeepRecord | any;
+};
+
+type Translations = DeepRecord;
 
 interface LocaleData {
 	[key: string]: Translations;
@@ -48,6 +51,7 @@ class I18nStore {
 	}
 
 	// Direct object access to translations
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	get messages(): any {
 		return this.translations[this.currentLocale] || {};
 	}
