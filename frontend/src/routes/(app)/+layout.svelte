@@ -80,11 +80,19 @@
 						onclick={() => (showUserMenu = !showUserMenu)}
 						class="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left transition hover:bg-gray-100 dark:hover:bg-gray-700"
 					>
-						<div
-							class="flex h-8 w-8 items-center justify-center rounded-full bg-blue-600 text-white"
-						>
-							{authStore.user?.name?.charAt(0).toUpperCase() || 'U'}
-						</div>
+						{#if authStore.user?.avatar_url}
+							<img
+								src={authStore.user.avatar_url}
+								alt={authStore.user.name}
+								class="h-8 w-8 rounded-full object-cover"
+							/>
+						{:else}
+							<div
+								class="flex h-8 w-8 items-center justify-center rounded-full bg-blue-600 text-white"
+							>
+								{authStore.user?.name?.charAt(0).toUpperCase() || 'U'}
+							</div>
+						{/if}
 						<div class="flex-1 overflow-hidden">
 							<p class="truncate text-sm font-medium text-gray-900 dark:text-gray-100">
 								{authStore.user?.name}
@@ -179,11 +187,19 @@
 
 					<div class="border-t border-gray-200 p-4 dark:border-gray-700">
 						<div class="mb-2 flex items-center gap-3 px-3">
-							<div
-								class="flex h-8 w-8 items-center justify-center rounded-full bg-blue-600 text-white"
-							>
-								{authStore.user?.name?.charAt(0).toUpperCase() || 'U'}
-							</div>
+							{#if authStore.user?.avatar_url}
+								<img
+									src={authStore.user.avatar_url}
+									alt={authStore.user.name}
+									class="h-8 w-8 rounded-full object-cover"
+								/>
+							{:else}
+								<div
+									class="flex h-8 w-8 items-center justify-center rounded-full bg-blue-600 text-white"
+								>
+									{authStore.user?.name?.charAt(0).toUpperCase() || 'U'}
+								</div>
+							{/if}
 							<div class="flex-1">
 								<p class="truncate text-sm font-medium text-gray-900 dark:text-gray-100">
 									{authStore.user?.name}

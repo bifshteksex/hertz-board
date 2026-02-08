@@ -26,6 +26,8 @@ class PresenceStore {
 	 * Get number of active users
 	 */
 	get userCount(): number {
+		// Access _version to make this reactive
+		void this._version;
 		return this._users.size;
 	}
 
