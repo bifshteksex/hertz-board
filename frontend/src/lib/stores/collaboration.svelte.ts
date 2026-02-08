@@ -120,6 +120,19 @@ class CollaborationStore {
 			// Set workspace in presence store
 			presenceStore.setWorkspace(workspaceId);
 
+			// Add current user to presence store
+			const currentUser = authStore.user;
+			if (currentUser) {
+				presenceStore.updateUser({
+					user_id: currentUser.id,
+					user_name: currentUser.name || currentUser.email || 'You',
+					user_color: this._userColor,
+					cursor: undefined,
+					selected_elements: [],
+					last_seen: new Date().toISOString()
+				});
+			}
+
 			// Request initial sync
 			this.requestSync();
 
@@ -175,6 +188,12 @@ class CollaborationStore {
 
 		wsClient.sendCursorMove(this._currentWorkspaceId, x, y);
 
+		// Update current user's cursor position in presence store
+		const currentUserId = authStore.user?.id;
+		if (currentUserId) {
+			presenceStore.updateCursor(currentUserId, { x, y });
+		}
+
 		this.cursorThrottle = setTimeout(() => {
 			this.cursorThrottle = null;
 		}, 100);
@@ -193,6 +212,13 @@ class CollaborationStore {
 
 		this.selectionThrottle = setTimeout(() => {
 			wsClient.sendSelectionChange(this._currentWorkspaceId!, selectedIds);
+
+			// Update current user's selection in presence store
+			const currentUserId = authStore.user?.id;
+			if (currentUserId) {
+				presenceStore.updateSelection(currentUserId, selectedIds);
+			}
+
 			this.selectionThrottle = null;
 		}, 50);
 	}
@@ -406,8 +432,9 @@ class CollaborationStore {
 
 		// Run cleanup every 10 seconds
 		this.cleanupTimer = setInterval(() => {
-			// Remove users inactive for more than 30 seconds
-			presenceStore.removeInactiveUsers(30000);
+			// Remove users inactive for more than 30 seconds (but not self)
+			const currentUserId = authStore.user?.id;
+			presenceStore.removeInactiveUsers(30000, currentUserId);
 		}, 10000);
 
 		console.log('[Collaboration] Started inactive user cleanup timer');

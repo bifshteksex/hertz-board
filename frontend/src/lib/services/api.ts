@@ -16,6 +16,7 @@ import type {
 	CreateWorkspaceRequest,
 	UpdateWorkspaceRequest,
 	WorkspaceMember,
+	WorkspaceRole,
 	InviteMemberRequest,
 	UpdateMemberRoleRequest,
 	WorkspaceInvitation,
@@ -282,7 +283,33 @@ export class ApiClient {
 
 	// Workspace members
 	async listMembers(workspaceId: string): Promise<WorkspaceMember[]> {
-		return this.request<WorkspaceMember[]>(`/workspaces/${workspaceId}/members`);
+		interface ApiMember {
+			id: string;
+			user?: {
+				id: string;
+				email: string;
+				name?: string;
+				avatar_url?: string;
+			};
+			role: WorkspaceRole;
+			joined_at: string;
+		}
+
+		const response = await this.request<{ members: ApiMember[] }>(
+			`/workspaces/${workspaceId}/members`
+		);
+
+		// Transform API response to match frontend type
+		return response.members.map((member) => ({
+			id: member.id,
+			workspace_id: workspaceId,
+			user_id: member.user?.id || '',
+			role: member.role,
+			joined_at: member.joined_at,
+			user_name: member.user?.name,
+			user_email: member.user?.email,
+			user_avatar: member.user?.avatar_url
+		}));
 	}
 
 	async inviteMember(

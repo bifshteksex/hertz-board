@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { presenceStore } from '$lib/stores/presence.svelte';
+	import { authStore } from '$lib/stores/auth.svelte';
 	import type { UserPresence } from '$lib/types/websocket';
 	import { User } from 'lucide-svelte';
 
@@ -13,6 +14,7 @@
 
 	const users = $derived(presenceStore.users);
 	const userCount = $derived(presenceStore.userCount);
+	const currentUserId = $derived(authStore.user?.id);
 
 	let isExpanded = $state(false);
 
@@ -50,47 +52,86 @@
 	}
 </script>
 
-<div class="active-users">
+<div class="relative">
 	<!-- Trigger button -->
-	<button class="users-button" onclick={toggleExpanded} title="Active users">
+	<button
+		class="flex items-center gap-1.5 rounded-md border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-700 transition-all hover:border-gray-300 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:border-gray-600 dark:hover:bg-gray-700"
+		onclick={toggleExpanded}
+		title="Active users"
+	>
 		<IconUsers size={24} />
 		{#if userCount > 0}
-			<span class="user-count">{userCount}</span>
+			<span
+				class="flex h-5 min-w-5 items-center justify-center rounded-full bg-blue-500 px-1.5 text-[11px] font-semibold text-white"
+				>{userCount}</span
+			>
 		{/if}
 	</button>
 
 	<!-- Dropdown panel -->
 	{#if isExpanded}
-		<div class="users-dropdown">
-			<div class="dropdown-header">
-				<span class="dropdown-title">Active Users ({userCount})</span>
-				<button class="close-button" onclick={toggleExpanded} aria-label="Close">×</button>
+		<div
+			class="animate-slideDown absolute top-[calc(100%+8px)] right-0 z-1000 flex max-h-100 w-70 flex-col border border-gray-200 bg-white shadow-lg dark:border-gray-700 dark:bg-gray-800"
+		>
+			<div
+				class="flex items-center justify-between border-b border-gray-200 px-4 py-3 dark:border-gray-700"
+			>
+				<span class="text-sm font-semibold text-gray-900 dark:text-gray-50"
+					>Active Users ({userCount})</span
+				>
+				<button
+					class="flex h-6 w-6 items-center justify-center rounded border-none bg-transparent text-xl text-gray-500 transition-all hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-50"
+					onclick={toggleExpanded}
+					aria-label="Close">×</button
+				>
 			</div>
 
-			<div class="users-list">
+			<div
+				class="scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent hover:scrollbar-thumb-gray-400 dark:hover:scrollbar-thumb-gray-500 flex-1 overflow-y-auto p-2"
+			>
 				{#if users.length === 0}
-					<div class="empty-state">
+					<div
+						class="flex flex-col items-center justify-center p-8 px-4 text-center text-gray-400 dark:text-gray-600"
+					>
 						<User size={32} strokeWidth={1.5} />
-						<p>No other users online</p>
+						<p class="mt-3 text-sm">No active users</p>
 					</div>
 				{:else}
 					{#each users as user (user.user_id)}
-						<button class="user-item" onclick={() => handleUserClick(user)}>
+						<button
+							class="flex w-full items-center gap-3 rounded-md border-none bg-transparent px-3 py-2.5 text-left transition-colors hover:bg-gray-50 dark:hover:bg-gray-700"
+							onclick={() => handleUserClick(user)}
+						>
 							<!-- Avatar -->
-							<div class="user-avatar" style="background-color: {user.user_color}">
+							<div
+								class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[13px] font-semibold text-white"
+								style="background-color: {user.user_color}"
+							>
 								{getInitials(user.user_name)}
 							</div>
 
 							<!-- User info -->
-							<div class="user-info">
-								<div class="user-name">{user.user_name}</div>
-								<div class="user-status">
+							<div class="min-w-0 flex-1">
+								<div
+									class="flex items-center gap-1.5 overflow-hidden text-sm font-medium text-ellipsis whitespace-nowrap text-gray-900 dark:text-gray-50"
+								>
+									{user.user_name}
+									{#if currentUserId && user.user_id === currentUserId}
+										<span class="shrink-0 text-xs font-medium text-blue-500 dark:text-blue-400"
+											>(You)</span
+										>
+									{/if}
+								</div>
+								<div class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
 									{user.cursor ? 'Active' : 'Idle'} · {getTimeSinceLastSeen(user.last_seen)}
 								</div>
 							</div>
 
 							<!-- Indicator -->
-							<div class="user-indicator" style="background-color: {user.user_color}"></div>
+							<div
+								class="h-2 w-2 shrink-0 rounded-full"
+								style="background-color: {user.user_color}"
+							></div>
 						</button>
 					{/each}
 				{/if}
@@ -100,84 +141,11 @@
 		<!-- Backdrop -->
 		<!-- svelte-ignore a11y_click_events_have_key_events -->
 		<!-- svelte-ignore a11y_no_static_element_interactions -->
-		<div class="backdrop" onclick={toggleExpanded}></div>
+		<div class="fixed inset-0 z-999 bg-transparent" onclick={toggleExpanded}></div>
 	{/if}
 </div>
 
 <style>
-	.active-users {
-		position: relative;
-	}
-
-	.users-button {
-		display: flex;
-		align-items: center;
-		gap: 6px;
-		padding: 8px 12px;
-		background: white;
-		border: 1px solid #e5e7eb;
-		border-radius: 6px;
-		transition: all 0.2s;
-		color: #374151;
-		font-size: 14px;
-		font-weight: 500;
-	}
-
-	.users-button:hover {
-		background: #f9fafb;
-		border-color: #d1d5db;
-	}
-
-	@media (prefers-color-scheme: dark) {
-		.users-button {
-			background: #1f2937;
-			border-color: #374151;
-			color: #d1d5db;
-		}
-
-		.users-button:hover {
-			background: #374151;
-			border-color: #4b5563;
-		}
-	}
-
-	.user-count {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		min-width: 20px;
-		height: 20px;
-		padding: 0 6px;
-		background: #3b82f6;
-		color: white;
-		border-radius: 10px;
-		font-size: 11px;
-		font-weight: 600;
-	}
-
-	.users-dropdown {
-		position: absolute;
-		top: calc(100% + 8px);
-		right: 0;
-		width: 280px;
-		max-height: 400px;
-		background: white;
-		border: 1px solid #e5e7eb;
-		box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-		z-index: 1000;
-		display: flex;
-		flex-direction: column;
-		animation: slideDown 0.2s ease-out;
-	}
-
-	@media (prefers-color-scheme: dark) {
-		.users-dropdown {
-			background: #1f2937;
-			border-color: #374151;
-			box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-		}
-	}
-
 	@keyframes slideDown {
 		from {
 			opacity: 0;
@@ -189,196 +157,33 @@
 		}
 	}
 
-	.dropdown-header {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		padding: 12px 16px;
-		border-bottom: 1px solid #e5e7eb;
+	.animate-slideDown {
+		animation: slideDown 0.2s ease-out;
 	}
 
-	@media (prefers-color-scheme: dark) {
-		.dropdown-header {
-			border-bottom-color: #374151;
-		}
-	}
-
-	.dropdown-title {
-		font-size: 14px;
-		font-weight: 600;
-		color: #111827;
-	}
-
-	@media (prefers-color-scheme: dark) {
-		.dropdown-title {
-			color: #f3f4f6;
-		}
-	}
-
-	.close-button {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: 24px;
-		height: 24px;
-		background: transparent;
-		border: none;
-		border-radius: 4px;
-		font-size: 20px;
-		color: #6b7280;
-		transition: all 0.2s;
-	}
-
-	.close-button:hover {
-		background: #f3f4f6;
-		color: #111827;
-	}
-
-	@media (prefers-color-scheme: dark) {
-		.close-button {
-			color: #9ca3af;
-		}
-
-		.close-button:hover {
-			background: #374151;
-			color: #f3f4f6;
-		}
-	}
-
-	.users-list {
-		flex: 1;
-		overflow-y: auto;
-		padding: 8px;
-	}
-
-	.empty-state {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		padding: 32px 16px;
-		color: #9ca3af;
-		text-align: center;
-	}
-
-	@media (prefers-color-scheme: dark) {
-		.empty-state {
-			color: #6b7280;
-		}
-	}
-
-	.empty-state p {
-		margin-top: 12px;
-		font-size: 14px;
-	}
-
-	.user-item {
-		display: flex;
-		align-items: center;
-		gap: 12px;
-		width: 100%;
-		padding: 10px 12px;
-		background: transparent;
-		border: none;
-		border-radius: 6px;
-		transition: background 0.2s;
-		text-align: left;
-	}
-
-	.user-item:hover {
-		background: #f9fafb;
-	}
-
-	@media (prefers-color-scheme: dark) {
-		.user-item:hover {
-			background: #374151;
-		}
-	}
-
-	.user-avatar {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: 36px;
-		height: 36px;
-		border-radius: 50%;
-		color: white;
-		font-size: 13px;
-		font-weight: 600;
-		flex-shrink: 0;
-	}
-
-	.user-info {
-		flex: 1;
-		min-width: 0;
-	}
-
-	.user-name {
-		font-size: 14px;
-		font-weight: 500;
-		color: #111827;
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-	}
-
-	@media (prefers-color-scheme: dark) {
-		.user-name {
-			color: #f3f4f6;
-		}
-	}
-
-	.user-status {
-		font-size: 12px;
-		color: #6b7280;
-		margin-top: 2px;
-	}
-
-	@media (prefers-color-scheme: dark) {
-		.user-status {
-			color: #9ca3af;
-		}
-	}
-
-	.user-indicator {
-		width: 8px;
-		height: 8px;
-		border-radius: 50%;
-		flex-shrink: 0;
-	}
-
-	.backdrop {
-		position: fixed;
-		inset: 0;
-		z-index: 999;
-		background: transparent;
-	}
-
-	/* Scrollbar styling */
-	.users-list::-webkit-scrollbar {
+	/* Custom scrollbar */
+	:global(.scrollbar-thin)::-webkit-scrollbar {
 		width: 6px;
 	}
 
-	.users-list::-webkit-scrollbar-track {
+	:global(.scrollbar-thin)::-webkit-scrollbar-track {
 		background: transparent;
 	}
 
-	.users-list::-webkit-scrollbar-thumb {
+	:global(.scrollbar-thin)::-webkit-scrollbar-thumb {
 		background: #d1d5db;
 		border-radius: 3px;
 	}
 
-	.users-list::-webkit-scrollbar-thumb:hover {
+	:global(.scrollbar-thin)::-webkit-scrollbar-thumb:hover {
 		background: #9ca3af;
 	}
 
-	@media (prefers-color-scheme: dark) {
-		.users-list::-webkit-scrollbar-thumb {
-			background: #4b5563;
-		}
+	:global(.dark .scrollbar-thin)::-webkit-scrollbar-thumb {
+		background: #4b5563;
+	}
 
-		.users-list::-webkit-scrollbar-thumb:hover {
-			background: #6b7280;
-		}
+	:global(.dark .scrollbar-thin)::-webkit-scrollbar-thumb:hover {
+		background: #6b7280;
 	}
 </style>

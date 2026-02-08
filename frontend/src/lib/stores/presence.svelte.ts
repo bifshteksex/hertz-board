@@ -152,12 +152,19 @@ class PresenceStore {
 
 	/**
 	 * Remove inactive users (no activity for more than N seconds)
+	 * @param inactivityThreshold - milliseconds of inactivity before removal
+	 * @param excludeUserId - user ID to exclude from removal (e.g., current user)
 	 */
-	removeInactiveUsers(inactivityThreshold = 60000): void {
+	removeInactiveUsers(inactivityThreshold = 60000, excludeUserId?: string): void {
 		const now = Date.now();
 		const toRemove: string[] = [];
 
 		this._users.forEach((user, userId) => {
+			// Don't remove excluded user (e.g., current user)
+			if (excludeUserId && userId === excludeUserId) {
+				return;
+			}
+
 			const lastSeen = new Date(user.last_seen).getTime();
 			if (now - lastSeen > inactivityThreshold) {
 				toRemove.push(userId);

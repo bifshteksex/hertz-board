@@ -41,9 +41,10 @@
 			isLoading = true;
 			error = '';
 			members = await api.listMembers(workspaceId);
+			console.log('[WorkspaceMembers] Loaded members:', members);
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to load members';
-			console.error('Failed to load members:', err);
+			console.error('[WorkspaceMembers] Failed to load members:', err);
 		} finally {
 			isLoading = false;
 		}
@@ -149,16 +150,22 @@
 	}
 </script>
 
-<div class="workspace-members">
-	<div class="header">
-		<div class="title">
+<div class="overflow-hidden border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
+	<div class="flex items-center justify-between border-b border-gray-200 p-4 dark:border-gray-700">
+		<div class="flex items-center gap-2 text-gray-900 dark:text-gray-50">
 			<Users size={20} />
-			<h3>Workspace Members</h3>
-			<span class="count">{members.length}</span>
+			<h3 class="m-0 text-base font-semibold">Workspace Members</h3>
+			<span
+				class="flex h-6 min-w-6 items-center justify-center bg-gray-100 px-2 text-[13px] font-semibold text-gray-500 dark:bg-gray-700 dark:text-gray-400"
+				>{members.length}</span
+			>
 		</div>
 
 		{#if canInvite}
-			<button class="invite-button" onclick={() => (showInviteModal = true)}>
+			<button
+				class="flex items-center gap-1.5 border-none bg-blue-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-600"
+				onclick={() => (showInviteModal = true)}
+			>
 				<Mail size={16} />
 				Invite Member
 			</button>
@@ -166,46 +173,73 @@
 	</div>
 
 	{#if isLoading}
-		<div class="loading">Loading members...</div>
+		<div class="p-8 text-center text-gray-500 dark:text-gray-400">Loading members...</div>
 	{:else if error}
-		<div class="error">{error}</div>
+		<div class="p-8 text-center text-red-600 dark:text-red-500">{error}</div>
 	{:else if members.length === 0}
-		<div class="empty-state">
+		<div
+			class="flex flex-col items-center justify-center p-12 px-4 text-gray-400 dark:text-gray-600"
+		>
 			<Users size={48} strokeWidth={1} />
-			<p>No members yet</p>
+			<p class="mt-3 text-sm">No members yet</p>
 		</div>
 	{:else}
-		<div class="members-list">
+		<div class="p-2">
 			{#each members as member (member.id)}
-				<div class="member-item">
+				<div
+					class="relative flex items-center gap-3 rounded-md p-3 transition-colors hover:bg-gray-50 dark:hover:bg-gray-700"
+				>
 					<!-- Avatar -->
-					<div class="member-avatar">
+					<div
+						class="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-linear-to-br from-indigo-500 to-purple-600 text-sm font-semibold text-white"
+					>
 						{#if member.user_avatar}
-							<img src={member.user_avatar} alt={member.user_name} />
+							<img
+								src={member.user_avatar}
+								alt={member.user_name}
+								class="h-full w-full object-cover"
+							/>
 						{:else}
 							{getInitials(member.user_name, member.user_email)}
 						{/if}
 					</div>
 
 					<!-- Info -->
-					<div class="member-info">
-						<div class="member-name">{member.user_name || 'Unknown User'}</div>
-						<div class="member-email">{member.user_email}</div>
+					<div class="min-w-0 flex-1">
+						<div
+							class="overflow-hidden text-sm font-medium text-ellipsis whitespace-nowrap text-gray-900 dark:text-gray-50"
+						>
+							{member.user_name || 'Unknown User'}
+						</div>
+						<div
+							class="overflow-hidden text-[13px] text-ellipsis whitespace-nowrap text-gray-500 dark:text-gray-400"
+						>
+							{member.user_email}
+						</div>
 					</div>
 
 					<!-- Role badge -->
 					{#if member.role === 'owner'}
-						<div class="role-badge" style="color: {getRoleColor(member.role)}">
+						<div
+							class="flex shrink-0 items-center gap-1 bg-gray-50 px-3 py-1 text-[13px] font-medium dark:bg-gray-700"
+							style="color: {getRoleColor(member.role)}"
+						>
 							<Crown size={14} />
 							{getRoleLabel(member.role)}
 						</div>
 					{:else if member.role === 'editor'}
-						<div class="role-badge" style="color: {getRoleColor(member.role)}">
+						<div
+							class="flex shrink-0 items-center gap-1 bg-gray-50 px-3 py-1 text-[13px] font-medium dark:bg-gray-700"
+							style="color: {getRoleColor(member.role)}"
+						>
 							<Edit3 size={14} />
 							{getRoleLabel(member.role)}
 						</div>
 					{:else}
-						<div class="role-badge" style="color: {getRoleColor(member.role)}">
+						<div
+							class="flex shrink-0 items-center gap-1 bg-gray-50 px-3 py-1 text-[13px] font-medium dark:bg-gray-700"
+							style="color: {getRoleColor(member.role)}"
+						>
 							<Eye size={14} />
 							{getRoleLabel(member.role)}
 						</div>
@@ -213,19 +247,21 @@
 
 					<!-- Actions menu -->
 					{#if canManageMembers && member.role !== 'owner'}
-						<div class="member-actions">
+						<div class="relative">
 							<button
-								class="menu-button"
+								class="flex h-7 w-7 items-center justify-center rounded border-none bg-transparent text-gray-500 transition-all hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-50"
 								onclick={() => (activeMenuId = activeMenuId === member.id ? null : member.id)}
 							>
 								<MoreVertical size={16} />
 							</button>
 
 							{#if activeMenuId === member.id}
-								<div class="actions-menu">
+								<div
+									class="animate-slideDown absolute top-[calc(100%+4px)] right-0 z-100 min-w-40 rounded-md border border-gray-200 bg-white p-1 shadow-lg dark:border-gray-700 dark:bg-gray-800"
+								>
 									{#if currentUserRole === 'owner'}
 										<button
-											class="menu-item"
+											class="flex w-full items-center gap-2 rounded border-none bg-transparent px-3 py-2 text-left text-sm text-gray-700 transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50 dark:text-gray-300 dark:hover:bg-gray-700"
 											onclick={() => handleUpdateRole(member.id, 'viewer')}
 											disabled={member.role === 'viewer'}
 										>
@@ -233,16 +269,19 @@
 											Make Viewer
 										</button>
 										<button
-											class="menu-item"
+											class="flex w-full items-center gap-2 rounded border-none bg-transparent px-3 py-2 text-left text-sm text-gray-700 transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50 dark:text-gray-300 dark:hover:bg-gray-700"
 											onclick={() => handleUpdateRole(member.id, 'editor')}
 											disabled={member.role === 'editor'}
 										>
 											<Edit3 size={14} />
 											Make Editor
 										</button>
-										<div class="menu-divider"></div>
+										<div class="my-1 h-px bg-gray-200 dark:bg-gray-700"></div>
 									{/if}
-									<button class="menu-item danger" onclick={() => handleRemoveMember(member.id)}>
+									<button
+										class="flex w-full items-center gap-2 rounded border-none bg-transparent px-3 py-2 text-left text-sm text-red-600 transition-colors hover:bg-red-50 dark:text-red-500 dark:hover:bg-red-950"
+										onclick={() => handleRemoveMember(member.id)}
+									>
 										<UserX size={14} />
 										Remove Member
 									</button>
@@ -251,7 +290,7 @@
 								<!-- Backdrop -->
 								<!-- svelte-ignore a11y_click_events_have_key_events -->
 								<!-- svelte-ignore a11y_no_static_element_interactions -->
-								<div class="menu-backdrop" onclick={() => (activeMenuId = null)}></div>
+								<div class="fixed inset-0 z-99" onclick={() => (activeMenuId = null)}></div>
 							{/if}
 						</div>
 					{/if}
@@ -263,27 +302,53 @@
 
 <!-- Invite Modal -->
 {#if showInviteModal}
-	<div class="modal-overlay" onclick={closeInviteModal} role="presentation">
+	<div
+		class="animate-fadeIn fixed inset-0 z-1000 flex items-center justify-center bg-black/50 p-4"
+		onclick={closeInviteModal}
+		role="presentation"
+	>
 		<!-- svelte-ignore a11y_click_events_have_key_events -->
 		<!-- svelte-ignore a11y_no_static_element_interactions -->
-		<div class="modal" onclick={(e) => e.stopPropagation()}>
-			<div class="modal-header">
-				<h3>Invite Member</h3>
-				<button class="close-button" onclick={closeInviteModal}>&times;</button>
+		<div
+			class="animate-slideUp max-h-[90vh] w-full max-w-125 overflow-auto bg-white shadow-xl dark:bg-gray-800"
+			onclick={(e) => e.stopPropagation()}
+		>
+			<div
+				class="flex items-center justify-between border-b border-gray-200 p-5 px-6 dark:border-gray-700"
+			>
+				<h3 class="m-0 text-lg font-semibold text-gray-900 dark:text-gray-50">Invite Member</h3>
+				<button
+					class="flex h-8 w-8 items-center justify-center rounded-md border-none bg-transparent text-2xl text-gray-500 transition-all hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-50"
+					onclick={closeInviteModal}>&times;</button
+				>
 			</div>
 
 			{#if inviteSuccess}
-				<div class="modal-body">
-					<div class="success-message">
-						<div class="success-icon">
+				<div class="p-6">
+					<div class="text-center">
+						<div
+							class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-blue-100 text-blue-500"
+						>
 							<Mail size={32} />
 						</div>
-						<h4>Invitation Sent!</h4>
-						<p>Share this link with the user:</p>
+						<h4 class="m-0 mb-2 text-lg font-semibold text-gray-900 dark:text-gray-50">
+							Invitation Sent!
+						</h4>
+						<p class="m-0 mb-4 text-sm text-gray-500 dark:text-gray-400">
+							Share this link with the user:
+						</p>
 
-						<div class="invite-link-box">
-							<input type="text" readonly value={inviteUrl} class="invite-link-input" />
-							<button class="copy-button" onclick={copyInviteLink}>
+						<div class="mb-3 flex gap-2">
+							<input
+								type="text"
+								readonly
+								value={inviteUrl}
+								class="flex-1 rounded-md border border-gray-300 bg-gray-50 px-3 py-2.5 text-[13px] text-gray-700 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300"
+							/>
+							<button
+								class="flex items-center gap-1.5 rounded-md border-none bg-blue-500 px-4 py-2.5 text-sm font-medium whitespace-nowrap text-white transition-colors hover:bg-blue-600"
+								onclick={copyInviteLink}
+							>
 								{#if copiedLink}
 									<Check size={16} />
 									Copied!
@@ -294,21 +359,34 @@
 							</button>
 						</div>
 
-						<p class="expiry-note">Link expires in 7 days</p>
+						<p class="text-[13px] text-gray-400 dark:text-gray-600">Link expires in 7 days</p>
 					</div>
 				</div>
-				<div class="modal-footer">
-					<button class="button secondary" onclick={closeInviteModal}>Done</button>
+				<div
+					class="flex items-center justify-end gap-3 border-t border-gray-200 p-4 px-6 dark:border-gray-700"
+				>
+					<button
+						class="rounded-md border border-none border-gray-300 bg-white px-5 py-2.5 text-sm font-medium text-gray-700 transition-all hover:border-gray-400 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-gray-500 dark:hover:bg-gray-700"
+						onclick={closeInviteModal}>Done</button
+					>
 				</div>
 			{:else}
 				<form onsubmit={handleInvite}>
-					<div class="modal-body">
+					<div class="p-6">
 						{#if inviteError}
-							<div class="error-message">{inviteError}</div>
+							<div
+								class="mb-4 rounded-md border border-red-200 bg-red-50 px-3 py-3 text-sm text-red-600 dark:border-red-900 dark:bg-red-950 dark:text-red-400"
+							>
+								{inviteError}
+							</div>
 						{/if}
 
-						<div class="form-group">
-							<label for="invite-email">Email Address</label>
+						<div class="mb-5">
+							<label
+								for="invite-email"
+								class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300"
+								>Email Address</label
+							>
 							<input
 								id="invite-email"
 								type="email"
@@ -316,16 +394,26 @@
 								placeholder="colleague@example.com"
 								required
 								disabled={isInviting}
+								class="w-full rounded-md border border-gray-300 px-3 py-2.5 text-sm text-gray-900 transition-all focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 focus:outline-none disabled:cursor-not-allowed disabled:bg-gray-50 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-50 dark:focus:ring-blue-500/20 dark:disabled:bg-slate-950"
 							/>
 						</div>
 
-						<div class="form-group">
-							<label for="invite-role">Role</label>
-							<select id="invite-role" bind:value={inviteRole} disabled={isInviting}>
+						<div class="mb-0">
+							<label
+								for="invite-role"
+								class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300"
+								>Role</label
+							>
+							<select
+								id="invite-role"
+								bind:value={inviteRole}
+								disabled={isInviting}
+								class="w-full rounded-md border border-gray-300 px-3 py-2.5 text-sm text-gray-900 transition-all focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 focus:outline-none disabled:cursor-not-allowed disabled:bg-gray-50 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-50 dark:focus:ring-blue-500/20 dark:disabled:bg-slate-950"
+							>
 								<option value="editor">Editor - Can edit content</option>
 								<option value="viewer">Viewer - Can only view</option>
 							</select>
-							<p class="help-text">
+							<p class="mt-1.5 text-[13px] text-gray-500 dark:text-gray-400">
 								{#if inviteRole === 'editor'}
 									Editors can create, edit, and delete content.
 								{:else}
@@ -335,16 +423,22 @@
 						</div>
 					</div>
 
-					<div class="modal-footer">
+					<div
+						class="flex items-center justify-end gap-3 border-t border-gray-200 p-4 px-6 dark:border-gray-700"
+					>
 						<button
 							type="button"
-							class="button secondary"
+							class="rounded-md border border-none border-gray-300 bg-white px-5 py-2.5 text-sm font-medium text-gray-700 transition-all hover:border-gray-400 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-gray-500 dark:hover:bg-gray-700"
 							onclick={closeInviteModal}
 							disabled={isInviting}
 						>
 							Cancel
 						</button>
-						<button type="submit" class="button primary" disabled={isInviting}>
+						<button
+							type="submit"
+							class="rounded-md border-none bg-blue-500 px-5 py-2.5 text-sm font-medium text-white transition-all hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-50"
+							disabled={isInviting}
+						>
 							{isInviting ? 'Sending...' : 'Send Invitation'}
 						</button>
 					</div>
@@ -355,284 +449,6 @@
 {/if}
 
 <style>
-	.workspace-members {
-		background: white;
-		border: 1px solid #e5e7eb;
-		overflow: hidden;
-	}
-
-	@media (prefers-color-scheme: dark) {
-		.workspace-members {
-			background: #1f2937;
-			border-color: #374151;
-		}
-	}
-
-	.header {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		padding: 16px;
-		border-bottom: 1px solid #e5e7eb;
-	}
-
-	@media (prefers-color-scheme: dark) {
-		.header {
-			border-bottom-color: #374151;
-		}
-	}
-
-	.title {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-		color: #111827;
-	}
-
-	@media (prefers-color-scheme: dark) {
-		.title {
-			color: #f3f4f6;
-		}
-	}
-
-	.title h3 {
-		font-size: 16px;
-		font-weight: 600;
-		margin: 0;
-	}
-
-	.count {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		min-width: 24px;
-		height: 24px;
-		padding: 0 8px;
-		background: #f3f4f6;
-		color: #6b7280;
-		font-size: 13px;
-		font-weight: 600;
-	}
-
-	@media (prefers-color-scheme: dark) {
-		.count {
-			background: #374151;
-			color: #9ca3af;
-		}
-	}
-
-	.invite-button {
-		display: flex;
-		align-items: center;
-		gap: 6px;
-		padding: 8px 16px;
-		background: #3b82f6;
-		color: white;
-		border: none;
-		border-radius: 6px;
-		font-size: 14px;
-		font-weight: 500;
-		transition: background 0.2s;
-	}
-
-	.invite-button:hover {
-		background: #2563eb;
-	}
-
-	.loading,
-	.error {
-		padding: 32px;
-		text-align: center;
-		color: #6b7280;
-	}
-
-	@media (prefers-color-scheme: dark) {
-		.loading {
-			color: #9ca3af;
-		}
-	}
-
-	.error {
-		color: #dc2626;
-	}
-
-	@media (prefers-color-scheme: dark) {
-		.error {
-			color: #ef4444;
-		}
-	}
-
-	.empty-state {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		padding: 48px 16px;
-		color: #9ca3af;
-	}
-
-	@media (prefers-color-scheme: dark) {
-		.empty-state {
-			color: #6b7280;
-		}
-	}
-
-	.empty-state p {
-		margin-top: 12px;
-		font-size: 14px;
-	}
-
-	.members-list {
-		padding: 8px;
-	}
-
-	.member-item {
-		display: flex;
-		align-items: center;
-		gap: 12px;
-		padding: 12px;
-		border-radius: 6px;
-		transition: background 0.2s;
-		position: relative;
-	}
-
-	.member-item:hover {
-		background: #f9fafb;
-	}
-
-	@media (prefers-color-scheme: dark) {
-		.member-item:hover {
-			background: #374151;
-		}
-	}
-
-	.member-avatar {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: 40px;
-		height: 40px;
-		background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-		color: white;
-		border-radius: 50%;
-		font-size: 14px;
-		font-weight: 600;
-		flex-shrink: 0;
-		overflow: hidden;
-	}
-
-	.member-avatar img {
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-	}
-
-	.member-info {
-		flex: 1;
-		min-width: 0;
-	}
-
-	.member-name {
-		font-size: 14px;
-		font-weight: 500;
-		color: #111827;
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-	}
-
-	@media (prefers-color-scheme: dark) {
-		.member-name {
-			color: #f3f4f6;
-		}
-	}
-
-	.member-email {
-		font-size: 13px;
-		color: #6b7280;
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-	}
-
-	@media (prefers-color-scheme: dark) {
-		.member-email {
-			color: #9ca3af;
-		}
-	}
-
-	.role-badge {
-		display: flex;
-		align-items: center;
-		gap: 4px;
-		padding: 4px 12px;
-		background: #f9fafb;
-		font-size: 13px;
-		font-weight: 500;
-		flex-shrink: 0;
-	}
-
-	@media (prefers-color-scheme: dark) {
-		.role-badge {
-			background: #374151;
-		}
-	}
-
-	.member-actions {
-		position: relative;
-	}
-
-	.menu-button {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: 28px;
-		height: 28px;
-		background: transparent;
-		border: none;
-		border-radius: 4px;
-		color: #6b7280;
-		transition: all 0.2s;
-	}
-
-	.menu-button:hover {
-		background: #f3f4f6;
-		color: #111827;
-	}
-
-	@media (prefers-color-scheme: dark) {
-		.menu-button {
-			color: #9ca3af;
-		}
-
-		.menu-button:hover {
-			background: #374151;
-			color: #f3f4f6;
-		}
-	}
-
-	.actions-menu {
-		position: absolute;
-		top: calc(100% + 4px);
-		right: 0;
-		min-width: 160px;
-		background: white;
-		border: 1px solid #e5e7eb;
-		border-radius: 6px;
-		box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-		padding: 4px;
-		z-index: 100;
-		animation: slideDown 0.15s ease-out;
-	}
-
-	@media (prefers-color-scheme: dark) {
-		.actions-menu {
-			background: #1f2937;
-			border-color: #374151;
-			box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-		}
-	}
-
 	@keyframes slideDown {
 		from {
 			opacity: 0;
@@ -644,116 +460,12 @@
 		}
 	}
 
-	.menu-item {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-		width: 100%;
-		padding: 8px 12px;
-		background: transparent;
-		border: none;
-		border-radius: 4px;
-		font-size: 14px;
-		color: #374151;
-		text-align: left;
-		transition: background 0.2s;
-	}
-
-	@media (prefers-color-scheme: dark) {
-		.menu-item {
-			color: #d1d5db;
-		}
-	}
-
-	.menu-item:hover:not(:disabled) {
-		background: #f3f4f6;
-	}
-
-	@media (prefers-color-scheme: dark) {
-		.menu-item:hover:not(:disabled) {
-			background: #374151;
-		}
-	}
-
-	.menu-item:disabled {
-		opacity: 0.5;
-		cursor: not-allowed;
-	}
-
-	.menu-item.danger {
-		color: #dc2626;
-	}
-
-	@media (prefers-color-scheme: dark) {
-		.menu-item.danger {
-			color: #ef4444;
-		}
-	}
-
-	.menu-item.danger:hover {
-		background: #fee2e2;
-	}
-
-	@media (prefers-color-scheme: dark) {
-		.menu-item.danger:hover {
-			background: #7f1d1d;
-		}
-	}
-
-	.menu-divider {
-		height: 1px;
-		background: #e5e7eb;
-		margin: 4px 0;
-	}
-
-	@media (prefers-color-scheme: dark) {
-		.menu-divider {
-			background: #374151;
-		}
-	}
-
-	.menu-backdrop {
-		position: fixed;
-		inset: 0;
-		z-index: 99;
-	}
-
-	/* Modal styles */
-	.modal-overlay {
-		position: fixed;
-		inset: 0;
-		background: rgba(0, 0, 0, 0.5);
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		z-index: 1000;
-		padding: 16px;
-		animation: fadeIn 0.2s ease-out;
-	}
-
 	@keyframes fadeIn {
 		from {
 			opacity: 0;
 		}
 		to {
 			opacity: 1;
-		}
-	}
-
-	.modal {
-		background: white;
-		width: 100%;
-		max-width: 500px;
-		max-height: 90vh;
-		overflow: auto;
-		box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-		animation: slideUp 0.3s ease-out;
-	}
-
-	@media (prefers-color-scheme: dark) {
-		.modal {
-			background: #1f2937;
-			box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
 		}
 	}
 
@@ -768,323 +480,15 @@
 		}
 	}
 
-	.modal-header {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		padding: 20px 24px;
-		border-bottom: 1px solid #e5e7eb;
+	.animate-slideDown {
+		animation: slideDown 0.15s ease-out;
 	}
 
-	@media (prefers-color-scheme: dark) {
-		.modal-header {
-			border-bottom-color: #374151;
-		}
+	.animate-fadeIn {
+		animation: fadeIn 0.2s ease-out;
 	}
 
-	.modal-header h3 {
-		font-size: 18px;
-		font-weight: 600;
-		color: #111827;
-		margin: 0;
-	}
-
-	@media (prefers-color-scheme: dark) {
-		.modal-header h3 {
-			color: #f3f4f6;
-		}
-	}
-
-	.close-button {
-		width: 32px;
-		height: 32px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		background: transparent;
-		border: none;
-		border-radius: 6px;
-		font-size: 24px;
-		color: #6b7280;
-		transition: all 0.2s;
-	}
-
-	.close-button:hover {
-		background: #f3f4f6;
-		color: #111827;
-	}
-
-	@media (prefers-color-scheme: dark) {
-		.close-button {
-			color: #9ca3af;
-		}
-
-		.close-button:hover {
-			background: #374151;
-			color: #f3f4f6;
-		}
-	}
-
-	.modal-body {
-		padding: 24px;
-	}
-
-	.form-group {
-		margin-bottom: 20px;
-	}
-
-	.form-group:last-child {
-		margin-bottom: 0;
-	}
-
-	.form-group label {
-		display: block;
-		font-size: 14px;
-		font-weight: 500;
-		color: #374151;
-		margin-bottom: 6px;
-	}
-
-	@media (prefers-color-scheme: dark) {
-		.form-group label {
-			color: #d1d5db;
-		}
-	}
-
-	.form-group input,
-	.form-group select {
-		width: 100%;
-		padding: 10px 12px;
-		border: 1px solid #d1d5db;
-		border-radius: 6px;
-		font-size: 14px;
-		color: #111827;
-		transition: all 0.2s;
-	}
-
-	@media (prefers-color-scheme: dark) {
-		.form-group input,
-		.form-group select {
-			background: #111827;
-			border-color: #4b5563;
-			color: #f3f4f6;
-		}
-	}
-
-	.form-group input:focus,
-	.form-group select:focus {
-		outline: none;
-		border-color: #3b82f6;
-		box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-	}
-
-	@media (prefers-color-scheme: dark) {
-		.form-group input:focus,
-		.form-group select:focus {
-			border-color: #3b82f6;
-			box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
-		}
-	}
-
-	.form-group input:disabled,
-	.form-group select:disabled {
-		background: #f9fafb;
-		cursor: not-allowed;
-	}
-
-	@media (prefers-color-scheme: dark) {
-		.form-group input:disabled,
-		.form-group select:disabled {
-			background: #0f172a;
-		}
-	}
-
-	.help-text {
-		margin-top: 6px;
-		font-size: 13px;
-		color: #6b7280;
-	}
-
-	@media (prefers-color-scheme: dark) {
-		.help-text {
-			color: #9ca3af;
-		}
-	}
-
-	.error-message {
-		padding: 12px;
-		background: #fee2e2;
-		border: 1px solid #fecaca;
-		border-radius: 6px;
-		color: #dc2626;
-		font-size: 14px;
-		margin-bottom: 16px;
-	}
-
-	@media (prefers-color-scheme: dark) {
-		.error-message {
-			background: #7f1d1d;
-			border-color: #991b1b;
-			color: #fca5a5;
-		}
-	}
-
-	.success-message {
-		text-align: center;
-	}
-
-	.success-icon {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: 64px;
-		height: 64px;
-		margin: 0 auto 16px;
-		background: #dbeafe;
-		color: #3b82f6;
-		border-radius: 50%;
-	}
-
-	.success-message h4 {
-		font-size: 18px;
-		font-weight: 600;
-		color: #111827;
-		margin: 0 0 8px;
-	}
-
-	@media (prefers-color-scheme: dark) {
-		.success-message h4 {
-			color: #f3f4f6;
-		}
-	}
-
-	.success-message p {
-		font-size: 14px;
-		color: #6b7280;
-		margin: 0 0 16px;
-	}
-
-	@media (prefers-color-scheme: dark) {
-		.success-message p {
-			color: #9ca3af;
-		}
-	}
-
-	.invite-link-box {
-		display: flex;
-		gap: 8px;
-		margin-bottom: 12px;
-	}
-
-	.invite-link-input {
-		flex: 1;
-		padding: 10px 12px;
-		border: 1px solid #d1d5db;
-		border-radius: 6px;
-		font-size: 13px;
-		color: #374151;
-		background: #f9fafb;
-	}
-
-	@media (prefers-color-scheme: dark) {
-		.invite-link-input {
-			background: #111827;
-			border-color: #4b5563;
-			color: #d1d5db;
-		}
-	}
-
-	.copy-button {
-		display: flex;
-		align-items: center;
-		gap: 6px;
-		padding: 10px 16px;
-		background: #3b82f6;
-		color: white;
-		border: none;
-		border-radius: 6px;
-		font-size: 14px;
-		font-weight: 500;
-		transition: background 0.2s;
-		white-space: nowrap;
-	}
-
-	.copy-button:hover {
-		background: #2563eb;
-	}
-
-	.expiry-note {
-		font-size: 13px;
-		color: #9ca3af;
-	}
-
-	@media (prefers-color-scheme: dark) {
-		.expiry-note {
-			color: #6b7280;
-		}
-	}
-
-	.modal-footer {
-		display: flex;
-		align-items: center;
-		justify-content: flex-end;
-		gap: 12px;
-		padding: 16px 24px;
-		border-top: 1px solid #e5e7eb;
-	}
-
-	@media (prefers-color-scheme: dark) {
-		.modal-footer {
-			border-top-color: #374151;
-		}
-	}
-
-	.button {
-		padding: 10px 20px;
-		border-radius: 6px;
-		font-size: 14px;
-		font-weight: 500;
-		transition: all 0.2s;
-		border: none;
-	}
-
-	.button:disabled {
-		opacity: 0.5;
-		cursor: not-allowed;
-	}
-
-	.button.secondary {
-		background: white;
-		color: #374151;
-		border: 1px solid #d1d5db;
-	}
-
-	@media (prefers-color-scheme: dark) {
-		.button.secondary {
-			background: #111827;
-			color: #d1d5db;
-			border-color: #4b5563;
-		}
-	}
-
-	.button.secondary:hover:not(:disabled) {
-		background: #f9fafb;
-		border-color: #9ca3af;
-	}
-
-	@media (prefers-color-scheme: dark) {
-		.button.secondary:hover:not(:disabled) {
-			background: #374151;
-			border-color: #6b7280;
-		}
-	}
-
-	.button.primary {
-		background: #3b82f6;
-		color: white;
-	}
-
-	.button.primary:hover:not(:disabled) {
-		background: #2563eb;
+	.animate-slideUp {
+		animation: slideUp 0.3s ease-out;
 	}
 </style>
