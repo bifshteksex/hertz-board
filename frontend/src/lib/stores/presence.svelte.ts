@@ -89,6 +89,7 @@ class PresenceStore {
 						: existing.selected_elements,
 				last_seen: presence.last_seen || new Date().toISOString()
 			});
+			console.log('[PresenceStore] Updated user:', presence.user_id, presence.user_name);
 		} else {
 			// Add new user
 			this._users.set(presence.user_id, {
@@ -96,8 +97,10 @@ class PresenceStore {
 				selected_elements: presence.selected_elements || [],
 				last_seen: presence.last_seen || new Date().toISOString()
 			});
+			console.log('[PresenceStore] Added new user:', presence.user_id, presence.user_name);
 		}
 		this._version++; // Trigger reactivity
+		console.log('[PresenceStore] Total users:', this._users.size);
 	}
 
 	/**

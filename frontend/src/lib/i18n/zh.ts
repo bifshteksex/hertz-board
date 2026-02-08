@@ -355,6 +355,26 @@ export default {
 			unsavedChanges: '{count}个未保存的更改',
 			allSaved: '所有更改已保存',
 			details: '详情'
+		},
+		activeUsers: {
+			title: '活跃用户',
+			noUsers: '没有活跃用户',
+			you: '(您)',
+			active: '活跃',
+			idle: '空闲',
+			justNow: '刚刚',
+			secondsAgo: '{count}秒前',
+			minutesAgo: '{count}分钟前',
+			hoursAgo: '{count}小时前',
+			closeButton: '关闭'
+		},
+		connectionStatus: {
+			connected: '已连接',
+			disconnected: '已断开',
+			syncing: '同步中...',
+			error: '连接错误',
+			retry: '重试',
+			reconnect: '重新连接'
 		}
 	}
 };

@@ -358,6 +358,26 @@ export default {
 			unsavedChanges: '{count} unsaved changes',
 			allSaved: 'All changes saved',
 			details: 'Details'
+		},
+		activeUsers: {
+			title: 'Active Users',
+			noUsers: 'No active users',
+			you: '(You)',
+			active: 'Active',
+			idle: 'Idle',
+			justNow: 'just now',
+			secondsAgo: '{count}s ago',
+			minutesAgo: '{count}m ago',
+			hoursAgo: '{count}h ago',
+			closeButton: 'Close'
+		},
+		connectionStatus: {
+			connected: 'Connected',
+			disconnected: 'Disconnected',
+			syncing: 'Syncing...',
+			error: 'Connection Error',
+			retry: 'Retry',
+			reconnect: 'Reconnect'
 		}
 	}
 };

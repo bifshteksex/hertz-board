@@ -295,7 +295,7 @@
 				<div class="h-6 w-px bg-gray-300 dark:bg-gray-600"></div>
 
 				<button
-					class="flex items-center gap-2 rounded-lg border border-gray-300 px-3 py-2 text-sm transition hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-800"
+					class="flex items-center gap-2 border border-gray-300 px-3 py-2 text-sm transition hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-800"
 					class:bg-blue-50={showLayersPanel}
 					class:border-blue-500={showLayersPanel}
 					onclick={() => (showLayersPanel = !showLayersPanel)}
@@ -305,7 +305,7 @@
 					Layers
 				</button>
 				<button
-					class="flex items-center gap-2 rounded-lg border border-gray-300 px-3 py-2 text-sm transition hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-800"
+					class="flex items-center gap-2 border border-gray-300 px-3 py-2 text-sm transition hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-800"
 					class:bg-blue-50={showMembersPanel}
 					class:border-blue-500={showMembersPanel}
 					onclick={() => (showMembersPanel = !showMembersPanel)}

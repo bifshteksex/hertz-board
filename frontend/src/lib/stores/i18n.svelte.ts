@@ -47,6 +47,12 @@ class I18nStore {
 		this.translations[locale] = data;
 	}
 
+	// Direct object access to translations
+	get messages(): any {
+		return this.translations[this.currentLocale] || {};
+	}
+
+	// Function-based translation with key path
 	t(key: string, params?: Record<string, string | number>): string {
 		const keys = key.split('.');
 		let value: string | Translations | undefined = this.translations[this.currentLocale];

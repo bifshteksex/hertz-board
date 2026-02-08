@@ -3,8 +3,11 @@
 	import { authStore } from '$lib/stores/auth.svelte';
 	import type { UserPresence } from '$lib/types/websocket';
 	import { User } from 'lucide-svelte';
+	import { i18n } from '$lib/stores/i18n.svelte';
 
 	import IconUsers from '$components/icons/IconUsers.svelte';
+
+	const t = $derived(i18n.messages);
 
 	interface Props {
 		onUserClick?: (_user: UserPresence) => void;
@@ -43,26 +46,25 @@
 		const diffMs = now - then;
 		const diffSec = Math.floor(diffMs / 1000);
 
-		if (diffSec < 5) return 'just now';
-		if (diffSec < 60) return `${diffSec}s ago`;
+		if (diffSec < 5) return t.canvas.activeUsers.justNow;
+		if (diffSec < 60) return t.canvas.activeUsers.secondsAgo.replace('{count}', diffSec.toString());
 		const diffMin = Math.floor(diffSec / 60);
-		if (diffMin < 60) return `${diffMin}m ago`;
+		if (diffMin < 60) return t.canvas.activeUsers.minutesAgo.replace('{count}', diffMin.toString());
 		const diffHour = Math.floor(diffMin / 60);
-		return `${diffHour}h ago`;
+		return t.canvas.activeUsers.hoursAgo.replace('{count}', diffHour.toString());
 	}
 </script>
 
 <div class="relative">
 	<!-- Trigger button -->
 	<button
-		class="flex items-center gap-1.5 rounded-md border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-700 transition-all hover:border-gray-300 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:border-gray-600 dark:hover:bg-gray-700"
+		class="flex items-center gap-1.5 border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-700 transition-all hover:border-gray-300 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:border-gray-600 dark:hover:bg-gray-700"
 		onclick={toggleExpanded}
-		title="Active users"
+		title={t.canvas.activeUsers.title}
 	>
 		<IconUsers size={24} />
 		{#if userCount > 0}
-			<span
-				class="flex h-5 min-w-5 items-center justify-center rounded-full bg-blue-500 px-1.5 text-[11px] font-semibold text-white"
+			<span class="flex h-5 min-w-5 items-center justify-center px-1.5 text-sm font-semibold"
 				>{userCount}</span
 			>
 		{/if}
@@ -77,12 +79,12 @@
 				class="flex items-center justify-between border-b border-gray-200 px-4 py-3 dark:border-gray-700"
 			>
 				<span class="text-sm font-semibold text-gray-900 dark:text-gray-50"
-					>Active Users ({userCount})</span
+					>{t.canvas.activeUsers.title} ({userCount})</span
 				>
 				<button
 					class="flex h-6 w-6 items-center justify-center rounded border-none bg-transparent text-xl text-gray-500 transition-all hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-50"
 					onclick={toggleExpanded}
-					aria-label="Close">×</button
+					aria-label={t.canvas.activeUsers.closeButton}>×</button
 				>
 			</div>
 
@@ -94,7 +96,7 @@
 						class="flex flex-col items-center justify-center p-8 px-4 text-center text-gray-400 dark:text-gray-600"
 					>
 						<User size={32} strokeWidth={1.5} />
-						<p class="mt-3 text-sm">No active users</p>
+						<p class="mt-3 text-sm">{t.canvas.activeUsers.noUsers}</p>
 					</div>
 				{:else}
 					{#each users as user (user.user_id)}
@@ -118,12 +120,14 @@
 									{user.user_name}
 									{#if currentUserId && user.user_id === currentUserId}
 										<span class="shrink-0 text-xs font-medium text-blue-500 dark:text-blue-400"
-											>(You)</span
+											>{t.canvas.activeUsers.you}</span
 										>
 									{/if}
 								</div>
 								<div class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
-									{user.cursor ? 'Active' : 'Idle'} · {getTimeSinceLastSeen(user.last_seen)}
+									{user.cursor ? t.canvas.activeUsers.active : t.canvas.activeUsers.idle} · {getTimeSinceLastSeen(
+										user.last_seen
+									)}
 								</div>
 							</div>
 

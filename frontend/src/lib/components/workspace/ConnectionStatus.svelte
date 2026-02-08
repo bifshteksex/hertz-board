@@ -1,16 +1,18 @@
 <script lang="ts">
 	import { collaborationStore } from '$lib/stores/collaboration.svelte';
 	import { Wifi, WifiOff, Loader2, AlertCircle } from 'lucide-svelte';
+	import { i18n } from '$lib/stores/i18n.svelte';
 
+	const t = $derived(i18n.messages);
 	const isConnected = $derived(collaborationStore.isConnected);
 	const isSyncing = $derived(collaborationStore.isSyncing);
 	const error = $derived(collaborationStore.error);
 
 	const statusText = $derived.by(() => {
-		if (error) return 'Connection Error';
-		if (isSyncing) return 'Syncing...';
-		if (isConnected) return 'Connected';
-		return 'Disconnected';
+		if (error) return t.canvas.connectionStatus.error;
+		if (isSyncing) return t.canvas.connectionStatus.syncing;
+		if (isConnected) return t.canvas.connectionStatus.connected;
+		return t.canvas.connectionStatus.disconnected;
 	});
 
 	const statusColor = $derived.by(() => {
@@ -27,19 +29,19 @@
 </script>
 
 <div
-	class="flex items-center gap-2 rounded-md border border-gray-200 bg-white px-3 py-1.5 text-[13px] text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300"
+	class="flex items-center gap-2 border border-gray-200 bg-white px-3 py-1.5 text-[13px] text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300"
 	style="--status-color: {statusColor}"
 >
 	<!-- Icon -->
 	<div class="flex items-center" style="color: var(--status-color)">
 		{#if error}
-			<AlertCircle size={16} />
+			<AlertCircle size={30} />
 		{:else if isSyncing}
-			<Loader2 size={16} class="animate-spin" />
+			<Loader2 size={30} class="animate-spin" />
 		{:else if isConnected}
-			<Wifi size={16} />
+			<Wifi size={30} />
 		{:else}
-			<WifiOff size={16} />
+			<WifiOff size={30} />
 		{/if}
 	</div>
 
@@ -51,7 +53,7 @@
 		<button
 			class="rounded border-none bg-red-600 px-2 py-1 text-xs font-medium text-white transition-colors hover:bg-red-700"
 			onclick={handleRetry}
-			title="Reconnect">Retry</button
+			title={t.canvas.connectionStatus.reconnect}>{t.canvas.connectionStatus.retry}</button
 		>
 	{/if}
 

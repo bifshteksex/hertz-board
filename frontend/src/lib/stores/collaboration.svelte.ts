@@ -131,6 +131,7 @@ class CollaborationStore {
 					selected_elements: [],
 					last_seen: new Date().toISOString()
 				});
+				console.log('[Collaboration] Added self to presence store:', currentUser.id);
 			}
 
 			// Request initial sync

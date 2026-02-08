@@ -361,6 +361,26 @@ export default {
 			unsavedChanges: 'Несохраненных изменений: {count}',
 			allSaved: 'Все изменения сохранены',
 			details: 'Подробности'
+		},
+		activeUsers: {
+			title: 'Активные пользователи',
+			noUsers: 'Нет активных пользователей',
+			you: '(Вы)',
+			active: 'Активен',
+			idle: 'Неактивен',
+			justNow: 'только что',
+			secondsAgo: '{count} сек. назад',
+			minutesAgo: '{count} мин. назад',
+			hoursAgo: '{count} ч. назад',
+			closeButton: 'Закрыть'
+		},
+		connectionStatus: {
+			connected: 'Подключено',
+			disconnected: 'Отключено',
+			syncing: 'Синхронизация...',
+			error: 'Ошибка подключения',
+			retry: 'Повторить',
+			reconnect: 'Переподключиться'
 		}
 	}
 };
