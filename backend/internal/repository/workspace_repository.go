@@ -279,8 +279,8 @@ func (r *WorkspaceRepository) AddMember(ctx context.Context, member *models.Work
 	query := `
 		INSERT INTO workspace_members (id, workspace_id, user_id, role, invited_by)
 		VALUES ($1, $2, $3, $4, $5)
-		RETURNING joined_at
 		ON CONFLICT (workspace_id, user_id) DO NOTHING
+		RETURNING joined_at
 	`
 
 	err := r.db.QueryRow(ctx, query,

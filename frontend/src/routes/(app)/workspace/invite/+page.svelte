@@ -116,13 +116,11 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 		padding: 20px;
 	}
 
 	.invite-container {
 		background: white;
-		border-radius: 16px;
 		padding: 48px;
 		max-width: 500px;
 		width: 100%;
@@ -235,7 +233,6 @@
 
 	.button {
 		padding: 12px 24px;
-		border-radius: 8px;
 		font-size: 16px;
 		font-weight: 500;
 		transition: all 0.2s;
