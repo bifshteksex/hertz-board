@@ -138,6 +138,7 @@ pub fn mark_workspace_synced(app: &AppHandle, workspace_id: &str) -> Result<(), 
 }
 
 /// Delete offline workspace
+#[allow(dead_code)]
 pub fn delete_offline_workspace(app: &AppHandle, workspace_id: &str) -> Result<(), String> {
     let state = app.state::<DbState>();
     let conn = state.conn.lock().unwrap();
