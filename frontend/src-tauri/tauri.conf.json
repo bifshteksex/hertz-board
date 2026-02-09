@@ -2,7 +2,7 @@
 	"$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
 	"productName": "HertzBoard",
 	"version": "0.1.0",
-	"identifier": "com.hertzboard.app",
+	"identifier": "com.hertzboard.desktop",
 	"build": {
 		"frontendDist": "../build",
 		"devUrl": "http://localhost:5173",
@@ -78,11 +78,7 @@
 				"mimeType": "application/x-hertzboard",
 				"role": "Editor"
 			}
-		],
-		"deeplink": {
-			"protocol": "hertzboard",
-			"schemes": ["hertzboard"]
-		}
+		]
 	},
 	"plugins": {
 		"updater": {
