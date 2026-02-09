@@ -1,4 +1,4 @@
-use tauri::{AppHandle, Manager};
+use tauri::AppHandle;
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 
@@ -30,7 +30,7 @@ pub async fn open_file_dialog(app: AppHandle) -> Result<Option<PathBuf>, String>
         .add_filter("HertzBoard Workspace", &["hertzboard", "json"])
         .blocking_pick_file();
 
-    Ok(file_path.map(|f| f.path.to_path_buf()))
+    Ok(file_path)
 }
 
 /// Save file dialog for exporting workspace
@@ -48,7 +48,7 @@ pub async fn save_file_dialog(
         .set_file_name(&default_name)
         .blocking_save_file();
 
-    Ok(file_path.map(|f| f.path.to_path_buf()))
+    Ok(file_path)
 }
 
 /// Export workspace to file
@@ -136,7 +136,7 @@ pub async fn check_for_updates(app: AppHandle) -> Result<UpdateInfo, String> {
 
     // Check for updates
     match app.updater() {
-        Some(updater) => {
+        Ok(updater) => {
             match updater.check().await {
                 Ok(Some(update)) => {
                     Ok(UpdateInfo {
@@ -158,7 +158,8 @@ pub async fn check_for_updates(app: AppHandle) -> Result<UpdateInfo, String> {
                 }
             }
         }
-        None => {
+        Err(e) => {
+            log::error!("Updater not available: {}", e);
             Ok(UpdateInfo {
                 available: false,
                 current_version,
