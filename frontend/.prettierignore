@@ -18,3 +18,4 @@ src-tauri/target/
 src-tauri/Cargo.lock
 src-tauri/icons/
 src-tauri/capabilities/
+src-tauri/gen/

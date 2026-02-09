@@ -8,9 +8,7 @@ declare global {
 	}
 
 	interface Window {
-		__TAURI__?: {
-			// Tauri runtime information
-		};
+		__TAURI__?: Record<string, unknown>;
 	}
 }
 

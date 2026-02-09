@@ -15,7 +15,9 @@ export default [
 			'dist/**',
 			'node_modules/**',
 			'**/*.min.js',
-			'vite.config.ts.timestamp-*'
+			'vite.config.ts.timestamp-*',
+			'src-tauri/target/**',
+			'src-tauri/gen/**'
 		]
 	},
 	{
