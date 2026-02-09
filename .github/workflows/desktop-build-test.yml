@@ -3,14 +3,14 @@ name: Desktop Build Test
 on:
   pull_request:
     paths:
-      - 'frontend/**'
-      - '.github/workflows/desktop-build-test.yml'
+      - "frontend/**"
+      - ".github/workflows/desktop-build-test.yml"
   push:
     branches:
       - main
       - develop
     paths:
-      - 'frontend/**'
+      - "frontend/**"
 
 jobs:
   test-build:
@@ -27,8 +27,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: "20"
+          cache: "npm"
           cache-dependency-path: frontend/package-lock.json
 
       - name: Install Rust stable
@@ -47,7 +47,7 @@ jobs:
       - name: Rust cache
         uses: swatinem/rust-cache@v2
         with:
-          workspaces: './frontend/src-tauri -> target'
+          workspaces: "./frontend/src-tauri -> target"
 
       - name: Install frontend dependencies
         working-directory: ./frontend
@@ -61,9 +61,15 @@ jobs:
         working-directory: ./frontend
         run: npm run check
 
-      - name: Lint frontend
+      - name: Lint frontend (Unix only)
+        if: matrix.platform != 'windows-latest'
         working-directory: ./frontend
         run: npm run lint
+
+      - name: Lint frontend (Windows - ESLint only)
+        if: matrix.platform == 'windows-latest'
+        working-directory: ./frontend
+        run: npx eslint .
 
       - name: Build Tauri app (debug)
         working-directory: ./frontend
