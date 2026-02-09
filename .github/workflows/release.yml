@@ -165,18 +165,6 @@ jobs:
 
             ---
 
-            ### 🔧 System Requirements
-
-            | Platform | Minimum | Recommended |
-            |----------|---------|-------------|
-            | **Windows** | Windows 10 (1809+) | Windows 11 |
-            | **macOS** | macOS 10.15 Catalina | macOS 12 Monterey+ |
-            | **Linux** | Ubuntu 20.04+ | Ubuntu 22.04+ |
-            | **RAM** | 4 GB | 8 GB |
-            | **Storage** | 200 MB | 500 MB |
-
-            ---
-
             ### 🐛 Known Issues
 
             - Windows: SmartScreen warning (app is not code-signed yet)
@@ -285,6 +273,7 @@ jobs:
           releaseId: ${{ needs.create-release.outputs.release_id }}
           projectPath: ./frontend
           args: ${{ matrix.args }}
+          packageManager: npm
 
       - name: Upload build summary
         if: always()
