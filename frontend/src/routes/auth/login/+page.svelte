@@ -2,7 +2,8 @@
 	import { goto } from '$app/navigation';
 	import { authStore } from '$lib/stores/auth.svelte';
 	import { i18n } from '$lib/stores/i18n.svelte';
-	import { onMount } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
+	import { setupOAuthCallbackListener } from '$lib/utils/oauth';
 	import LanguageSwitcher from '$lib/components/LanguageSwitcher.svelte';
 	import EyeIcon from '$lib/components/icons/EyeIcon.svelte';
 	import EyeClosedIcon from '$lib/components/icons/EyeClosedIcon.svelte';
@@ -14,6 +15,7 @@
 	let eyePosition = $state<'center' | 'email' | 'password'>('center');
 	let showPassword = $state(false);
 	let faceClicked = $state(false);
+	let cleanupOAuth: (() => void) | undefined;
 
 	// SEO metadata
 	const title = $derived(i18n.t('seo.pages.login.title'));
@@ -26,6 +28,25 @@
 		// Redirect if already authenticated
 		if (authStore.isAuthenticated) {
 			goto('/dashboard');
+		}
+
+		// Setup OAuth callback listener for Tauri
+		cleanupOAuth = setupOAuthCallbackListener(
+			() => {
+				// Success - redirect to dashboard
+				goto('/dashboard');
+			},
+			(err) => {
+				// Error - show message
+				error = err;
+				isLoading = false;
+			}
+		);
+	});
+
+	onDestroy(() => {
+		if (cleanupOAuth) {
+			cleanupOAuth();
 		}
 	});
 
@@ -44,9 +65,32 @@
 		}
 	}
 
-	function handleOAuth(provider: 'google' | 'github') {
-		const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080/api/v1';
-		window.location.href = `${apiUrl}/auth/${provider}`;
+	async function handleOAuth(provider: 'google' | 'github') {
+		error = '';
+		isLoading = true;
+
+		try {
+			const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080/api/v1';
+
+			// Check if running in Tauri
+			if (window.__TAURI__) {
+				// Desktop app - use deep link callback
+				const callbackUrl = 'hertzboard://oauth/callback';
+				const oauthUrl = `${apiUrl}/auth/${provider}?redirect_uri=${encodeURIComponent(callbackUrl)}`;
+
+				const { open } = await import('@tauri-apps/plugin-shell');
+				await open(oauthUrl);
+
+				// Keep loading state - will be cleared by callback or error
+			} else {
+				// Web browser - use traditional redirect
+				const oauthUrl = `${apiUrl}/auth/${provider}`;
+				window.location.href = oauthUrl;
+			}
+		} catch (err) {
+			error = err instanceof Error ? err.message : 'Failed to initiate OAuth';
+			isLoading = false;
+		}
 	}
 </script>
 
