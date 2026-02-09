@@ -1,0 +1,93 @@
+{
+	"$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
+	"productName": "HertzBoard",
+	"version": "0.1.0",
+	"identifier": "com.hertzboard.app",
+	"build": {
+		"frontendDist": "../build",
+		"devUrl": "http://localhost:5173",
+		"beforeDevCommand": "npm run dev",
+		"beforeBuildCommand": "npm run build"
+	},
+	"app": {
+		"windows": [
+			{
+				"title": "HertzBoard",
+				"width": 1400,
+				"height": 900,
+				"minWidth": 1024,
+				"minHeight": 768,
+				"resizable": true,
+				"fullscreen": false,
+				"center": true,
+				"decorations": true,
+				"transparent": false,
+				"alwaysOnTop": false,
+				"visible": true
+			}
+		],
+		"security": {
+			"csp": null,
+			"assetProtocol": {
+				"enable": true,
+				"scope": ["**"]
+			}
+		},
+		"withGlobalTauri": true
+	},
+	"bundle": {
+		"active": true,
+		"targets": "all",
+		"icon": [
+			"icons/32x32.png",
+			"icons/128x128.png",
+			"icons/128x128@2x.png",
+			"icons/icon.icns",
+			"icons/icon.ico"
+		],
+		"publisher": "HertzBoard",
+		"copyright": "Copyright © 2026 HertzBoard. All rights reserved.",
+		"category": "Productivity",
+		"shortDescription": "Collaborative visual workspace platform",
+		"longDescription": "HertzBoard is a real-time collaborative visual workspace platform for teams. Create boards, add elements, and collaborate in real-time with your team.",
+		"windows": {
+			"certificateThumbprint": null,
+			"digestAlgorithm": "sha256",
+			"timestampUrl": "http://timestamp.digicert.com"
+		},
+		"macOS": {
+			"frameworks": [],
+			"minimumSystemVersion": "10.15",
+			"exceptionDomain": "",
+			"signingIdentity": null,
+			"entitlements": null
+		},
+		"linux": {
+			"deb": {
+				"depends": []
+			},
+			"appimage": {
+				"bundleMediaFramework": false
+			}
+		},
+		"fileAssociations": [
+			{
+				"ext": ["hertzboard"],
+				"name": "HertzBoard Workspace",
+				"description": "HertzBoard workspace file",
+				"mimeType": "application/x-hertzboard",
+				"role": "Editor"
+			}
+		]
+	},
+	"plugins": {
+		"updater": {
+			"active": true,
+			"endpoints": [
+				"https://github.com/YOUR_USERNAME/hertz-board/releases/latest/download/latest.json"
+			],
+			"dialog": true,
+			"pubkey": "YOUR_PUBLIC_KEY_HERE"
+		}
+	}
+}

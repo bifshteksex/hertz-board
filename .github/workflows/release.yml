@@ -1,0 +1,491 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+      - "v*.*.*-*"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version tag (e.g., v0.1.0)"
+        required: true
+        type: string
+      skip_deploy:
+        description: "Skip production deployment"
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+jobs:
+  # ====================
+  # 1. Create Release Draft
+  # ====================
+  create-release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    outputs:
+      release_id: ${{ steps.create-release.outputs.result }}
+      version: ${{ steps.get-version.outputs.version }}
+      upload_url: ${{ steps.create-release.outputs.upload_url }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Get version
+        id: get-version
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            VERSION="${{ github.event.inputs.version }}"
+          else
+            VERSION="${GITHUB_REF#refs/tags/}"
+          fi
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          echo "Version: ${VERSION}"
+
+      - name: Extract changelog for this version
+        id: changelog
+        run: |
+          VERSION="${{ steps.get-version.outputs.version }}"
+          VERSION_NUM="${VERSION#v}"
+
+          # Try to extract changelog section for this version
+          if [ -f CHANGELOG.md ]; then
+            CHANGELOG=$(sed -n "/## \[${VERSION_NUM}\]/,/## \[/p" CHANGELOG.md | sed '$d')
+            if [ -z "$CHANGELOG" ]; then
+              CHANGELOG="See [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/main/CHANGELOG.md) for details."
+            fi
+          else
+            CHANGELOG="Initial release"
+          fi
+
+          # Save to file for multi-line output
+          echo "$CHANGELOG" > changelog.txt
+
+      - name: Create GitHub Release
+        id: create-release
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const changelog = fs.readFileSync('changelog.txt', 'utf8');
+            const version = '${{ steps.get-version.outputs.version }}';
+
+            const releaseBody = `## 🚀 HertzBoard ${version}
+
+            ### 📥 Downloads
+
+            #### 🖥️ Desktop Applications
+
+            | Platform | Download | Size |
+            |----------|----------|------|
+            | 🪟 **Windows** | [HertzBoard-${version}-x64.msi](#) | ~20 MB |
+            | 🍎 **macOS** (Universal) | [HertzBoard-${version}.dmg](#) | ~25 MB |
+            | 🍎 **macOS** (Intel) | [HertzBoard-${version}-x64.app.tar.gz](#) | ~22 MB |
+            | 🍎 **macOS** (Apple Silicon) | [HertzBoard-${version}-aarch64.app.tar.gz](#) | ~22 MB |
+            | 🐧 **Linux** (AppImage) | [HertzBoard-${version}-amd64.AppImage](#) | ~65 MB |
+            | 🐧 **Linux** (Debian/Ubuntu) | [hertzboard_${version}_amd64.deb](#) | ~45 MB |
+
+            #### 🌐 Web Application
+
+            **Production**: [https://hertz.rshang.in](https://hertz.rshang.in)
+
+            ---
+
+            ### 📝 What's New
+
+            ${changelog}
+
+            ---
+
+            ### 📦 Installation Instructions
+
+            <details>
+            <summary><strong>🪟 Windows</strong></summary>
+
+            1. Download \`HertzBoard-${version}-x64.msi\`
+            2. Double-click the installer
+            3. Follow the installation wizard
+            4. Launch HertzBoard from Start Menu
+
+            **Note**: You may see a Windows SmartScreen warning. Click "More info" → "Run anyway"
+            </details>
+
+            <details>
+            <summary><strong>🍎 macOS</strong></summary>
+
+            **Option 1: DMG (Recommended)**
+            1. Download \`HertzBoard-${version}.dmg\`
+            2. Open the DMG file
+            3. Drag HertzBoard to Applications folder
+            4. Right-click the app → Open (first time only to bypass Gatekeeper)
+
+            **Option 2: App Bundle**
+            1. Download the appropriate .app.tar.gz for your Mac:
+               - Intel: \`x64.app.tar.gz\`
+               - Apple Silicon (M1/M2/M3): \`aarch64.app.tar.gz\`
+            2. Extract the archive
+            3. Move HertzBoard.app to Applications
+            4. Right-click → Open (first time only)
+            </details>
+
+            <details>
+            <summary><strong>🐧 Linux</strong></summary>
+
+            **Option 1: AppImage (Universal)**
+            \`\`\`bash
+            # Download
+            wget https://github.com/${{ github.repository }}/releases/download/${version}/HertzBoard-${version}-amd64.AppImage
+
+            # Make executable
+            chmod +x HertzBoard-${version}-amd64.AppImage
+
+            # Run
+            ./HertzBoard-${version}-amd64.AppImage
+            \`\`\`
+
+            **Option 2: Debian/Ubuntu (.deb)**
+            \`\`\`bash
+            # Download
+            wget https://github.com/${{ github.repository }}/releases/download/${version}/hertzboard_${version}_amd64.deb
+
+            # Install
+            sudo dpkg -i hertzboard_${version}_amd64.deb
+
+            # Fix dependencies if needed
+            sudo apt-get install -f
+
+            # Run
+            hertzboard
+            \`\`\`
+            </details>
+
+            ---
+
+            ### 🔧 System Requirements
+
+            | Platform | Minimum | Recommended |
+            |----------|---------|-------------|
+            | **Windows** | Windows 10 (1809+) | Windows 11 |
+            | **macOS** | macOS 10.15 Catalina | macOS 12 Monterey+ |
+            | **Linux** | Ubuntu 20.04+ | Ubuntu 22.04+ |
+            | **RAM** | 4 GB | 8 GB |
+            | **Storage** | 200 MB | 500 MB |
+
+            ---
+
+            ### 🐛 Known Issues
+
+            - Windows: SmartScreen warning (app is not code-signed yet)
+            - macOS: Gatekeeper warning (app is not notarized yet)
+            - Linux: May require additional dependencies on some distributions
+
+            ---
+
+            ### 📚 Documentation
+
+            - [Installation Guide](https://github.com/${{ github.repository }}/blob/main/DESKTOP_QUICKSTART.md)
+            - [User Guide](https://github.com/${{ github.repository }}/blob/main/frontend/DESKTOP.md)
+            - [Changelog](https://github.com/${{ github.repository }}/blob/main/CHANGELOG.md)
+
+            ---
+
+            ### 💬 Support
+
+            - 🐛 [Report a bug](https://github.com/${{ github.repository }}/issues/new?template=bug_report.md)
+            - 💡 [Request a feature](https://github.com/${{ github.repository }}/issues/new?template=feature_request.md)
+            - 📖 [Documentation](https://github.com/${{ github.repository }}/wiki)
+
+            ---
+
+            **Full Changelog**: https://github.com/${{ github.repository }}/compare/v0.0.0...${version}
+            `;
+
+            const { data } = await github.rest.repos.createRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              tag_name: version,
+              name: `HertzBoard ${version}`,
+              body: releaseBody,
+              draft: true,  // Start as draft, will publish after all uploads
+              prerelease: version.includes('-alpha') || version.includes('-beta') || version.includes('-rc')
+            });
+
+            console.log(`✅ Created release: ${data.html_url}`);
+            return data.id;
+
+  # ====================
+  # 2. Build Desktop Apps
+  # ====================
+  build-desktop:
+    name: Build Desktop - ${{ matrix.os-name }}
+    needs: create-release
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: "macos-latest"
+            args: "--target universal-apple-darwin"
+            os-name: "macOS"
+          - platform: "ubuntu-22.04"
+            args: ""
+            os-name: "Linux"
+          - platform: "windows-latest"
+            args: ""
+            os-name: "Windows"
+
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
+
+      - name: Install dependencies (Ubuntu only)
+        if: matrix.platform == 'ubuntu-22.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libwebkit2gtk-4.1-dev \
+            libappindicator3-dev \
+            librsvg2-dev \
+            patchelf \
+            libssl-dev \
+            pkg-config
+
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: "./frontend/src-tauri -> target"
+
+      - name: Install frontend dependencies
+        working-directory: ./frontend
+        run: npm ci
+
+      - name: Build Tauri app
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+        with:
+          releaseId: ${{ needs.create-release.outputs.release_id }}
+          projectPath: ./frontend
+          args: ${{ matrix.args }}
+
+      - name: Upload build summary
+        if: always()
+        run: |
+          echo "### Build completed for ${{ matrix.os-name }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Platform**: ${{ matrix.platform }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Version**: ${{ needs.create-release.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+
+  # ====================
+  # 3. Generate Updater Manifest
+  # ====================
+  generate-updater:
+    name: Generate Updater Manifest
+    needs: [create-release, build-desktop]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Generate latest.json
+        run: |
+          VERSION="${{ needs.create-release.outputs.version }}"
+          VERSION_NUM="${VERSION#v}"
+
+          cat > latest.json << EOF
+          {
+            "version": "${VERSION_NUM}",
+            "notes": "See the release page for details",
+            "pub_date": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "platforms": {
+              "darwin-x86_64": {
+                "signature": "",
+                "url": "https://github.com/${{ github.repository }}/releases/download/${VERSION}/HertzBoard_x64.app.tar.gz"
+              },
+              "darwin-aarch64": {
+                "signature": "",
+                "url": "https://github.com/${{ github.repository }}/releases/download/${VERSION}/HertzBoard_aarch64.app.tar.gz"
+              },
+              "linux-x86_64": {
+                "signature": "",
+                "url": "https://github.com/${{ github.repository }}/releases/download/${VERSION}/hertzboard_${VERSION_NUM}_amd64.AppImage.tar.gz"
+              },
+              "windows-x86_64": {
+                "signature": "",
+                "url": "https://github.com/${{ github.repository }}/releases/download/${VERSION}/HertzBoard_${VERSION_NUM}_x64_en-US.msi.zip"
+              }
+            }
+          }
+          EOF
+
+          cat latest.json
+
+      - name: Upload to release
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const content = fs.readFileSync('latest.json');
+
+            await github.rest.repos.uploadReleaseAsset({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              release_id: ${{ needs.create-release.outputs.release_id }},
+              name: 'latest.json',
+              data: content
+            });
+
+  # ====================
+  # 4. Deploy to Production
+  # ====================
+  deploy-production:
+    name: Deploy to Production
+    needs: [create-release, build-desktop]
+    if: ${{ !inputs.skip_deploy }}
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://hertz.rshang.in
+
+    steps:
+      - name: Deploy to Production Server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.PROD_HOST }}
+          username: ${{ secrets.PROD_USER }}
+          key: ${{ secrets.PROD_SSH_KEY }}
+          port: 22
+          script: |
+            set -e
+
+            echo "🚀 ===== Starting Production Deployment ====="
+            cd /opt/hertz-board
+
+            echo "📦 1. Fetching latest code..."
+            git fetch --all --tags --force
+            git stash push -m "Auto-stash before deployment at $(date)" || true
+            git checkout -f ${{ needs.create-release.outputs.version }}
+            git reset --hard origin/${{ needs.create-release.outputs.version }} || git reset --hard ${{ needs.create-release.outputs.version }}
+
+            echo "💾 2. Creating backup..."
+            make -f Makefile.production prod-backup || echo "⚠️ Backup failed, continuing anyway"
+
+            echo "🔨 3. Building production images..."
+            make -f Makefile.production prod-build
+            docker-compose -f docker-compose.production.yml --env-file .env.production build frontend
+
+            echo "♻️ 4. Restarting containers..."
+            docker-compose -f docker-compose.production.yml --env-file .env.production up -d --force-recreate --no-deps backend frontend
+
+            echo "🔄 5. Restarting nginx..."
+            docker-compose -f docker-compose.production.yml --env-file .env.production restart nginx
+
+            echo "⏳ 6. Waiting for services..."
+            sleep 20
+
+            echo "📊 7. Checking deployment status..."
+            docker-compose -f docker-compose.production.yml ps
+
+            echo "🧹 8. Cleaning up..."
+            docker image prune -f
+
+            echo "✅ ===== Deployment Completed Successfully ====="
+            echo "📌 Version: ${{ needs.create-release.outputs.version }}"
+            echo "🔗 URL: https://hertz.rshang.in"
+
+      - name: Health Check
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.PROD_HOST }}
+          username: ${{ secrets.PROD_USER }}
+          key: ${{ secrets.PROD_SSH_KEY }}
+          port: 22
+          script: |
+            echo "Running health checks..."
+            cd /opt/hertz-board
+
+            # Check if containers are running
+            RUNNING_CONTAINERS=$(docker ps | grep hertz-board | wc -l)
+            if [ $RUNNING_CONTAINERS -lt 5 ]; then
+              echo "❌ ERROR: Only $RUNNING_CONTAINERS/5 containers running!"
+              docker-compose -f docker-compose.production.yml ps
+              exit 1
+            fi
+            echo "All containers running ($RUNNING_CONTAINERS/5)"
+
+            # Check backend health
+            sleep 5
+            BACKEND_HEALTH=$(docker-compose -f docker-compose.production.yml exec -T backend wget -q -O- http://localhost:8080/health || echo "failed")
+            if [ "$BACKEND_HEALTH" = "failed" ]; then
+              echo "WARNING: Backend health check failed"
+            else
+              echo "Backend health check: OK"
+            fi
+
+            echo "Health checks completed"
+
+      - name: Deployment summary
+        if: always()
+        run: |
+          echo "### Production Deployment" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Version**: ${{ needs.create-release.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Environment**: Production" >> $GITHUB_STEP_SUMMARY
+          echo "**URL**: https://hertz.rshang.in" >> $GITHUB_STEP_SUMMARY
+          echo "**Status**: ${{ job.status }}" >> $GITHUB_STEP_SUMMARY
+
+  # ====================
+  # 5. Publish Release
+  # ====================
+  publish-release:
+    name: Publish GitHub Release
+    needs: [create-release, build-desktop, generate-updater, deploy-production]
+    if: always() && needs.build-desktop.result == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Publish release
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.repos.updateRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              release_id: ${{ needs.create-release.outputs.release_id }},
+              draft: false
+            });
+
+            console.log('Release published');
+
+      - name: Create summary
+        run: |
+          echo "# 🎉 Release ${{ needs.create-release.outputs.version }} Published!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## 📦 Artifacts" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Windows (MSI)" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ macOS (DMG, Universal)" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Linux (AppImage, DEB)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## 🌐 Deployment" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Production: https://hertz.rshang.in" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## 🔗 Links" >> $GITHUB_STEP_SUMMARY
+          echo "- [GitHub Release](https://github.com/${{ github.repository }}/releases/tag/${{ needs.create-release.outputs.version }})" >> $GITHUB_STEP_SUMMARY
+          echo "- [Download Latest](https://github.com/${{ github.repository }}/releases/latest)" >> $GITHUB_STEP_SUMMARY
