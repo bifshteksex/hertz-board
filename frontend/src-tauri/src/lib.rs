@@ -90,27 +90,35 @@ pub fn run() {
             log::info!("Architecture: {}", std::env::consts::ARCH);
 
             // Setup deep link handler for OAuth callbacks
-            let app_handle = app.handle().clone();
-            tauri_plugin_deep_link::register("hertzboard", move |request| {
-                log::info!("Deep link received: {}", request);
+            #[cfg(desktop)]
+            {
+                use tauri_plugin_deep_link::DeepLinkExt;
 
-                // Parse the URL to extract OAuth tokens
-                // Expected format: hertzboard://oauth/callback?access_token=xxx&refresh_token=yyy
-                if request.starts_with("hertzboard://oauth/callback") {
-                    if let Some(window) = app_handle.get_webview_window("main") {
-                        // Send the deep link URL to the frontend
-                        let script = format!(
-                            "window.dispatchEvent(new CustomEvent('oauth-callback', {{ detail: '{}' }}))",
-                            request.replace("'", "\\'")
-                        );
-                        let _ = window.eval(&script);
+                let app_handle = app.handle().clone();
+                app.deep_link().register_all()?;
+
+                app.deep_link().on_open_url(move |event| {
+                    let urls = event.urls();
+                    if let Some(url_str) = urls.first() {
+                        log::info!("Deep link received: {}", url_str);
+
+                        let url_string = url_str.to_string();
+
+                        // Parse the URL to extract OAuth tokens
+                        // Expected format: hertzboard://oauth/callback?access_token=xxx&refresh_token=yyy
+                        if url_string.starts_with("hertzboard://oauth/callback") {
+                            if let Some(window) = app_handle.get_webview_window("main") {
+                                // Send the deep link URL to the frontend
+                                let script = format!(
+                                    "window.dispatchEvent(new CustomEvent('oauth-callback', {{ detail: '{}' }}))",
+                                    url_string.replace("'", "\\'")
+                                );
+                                let _ = window.eval(&script);
+                            }
+                        }
                     }
-                }
-            })
-            .map_err(|e| {
-                log::error!("Failed to register deep link handler: {}", e);
-                e
-            })?;
+                });
+            }
 
             // Log where logs are stored
             if let Ok(log_dir) = app.path().app_log_dir() {
