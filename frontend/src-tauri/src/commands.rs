@@ -30,7 +30,7 @@ pub async fn open_file_dialog(app: AppHandle) -> Result<Option<PathBuf>, String>
         .add_filter("HertzBoard Workspace", &["hertzboard", "json"])
         .blocking_pick_file();
 
-    Ok(file_path)
+    Ok(file_path.and_then(|f| f.into_path().ok()))
 }
 
 /// Save file dialog for exporting workspace
@@ -48,7 +48,7 @@ pub async fn save_file_dialog(
         .set_file_name(&default_name)
         .blocking_save_file();
 
-    Ok(file_path)
+    Ok(file_path.and_then(|f| f.into_path().ok()))
 }
 
 /// Export workspace to file

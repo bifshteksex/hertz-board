@@ -12,3 +12,9 @@ node_modules/
 # Generated files
 *.min.js
 *.min.css
+
+# Tauri generated files
+src-tauri/target/
+src-tauri/Cargo.lock
+src-tauri/icons/
+src-tauri/capabilities/
