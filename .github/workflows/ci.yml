@@ -110,20 +110,37 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "24"
-          cache: "npm"
-          cache-dependency-path: frontend/package-lock.json
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 8
+          run_install: false
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
 
       - name: Install dependencies
-        run: cd frontend && npm ci
+        run: cd frontend && pnpm install --frozen-lockfile
 
       - name: Sync SvelteKit
-        run: cd frontend && npx svelte-kit sync
+        run: cd frontend && pnpm exec svelte-kit sync
 
       - name: Run linter
-        run: cd frontend && npm run lint
+        run: cd frontend && pnpm run lint
 
       - name: Type check
-        run: cd frontend && npm run check
+        run: cd frontend && pnpm run check
 
   frontend-test:
     name: Frontend Tests
@@ -135,17 +152,34 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "24"
-          cache: "npm"
-          cache-dependency-path: frontend/package-lock.json
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 8
+          run_install: false
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
 
       - name: Install dependencies
-        run: cd frontend && npm ci
+        run: cd frontend && pnpm install --frozen-lockfile
 
       - name: Sync SvelteKit
-        run: cd frontend && npx svelte-kit sync
+        run: cd frontend && pnpm exec svelte-kit sync
 
       - name: Run tests
-        run: cd frontend && npm run test:unit
+        run: cd frontend && pnpm run test:unit
 
   frontend-build:
     name: Frontend Build
@@ -157,17 +191,34 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "24"
-          cache: "npm"
-          cache-dependency-path: frontend/package-lock.json
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 8
+          run_install: false
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
 
       - name: Install dependencies
-        run: cd frontend && npm ci
+        run: cd frontend && pnpm install --frozen-lockfile
 
       - name: Sync SvelteKit
-        run: cd frontend && npx svelte-kit sync
+        run: cd frontend && pnpm exec svelte-kit sync
 
       - name: Build
-        run: cd frontend && npm run build
+        run: cd frontend && pnpm run build
 
   backend-build:
     name: Backend Build

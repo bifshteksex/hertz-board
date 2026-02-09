@@ -28,8 +28,25 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
-          cache: "npm"
-          cache-dependency-path: frontend/package-lock.json
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 8
+          run_install: false
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
 
       - name: Install Rust stable
         uses: dtolnay/rust-toolchain@stable
@@ -51,29 +68,29 @@ jobs:
 
       - name: Install frontend dependencies
         working-directory: ./frontend
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Run frontend tests
         working-directory: ./frontend
-        run: npm run test:unit
+        run: pnpm run test:unit
 
       - name: Check frontend
         working-directory: ./frontend
-        run: npm run check
+        run: pnpm run check
 
       - name: Lint frontend (Unix only)
         if: matrix.platform != 'windows-latest'
         working-directory: ./frontend
-        run: npm run lint
+        run: pnpm run lint
 
       - name: Lint frontend (Windows - ESLint only)
         if: matrix.platform == 'windows-latest'
         working-directory: ./frontend
-        run: npx eslint .
+        run: pnpm exec eslint .
 
       - name: Build Tauri app (debug)
         working-directory: ./frontend
-        run: npm run tauri:build:debug
+        run: pnpm run tauri:build:debug
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
