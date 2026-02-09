@@ -267,14 +267,16 @@ jobs:
           VERSION="${{ needs.create-release.outputs.version }}"
           VERSION_NUM="${VERSION#v}"
 
-          echo "Updating version to ${VERSION_NUM}..."
+          echo "Git tag version: ${VERSION_NUM}"
+          CLEAN_VERSION="${VERSION_NUM%%-*}"
 
-          # Update package.json
+          echo "Clean version (numbers only): ${CLEAN_VERSION}"
+
+          # Update both package.json and tauri.conf.json with clean version
           cd frontend
-          npm version ${VERSION_NUM} --no-git-tag-version --allow-same-version
+          npm version ${CLEAN_VERSION} --no-git-tag-version --allow-same-version
 
-          # Update tauri.conf.json
-          jq ".version = \"${VERSION_NUM}\"" src-tauri/tauri.conf.json > src-tauri/tauri.conf.json.tmp
+          jq ".version = \"${CLEAN_VERSION}\"" src-tauri/tauri.conf.json > src-tauri/tauri.conf.json.tmp
           mv src-tauri/tauri.conf.json.tmp src-tauri/tauri.conf.json
 
           echo "Updated versions:"
@@ -320,10 +322,14 @@ jobs:
         run: |
           VERSION="${{ needs.create-release.outputs.version }}"
           VERSION_NUM="${VERSION#v}"
+          CLEAN_VERSION="${VERSION_NUM%%-*}"
+
+          echo "Git tag version: ${VERSION_NUM}"
+          echo "Clean version for latest.json: ${CLEAN_VERSION}"
 
           cat > latest.json << EOF
           {
-            "version": "${VERSION_NUM}",
+            "version": "${CLEAN_VERSION}",
             "notes": "See the release page for details",
             "pub_date": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
             "platforms": {
@@ -337,11 +343,11 @@ jobs:
               },
               "linux-x86_64": {
                 "signature": "",
-                "url": "https://github.com/${{ github.repository }}/releases/download/${VERSION}/hertzboard_${VERSION_NUM}_amd64.AppImage.tar.gz"
+                "url": "https://github.com/${{ github.repository }}/releases/download/${VERSION}/hertzboard_${CLEAN_VERSION}_amd64.AppImage.tar.gz"
               },
               "windows-x86_64": {
                 "signature": "",
-                "url": "https://github.com/${{ github.repository }}/releases/download/${VERSION}/HertzBoard_${VERSION_NUM}_x64_en-US.msi.zip"
+                "url": "https://github.com/${{ github.repository }}/releases/download/${VERSION}/HertzBoard_${CLEAN_VERSION}_x64_en-US.msi.zip"
               }
             }
           }
