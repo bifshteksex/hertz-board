@@ -78,16 +78,18 @@ jobs:
 
             ### 📥 Downloads
 
+            **⬇️ Download the application files from the Assets section below** (expand "Assets" if collapsed)
+
             #### 🖥️ Desktop Applications
 
-            | Platform | Download | Size |
-            |----------|----------|------|
-            | 🪟 **Windows** | [HertzBoard-${version}-x64.msi](#) | ~20 MB |
-            | 🍎 **macOS** (Universal) | [HertzBoard-${version}.dmg](#) | ~25 MB |
-            | 🍎 **macOS** (Intel) | [HertzBoard-${version}-x64.app.tar.gz](#) | ~22 MB |
-            | 🍎 **macOS** (Apple Silicon) | [HertzBoard-${version}-aarch64.app.tar.gz](#) | ~22 MB |
-            | 🐧 **Linux** (AppImage) | [HertzBoard-${version}-amd64.AppImage](#) | ~65 MB |
-            | 🐧 **Linux** (Debian/Ubuntu) | [hertzboard_${version}_amd64.deb](#) | ~45 MB |
+            | Platform | File Name | Size |
+            |----------|-----------|------|
+            | 🪟 **Windows** | \`*.msi\` | ~20 MB |
+            | 🍎 **macOS** (Universal) | \`*.dmg\` | ~25 MB |
+            | 🍎 **macOS** (Intel) | \`*_x64.app.tar.gz\` | ~22 MB |
+            | 🍎 **macOS** (Apple Silicon) | \`*_aarch64.app.tar.gz\` | ~22 MB |
+            | 🐧 **Linux** (AppImage) | \`*.AppImage\` | ~65 MB |
+            | 🐧 **Linux** (Debian/Ubuntu) | \`*.deb\` | ~45 MB |
 
             #### 🌐 Web Application
 
@@ -106,7 +108,7 @@ jobs:
             <details>
             <summary><strong>🪟 Windows</strong></summary>
 
-            1. Download \`HertzBoard-${version}-x64.msi\`
+            1. Download the \`.msi\` file from Assets below
             2. Double-click the installer
             3. Follow the installation wizard
             4. Launch HertzBoard from Start Menu
@@ -118,15 +120,15 @@ jobs:
             <summary><strong>🍎 macOS</strong></summary>
 
             **Option 1: DMG (Recommended)**
-            1. Download \`HertzBoard-${version}.dmg\`
+            1. Download the \`.dmg\` file from Assets below
             2. Open the DMG file
             3. Drag HertzBoard to Applications folder
             4. Right-click the app → Open (first time only to bypass Gatekeeper)
 
             **Option 2: App Bundle**
-            1. Download the appropriate .app.tar.gz for your Mac:
-               - Intel: \`x64.app.tar.gz\`
-               - Apple Silicon (M1/M2/M3): \`aarch64.app.tar.gz\`
+            1. Download the appropriate \`.app.tar.gz\` file from Assets:
+               - Intel: \`*_x64.app.tar.gz\`
+               - Apple Silicon (M1/M2/M3): \`*_aarch64.app.tar.gz\`
             2. Extract the archive
             3. Move HertzBoard.app to Applications
             4. Right-click → Open (first time only)
@@ -136,31 +138,15 @@ jobs:
             <summary><strong>🐧 Linux</strong></summary>
 
             **Option 1: AppImage (Universal)**
-            \`\`\`bash
-            # Download
-            wget https://github.com/${{ github.repository }}/releases/download/${version}/HertzBoard-${version}-amd64.AppImage
-
-            # Make executable
-            chmod +x HertzBoard-${version}-amd64.AppImage
-
-            # Run
-            ./HertzBoard-${version}-amd64.AppImage
-            \`\`\`
+            1. Download the \`.AppImage\` file from Assets below
+            2. Make it executable: \`chmod +x *.AppImage\`
+            3. Run it: \`./HertzBoard*.AppImage\`
 
             **Option 2: Debian/Ubuntu (.deb)**
-            \`\`\`bash
-            # Download
-            wget https://github.com/${{ github.repository }}/releases/download/${version}/hertzboard_${version}_amd64.deb
-
-            # Install
-            sudo dpkg -i hertzboard_${version}_amd64.deb
-
-            # Fix dependencies if needed
-            sudo apt-get install -f
-
-            # Run
-            hertzboard
-            \`\`\`
+            1. Download the \`.deb\` file from Assets below
+            2. Install: \`sudo dpkg -i *.deb\`
+            3. Fix dependencies if needed: \`sudo apt-get install -f\`
+            4. Run: \`hertzboard\`
             </details>
 
             ---
@@ -198,8 +184,7 @@ jobs:
               tag_name: version,
               name: `HertzBoard ${version}`,
               body: releaseBody,
-              draft: true,  // Start as draft, will publish after all uploads
-              prerelease: version.includes('-alpha') || version.includes('-beta') || version.includes('-rc')
+              draft: true
             });
 
             console.log(`✅ Created release: ${data.html_url}`);
@@ -275,6 +260,26 @@ jobs:
         uses: swatinem/rust-cache@v2
         with:
           workspaces: "./frontend/src-tauri -> target"
+
+      - name: Update version in config files
+        shell: bash
+        run: |
+          VERSION="${{ needs.create-release.outputs.version }}"
+          VERSION_NUM="${VERSION#v}"
+
+          echo "Updating version to ${VERSION_NUM}..."
+
+          # Update package.json
+          cd frontend
+          npm version ${VERSION_NUM} --no-git-tag-version --allow-same-version
+
+          # Update tauri.conf.json
+          jq ".version = \"${VERSION_NUM}\"" src-tauri/tauri.conf.json > src-tauri/tauri.conf.json.tmp
+          mv src-tauri/tauri.conf.json.tmp src-tauri/tauri.conf.json
+
+          echo "Updated versions:"
+          echo "  package.json: $(jq -r .version package.json)"
+          echo "  tauri.conf.json: $(jq -r .version src-tauri/tauri.conf.json)"
 
       - name: Install frontend dependencies
         working-directory: ./frontend
